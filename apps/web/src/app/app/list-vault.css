@@ -1,0 +1,373 @@
+/* Shopping list + Vault (approved mockup /workspace/mockups/sparkle-list-vault). Scoped to .sa. */
+.sa .lv-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+.sa .lv-card {
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  box-shadow: var(--sh);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  transition:
+    box-shadow 0.25s,
+    transform 0.25s;
+}
+.sa .lv-card:hover {
+  box-shadow:
+    var(--sh),
+    0 0 0 1px rgba(129, 140, 248, 0.18),
+    0 8px 32px rgba(129, 140, 248, 0.16);
+}
+.sa .lv-card h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.sa .lv-card h3 .spk {
+  margin-left: 4px;
+}
+.sa .lv-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 2px;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+.sa .lv-row:first-of-type {
+  border-top: 0;
+}
+.sa .lv-t {
+  font-weight: 600;
+}
+.sa .lv-s {
+  color: var(--dim);
+  font-size: 12.5px;
+}
+.sa .lv-note {
+  font-size: 12px;
+  color: var(--dim);
+  font-style: italic;
+}
+.sa .lv-grow {
+  flex: 1;
+  min-width: 0;
+}
+.sa .lv-done .lv-t {
+  text-decoration: line-through;
+  color: var(--dim);
+  font-weight: 500;
+}
+.sa .lv-ck {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  flex: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  position: relative;
+  background: var(--card);
+  color: transparent;
+  padding: 0;
+}
+.sa .lv-done .lv-ck {
+  background: var(--pill);
+  color: var(--pillt);
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.55);
+}
+.sa .lv-av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  flex: none;
+  border: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--card) 70%, transparent);
+}
+.sa .lv-av.lg {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+/* Dark-mode contrast for near-black avatars (was invisible on dark cards) */
+.sa[data-theme="dark"] .lv-av,
+.sa[data-theme="dark"] .cav,
+.sa[data-theme="dark"] .av {
+  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.22);
+}
+.sa .lv-qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--soft);
+  border-radius: 999px;
+  padding: 3px 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.sa .lv-qty button {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--card);
+  border: 0;
+  cursor: pointer;
+  color: var(--fg);
+  padding: 0;
+}
+.sa .lv-add {
+  display: flex;
+  gap: 8px;
+}
+.sa .lv-in {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 14px;
+}
+.sa .lv-pill {
+  background: var(--pill);
+  color: var(--pillt);
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1px rgba(129, 140, 248, 0.25),
+    0 4px 18px rgba(99, 102, 241, 0.28);
+}
+.sa[data-theme="dark"] .lv-pill {
+  box-shadow:
+    0 0 0 1px rgba(165, 180, 252, 0.4),
+    0 0 22px rgba(165, 180, 252, 0.35);
+}
+.sa .lv-pill:disabled {
+  opacity: 0.5;
+}
+.sa .lv-ghost {
+  white-space: nowrap;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.sa .lv-seg {
+  display: inline-flex;
+  background: var(--soft);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.sa .lv-seg button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--dim);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.sa .lv-seg .on {
+  background: var(--card);
+  color: var(--fg);
+  box-shadow: var(--sh);
+}
+.sa .lv-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--dim);
+}
+.sa .lv-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--dim);
+}
+.sa .lv-live i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+.sa .lv-live.off i {
+  background: var(--dim);
+  box-shadow: none;
+}
+.sa .lv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sa .lv-edit {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 13px;
+  width: 100%;
+  margin-top: 6px;
+}
+.sa .lv-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 5;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--sh);
+  padding: 6px;
+  min-width: 150px;
+}
+.sa .lv-menu button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: 0;
+  color: var(--fg);
+  padding: 7px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+}
+.sa .lv-menu button:hover {
+  background: var(--soft);
+}
+.sa .cls-std {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+.sa .cls-aca {
+  background: #dcfce7;
+  color: #166534;
+}
+.sa .cls-sen {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.sa[data-theme="dark"] .cls-std {
+  background: #1e1b4b;
+  color: #c7d2fe;
+}
+.sa[data-theme="dark"] .cls-aca {
+  background: #052e16;
+  color: #bbf7d0;
+}
+.sa[data-theme="dark"] .cls-sen {
+  background: #450a0a;
+  color: #fecaca;
+}
+.sa .lv-doc {
+  width: 40px;
+  height: 48px;
+  border-radius: 10px;
+  background: var(--soft);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex: none;
+  border: 1px solid var(--line);
+}
+.sa .lv-banner {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  background: var(--soft);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+.sa .lv-drop {
+  border: 1.5px dashed var(--line);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 14px;
+}
+.sa .lv-review {
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  box-shadow: 0 0 24px rgba(129, 140, 248, 0.15);
+  border-radius: 14px;
+  padding: 12px !important;
+}
+.sa .lv-kv {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 6px 12px;
+  font-size: 14px;
+}
+.sa .lv-kv > span {
+  color: var(--dim);
+}
+.sa .lv-toast {
+  position: fixed;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--pill);
+  color: var(--pillt);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 13px;
+  display: flex;
+  gap: 12px;
+  z-index: 50;
+  box-shadow: var(--sh);
+}
+.sa .lv-toast button {
+  background: none;
+  border: 0;
+  color: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+@media (max-width: 760px) {
+  .sa .lv-grid {
+    grid-template-columns: 1fr;
+  }
+  .sa .lv-hidem {
+    display: none;
+  }
+}

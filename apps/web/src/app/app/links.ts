@@ -11,6 +11,7 @@ export const I = {
   spark: "M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z",
   vault: "M5 11h14v10H5zM8 11V7a4 4 0 018 0v4",
   admin: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z",
+  list: "M3 4h2l2.4 11.2a2 2 0 002 1.6h7.7a2 2 0 002-1.5L21 8H6M10 21h.01M17 21h.01",
 };
 export const MAIN = [
   { href: "/app/today", label: "Today", icon: I.today },
@@ -20,9 +21,10 @@ export const MAIN = [
   { href: "/app/attendance", label: "Attendance", icon: I.today },
   { href: "/app/gpa", label: "GPA Simulator", icon: I.gpa },
   { href: "/app/scan", label: "Scan Homework", icon: I.scan },
+  { href: "/app/list", label: "Shopping list", icon: I.list },
 ];
 export const MORE = [
   { href: "/app/family", label: "Family & helpers", icon: I.family },
   { href: "/app/import", label: "Import (CSV)", icon: I.import },
-  { href: "/app/vault", label: "Vault", icon: I.vault, k: "Soon" },
+  { href: "/app/vault", label: "Vault", icon: I.vault, k: "Beta" },
 ];
