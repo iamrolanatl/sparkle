@@ -19,7 +19,7 @@
 
 | ID | Date | Decision | Context / rationale | Alternatives | Decided by | Status |
 |---|---|---|---|---|---|---|
-| ADR-01 | Oct 2026 | Device-default credential storage (agent OS secure store) | Minimize central secret risk for school credentials | Central vault | Handoff v1.0 | Accepted |
+| ADR-01 | Oct 2026 | Device-default credential storage (agent OS secure store) — tightened to on-device only by CR-0011 / DEC-76 | Minimize central secret risk for school credentials | Central vault | Handoff v1.0 | Accepted |
 | ADR-02 | Oct 2026 | Precomputed Today document (cached in KV) | Meet NFR-01/03; cacheability | On-demand query | Handoff v1.0 | Accepted |
 | ADR-03 | Oct 2026 | Deterministic GPA engine; AI only explains | Correctness, trust | AI-computed GPA | Handoff v1.0 | Accepted |
 | ADR-04 | Oct 2026 | Explicit confirmation required for any outbound communication | Safety, trust, policy compliance | Auto-send | Handoff v1.0 | Accepted |
@@ -92,6 +92,7 @@
 | DEC-73 | 2026-10-21 | One Worker export with queue and cron dispatch registries (src/queues.ts, src/scheduled.ts); Integration owns bindings; free queue sparkle-scans-ocr created; daily cron 03:30 UTC for vault jobs | Arbitrates #31/#48/#53 export conflict; one place to see all async work | Each team edits default export | Grok Bot (Integration lead) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-74 | 2026-10-21 | Dev vault keys: random 32-byte VAULT_KEK as a Worker secret (box copy ~/.sparkle/vault-dev.json, 0600, never committed); VAULT_KEK_PREV = VAULT_KEK and VERSION=1 until the first rotation; vault flag stays OFF | Lets Team C exercise crypto on dev with sample docs only | No keys (vault untestable) | Grok Bot (Integration lead) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-75 | 2026-10-21 | Weather location = centroid of the family's saved school ZIP, computed client-side; never device geolocation; /weather requires sign-in, 30 req/min/user, US-only, own KV namespace | FR-22 (no continuous GPS), Team E review of #19 | Raw device GPS; public endpoint | Grok Bot (Integration lead) under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-76 | 2026-10-21 | Approve CR-0011: school-portal credentials are stored on the student's device only and never server-side (FR-03, NFR-05 tightened). Stricter than baseline, so approved by PM under standing delegation | PM / Integration | Issue #32; DEC-160; SA-21 closed |
 | DEC-180 | 2026-10-21 | Static CSP + OWASP security headers on web and API; nonce CSP as follow-up | ASVS V14.4, NFR-33 | No CSP; nonce CSP now (breaks static pages) | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-181 | 2026-10-21 | Automated axe WCAG 2.2 AA audit in the Playwright E2E job (desktop + mobile) | NFR-11, DoD UI | Manual-only audits | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-182 | 2026-10-21 | WCAG 2.2 AA is the accessibility baseline (resolves NFR-11 TBD; matches Accessibility Statement) | Consistency, legal exposure | 2.1 AA | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Accepted (PM, under Rolan's standing delegation, 2026-10-21) |

@@ -24,7 +24,7 @@ Priority uses MoSCoW (M = Must for MVP acceptance, S = Should, C = Could). Featu
 |---|---|---|---|---|
 | FR-01 | Pull and normalize data from StudentVue, ParentVue, CTLS Learn, **CTLS Parent**, Office 365 (**email + calendar**), Synergy, Clever and other available Cobb sources into per-class, per-unit views. | M | F-01 | 3.1 |
 | FR-02 | AI prioritizes present and future work; missed work only when still actionable; every item shows a plain-language reason; student can mark **Done / Working / Later / Ignore**; short **"What changed"** summary after each sync; default short list with detail behind progressive disclosure. | M | F-02 | 3.1 |
-| FR-03 | Google sign-in for all users; parent adds students and credentials (device-stored by default); invitation + acceptance via email link **or short code**. | M | F-03 | 3.2 |
+| FR-03 | Google sign-in for all users; parent adds students and credentials (portal credentials stored on the student's device only, never server-side — CR-0011); invitation + acceptance via email link **or short code**. | M | F-03 | 3.2 |
 | FR-04 | Explicit, revocable, read-only sharing with age-threshold control (recommended 13/14 — **TBD (Rolan)** final value); plain-language share preview; always-visible access list for the student. | M | F-03 | 3.2 |
 | FR-05 | Per-class workspace with current unit as primary container (syllabus, handouts, posts, AI-suggested third-party resources e.g. Khan Academy, YouTube, Blooket, Quizlet, and user-added links/docs); organized by subject and unit; focus mode when a class is opened. | M | F-07 | 3.5 |
 | FR-06 | Deterministic weighted/unweighted GPA calculation and simulator. AI explains only; never calculates. | M | F-06 | 3.4 |
@@ -62,7 +62,7 @@ Priority uses MoSCoW (M = Must for MVP acceptance, S = Should, C = Could). Featu
 | NFR-02 | Glass/background effects ≥ 50 fps; auto-disable < 30 fps, reduced-motion, or data saver. | FPS harness |
 | NFR-03 | API reads p95 ≤ 300 ms; cached Today document ≤ 100 ms. | Load tests |
 | NFR-04 | Chat first token p95 ≤ 1.5 s on Tiers 1–2. | Synthetic checks |
-| NFR-05 | Device-default credential storage; row-level security; age-aware sharing. | Security tests |
+| NFR-05 | School-portal credentials stored on-device only, never sent to or stored by Sparkle servers (CR-0011); row-level security; age-aware sharing. | Security tests |
 | NFR-06 | Circuit breakers, bulkheads, **rate limits**, graceful degradation on all external dependencies; UI error boundaries so one failure never blanks the screen. | Chaos / resilience tests |
 | NFR-07 | Multi-district expansion via Platform Profiles without rewrite; target 1,000,000 users. | Architecture review |
 | NFR-08 | Audit log of admin actions, share changes, and outbound message confirmations. | Audit tests |
