@@ -21,7 +21,7 @@ const STEP_UP_SECONDS = 15 * 60;
 export const vault = new Hono<{ Bindings: VaultEnv }>();
 
 /** Kill switch (DEC-36/37): fail CLOSED — vault is off unless flag row says enabled. */
-export async function vaultFlag(c: C, next: Next) {
+async function vaultFlag(c: C, next: Next) {
   let on = false;
   try {
     on = Boolean((await new Store(c.env).flag("vault_enabled"))?.enabled);

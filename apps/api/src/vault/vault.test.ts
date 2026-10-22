@@ -2,7 +2,7 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import { minimize } from "./minimize";
 import { suggestClass, validateOcrForClass } from "./ocr";
 import { newWrappedDek, unwrapDek, seal, open, openText } from "./crypto";
-import { _test, hexToBytes, bytesToHex } from "./route";
+import { _test, hexToBytes, bytesToHex, purgeDue } from "./route";
 import app from "../index";
 
 const KEK = btoa(String.fromCharCode(...new Uint8Array(32).fill(7)));
@@ -104,5 +104,23 @@ describe("vault routes behind kill switch (DEC-37)", () => {
         )
       ).status,
     ).toBe(404);
+  });
+});
+
+describe("purge job (DEC-28)", () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it("deletes R2 objects returned by vault_purge_due", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify([{ r2_key: "v1/a" }, { r2_key: "v1/b" }]))),
+    );
+    const del = vi.fn(async () => {});
+    const n = await purgeDue({
+      SUPABASE_URL: "https://x.supabase.co",
+      SUPABASE_SECRET_KEY: "s",
+      VAULT_BUCKET: { delete: del } as unknown as R2Bucket,
+    });
+    expect(n).toBe(2);
+    expect(del).toHaveBeenCalledWith(["v1/a", "v1/b"]);
   });
 });
