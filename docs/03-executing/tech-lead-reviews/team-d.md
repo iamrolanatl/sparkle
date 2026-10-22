@@ -18,3 +18,8 @@
 
 ## 2026-10-21 (milestone 2 — after Team E review of #30)
 Gaps from review fixed in #30 (two-phase admission, scores persisted, provenance, byte cap, DO timeouts, credential filter, TDD §8.7 placement). New DEC-166, DEC-167. Interface update posted on #31.
+
+## 2026-10-22 (milestone 3 — Team C/E reviews of #47/#61, Integration requests on #30)
+- #30: migration renamed `20261022130000_d_ingest_provenance.sql` (only in #30), SOP-15 rollback note, rebased on main, queue handler registered via `queues.ts` (#55); default export untouched.
+- #47/#61: all blockers and should-fixes addressed (DEC-168); R-D2 added; WBS 3.2 updated. Stack order: #30 → #47 → #61 → #51.
+- Docs gap #32 superseded by CR-0011 (SA-21) on main.
