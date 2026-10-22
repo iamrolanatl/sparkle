@@ -21,4 +21,24 @@ describe("supabase migration + RLS (PGlite)", () => {
     expect(oks.length).toBe(45);
     await db.close();
   }, 60_000);
+
+  it("CR-0007: every auth.uid() in policies is wrapped in a sub-select, migration is idempotent, FKs indexed", async () => {
+    const db = new PGlite({ extensions: { pgcrypto } });
+    await db.exec(read("tests/auth_stub.sql"));
+    const files = readdirSync(join(dir, "migrations")).sort();
+    for (const f of files) await db.exec(read(join("migrations", f)));
+    await db.exec(read(join("migrations", files.find((f) => f.includes("rls_perf"))!))); // re-run: idempotent
+    const bare = await db.query<{ n: number }>(
+      `select count(*)::int n from pg_policies where schemaname='public'
+       and (regexp_replace(coalesce(qual,'') || coalesce(with_check,''), 'SELECT auth\\.uid\\(\\) AS uid', '', 'gi') ~ 'auth\\.uid\\(\\)')`);
+    expect(bare.rows[0].n).toBe(0);
+    const doubled = await db.query<{ n: number }>(
+      `select count(*)::int n from pg_policies where schemaname='public' and coalesce(qual,'') ~* 'select \\( *select auth'`);
+    expect(doubled.rows[0].n).toBe(0);
+    const unindexed = await db.query<{ n: number }>(
+      `select count(*)::int n from pg_constraint c where c.contype='f' and c.connamespace='public'::regnamespace
+       and not exists (select 1 from pg_index i where i.indrelid=c.conrelid and i.indkey[0]=c.conkey[1])`);
+    expect(unindexed.rows[0].n).toBe(0);
+    await db.close();
+  }, 60_000);
 });
