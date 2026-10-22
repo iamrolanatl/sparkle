@@ -2,10 +2,11 @@ import { VERSION } from "./version";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
+import { students, type StudentsEnv } from "./students/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 
-export interface Env extends ChatEnv {
+export interface Env extends ChatEnv, StudentsEnv {
   APP_ENV?: string;
   ALLOWED_ORIGINS?: string;
   SCANS_BUCKET?: R2Bucket;
@@ -20,7 +21,12 @@ app.use("*", observe);
 
 app.use("*", async (c, next) => {
   const allowed = (c.env?.ALLOWED_ORIGINS ?? "http://localhost:3000").split(",").map((s) => s.trim());
-  return cors({ origin: (o) => (allowed.includes(o) ? o : null), allowMethods: ["GET", "POST", "OPTIONS"] })(c, next);
+  return cors({
+    origin: (o) => (allowed.includes(o) ? o : null),
+    allowMethods: ["GET", "POST", "OPTIONS"],
+    allowHeaders: ["Authorization", "Content-Type", "Idempotency-Key"],
+    maxAge: 600,
+  })(c, next);
 });
 
 /** Liveness/health: never exposes secret values. `?deep=1` also probes Supabase (2 s timeout) for synthetics. */
@@ -55,6 +61,8 @@ app.get("/health", async (c) => {
 
 app.use("/chat/handoff", idempotency());
 app.route("/chat", chat);
+app.use("/students/:id/import", idempotency());
+app.route("/students", students);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {

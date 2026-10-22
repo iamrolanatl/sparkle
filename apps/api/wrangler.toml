@@ -13,7 +13,7 @@ APP_ENV = "production"
 SUPABASE_URL = "https://nklbdyezbsugkdvaidtt.supabase.co"
 AI_GATEWAY_ID = "sparkle-gateway"
 ALLOWED_ORIGINS = "https://sparkle-web.crystal-iamrolan.workers.dev,http://localhost:3000"  # add production domain when known (WBS 2.8)
-# Secrets (set with `wrangler secret put`): SUPABASE_SECRET_KEY
+# Secrets (set with `wrangler secret put`): SUPABASE_SECRET_KEY, SUPABASE_PUBLISHABLE_KEY
 
 # Sales/support chat (FR-19): Workers AI through AI Gateway
 [ai]
@@ -32,3 +32,8 @@ bucket_name = "sparkle-scans"
 [[r2_buckets]]
 binding = "VAULT_BUCKET"
 bucket_name = "sparkle-vault"
+
+# Today document cache (WBS 3.4, CR-0007)
+[[kv_namespaces]]
+binding = "TODAY_CACHE"
+id = "73fefa053a9b434f9a36d5d16a1ae283"
