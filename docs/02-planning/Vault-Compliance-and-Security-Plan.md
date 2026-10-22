@@ -15,7 +15,7 @@
 >
 > **Not legal advice.** This is a research-based, deliberately conservative engineering/compliance posture. Final applicability calls are confirmed by privacy counsel before real family documents are stored (Launch Gate item LG-01).
 
-> **Numbering note.** CR-0002..0004, DEC-05..07 and FR-16..24 are being added on the parallel `feat/phase0-foundation` branch. To avoid merge collisions this plan uses **DEC-20..DEC-39, NFR-20..NFR-34, R-20..R-25, WBS 6.7 / 7.5**.
+> **Numbering note.** CR-0002..0004, DEC-05..07 and FR-16..24 are being added on the parallel `feat/phase0-foundation` branch. To avoid merge collisions this plan uses **DEC-20..DEC-39, NFR-20..NFR-34, R-20..R-25, WBS 6.8.x / 7.5** (vault rows were renumbered 6.7.x → 6.8.x on merge; 6.8.x is authoritative).
 
 ---
 
@@ -99,7 +99,7 @@ The vault stores, per student (and per household), scanned/uploaded school mail 
 3. **Assess** (counsel engaged): what data, which students, which states, health data? unencrypted? → determines HBNR, GA, other-state duties.
 4. **Notify:** families (email + in-app) target ≤ 30 days, ceiling 60; FTC (HBNR) if applicable; state AGs where required; CRAs if > 10k GA residents; subprocessors per DPA.
 5. **Recover & review:** fix, retest, post-incident review within 14 days, WISP update.
-Templates and contact list live in `docs/06-operations/` (WBS 6.7.7).
+Templates and contact list live in `docs/06-operations/` (WBS 6.8.7).
 
 ## 8. Launch gate — `vault_enabled` for real families
 All must be **true** and evidenced in the PR that flips the flag:

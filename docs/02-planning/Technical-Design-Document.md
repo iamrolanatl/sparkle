@@ -82,6 +82,9 @@ Implemented in `supabase/migrations/20261021000000_initial_tenant_model.sql`; pr
 | `classes, units, assignments, grades, sync_runs, ai_drafts` | School data; every row has `student_id` | **Service-role ingest worker writes only**; clients have SELECT only |
 | `share_audit_log`, `admin_audit_log` | Audit | no client write; admin log has no client read |
 | `app_settings` | `guardian_limit_age_threshold` (placeholder 13, DEC-04) | read-only to clients |
+| `tasks` | Student tasks from natural language (FR-21, Team A, #39) | `student_id, title, due_at, status`; created only with explicit confirmation |
+| `scans` | Worksheet/calendar OCR uploads (FR-23, Team B, #44) | `student_id, status, ocr result`; RLS guardians + student. **Retention:** originals and unsaved scans deleted after **30 days** (DEC-126) |
+| `vault_documents`, `vault_grants`, `vault_access_log`, `consents`, `household_keys` | FR-24 vault (Team C, #38) — behind flag, **not launched** | see Vault Compliance & Security Plan |
 | `waitlist` | Landing page email capture (FR-17) | insert-only anon/authed; trigger rate limit per `ip_hash`; read by service role only |
 
 Scopes (`access_scope` enum): core = grades, attendance, assignments, schedule, messages (never limitable); limitable = daily_notes, ai_chat, resources.
