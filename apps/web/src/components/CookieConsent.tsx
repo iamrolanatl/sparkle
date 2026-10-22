@@ -40,6 +40,7 @@ export function CookieConsent() {
     <div
       role="dialog"
       aria-label="Cookie choices"
+      data-cookie-banner=""
       className="spk-glass fixed inset-x-3 bottom-3 z-40 mx-auto max-w-xl p-4 text-sm sm:bottom-5"
     >
       <p>

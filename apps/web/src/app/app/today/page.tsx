@@ -119,7 +119,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
             Due soon <span>Next 7 days</span>
           </div>
           {rows.length ? (
-            rows.slice(0, 8).map((r) => (
+            rows.slice(0, 6).map((r) => (
               <div className="row" key={r.id}>
                 <span className="dot" style={{ background: r.color }} />
                 <div style={{ minWidth: 0 }}>

@@ -561,3 +561,8 @@
     font-size: 16px;
   }
 }
+@media (max-width: 820px) {
+  body:has(.sa) [data-cookie-banner] {
+    bottom: 84px;
+  }
+}
