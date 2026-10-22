@@ -3,8 +3,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
 import { students, type StudentsEnv } from "./students/route";
+import { weather } from "./weather/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
+import { makeDispatcher, queueHandlers } from "./queues";
+import { cronHandlers, makeScheduler } from "./scheduled";
 
 export interface Env extends ChatEnv, StudentsEnv {
   APP_ENV?: string;
@@ -63,6 +66,7 @@ app.use("/chat/handoff", idempotency());
 app.route("/chat", chat);
 app.use("/students/:id/import", idempotency());
 app.route("/students", students);
+app.route("/weather", weather);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {
@@ -70,4 +74,11 @@ app.onError((err, c) => {
   return c.json({ error: "internal_error" }, 500);
 });
 
-export default app;
+// One Worker export: HTTP via Hono, queues via the registry dispatcher (src/queues.ts).
+// `request` is kept so tests can keep calling `app.request(...)`.
+export default {
+  fetch: app.fetch,
+  request: app.request,
+  queue: makeDispatcher<Env>(queueHandlers as never),
+  scheduled: makeScheduler<Env>(cronHandlers as never),
+};

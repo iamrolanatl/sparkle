@@ -49,3 +49,17 @@ test("GPA simulator computes deterministically (FR-06)", async ({ page }) => {
   await expect(page.getByTestId("gpa-result")).toContainText("Unweighted 3.50");
   await expect(page.getByTestId("gpa-result")).toContainText("Weighted 3.75");
 });
+
+test("PWA manifest and offline page", async ({ page, request }) => {
+  const m = await (await request.get("/manifest.webmanifest")).json();
+  expect(m.icons.length).toBeGreaterThanOrEqual(3);
+  expect((await request.get("/sw.js")).ok()).toBe(true);
+  await page.goto("/offline");
+  await expect(page.getByRole("heading", { name: "You're offline" })).toBeVisible();
+});
+
+test("service worker never caches partial video responses", async ({ request }) => {
+  const sw = await (await request.get("/sw.js")).text();
+  expect(sw).toContain('req.headers.has("range")');
+  expect(sw).toContain("res.status === 200");
+});

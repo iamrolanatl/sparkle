@@ -24,6 +24,11 @@ name = "CHAT_RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 10, period = 60 }
 
+[[ratelimits]]
+name = "WEATHER_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 30, period = 60 }
+
 # R2 (private, ENAM; no public access). Vault use is behind feature flag vault_enabled=false until legal/security review.
 [[r2_buckets]]
 binding = "SCANS_BUCKET"
@@ -37,3 +42,23 @@ bucket_name = "sparkle-vault"
 [[kv_namespaces]]
 binding = "TODAY_CACHE"
 id = "73fefa053a9b434f9a36d5d16a1ae283"
+
+# School-day weather cache (FR-22). Own namespace — never shares TODAY_CACHE (Team E review of #19).
+[[kv_namespaces]]
+binding = "WEATHER_CACHE"
+id = "d31818dad4684e78886c1b04aef46910"
+
+# OCR scan jobs (Team B, FR-23). Free-tier queue created 2026-10-21 (DEC-73). SCANS_OCR_SERVER stays OFF (R-23 data location).
+[[queues.producers]]
+binding = "SCAN_QUEUE"
+queue = "sparkle-scans-ocr"
+
+[[queues.consumers]]
+queue = "sparkle-scans-ocr"
+max_batch_size = 5
+max_retries = 3
+dead_letter_queue = "sparkle-scans-ocr-dlq"  # free queue; poison messages land here after 3 retries (no consumer; inspect manually)
+
+# Daily jobs (UTC). 03:30 = vaultDaily (Team C) + purgeScans (Team B, DEC-126 30-day purge) — dispatched via src/scheduled.ts.
+[triggers]
+crons = ["30 3 * * *"]
