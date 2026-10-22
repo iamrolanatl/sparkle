@@ -8,7 +8,8 @@ export interface TaskLite {
   priority: "low" | "normal" | "high" | string;
 }
 export interface DueSoonDoc {
-  overdue: TaskLite[];
+  overdue: TaskLite[]; // most recent first, capped at 5
+  overdueCount: number; // total overdue (collapsed in UI)
   dueToday: TaskLite[];
   dueSoon: TaskLite[]; // next 48 h, after today
   reminders: {
@@ -36,14 +37,15 @@ export function dueSoon(tasks: TaskLite[], now: Date, windowHours = 48): DueSoon
   const dated = tasks.filter((x) => x.due_at && !isNaN(Date.parse(x.due_at)));
   const overdue = dated
     .filter((x) => Date.parse(x.due_at!) < t && etDay(new Date(x.due_at!)) !== today)
-    .sort(byUrgency);
+    .sort((a, b) => b.due_at!.localeCompare(a.due_at!) || (RANK[a.priority] ?? 1) - (RANK[b.priority] ?? 1));
   const dueToday = dated.filter((x) => etDay(new Date(x.due_at!)) === today).sort(byUrgency);
   const dueSoonList = dated
     .filter((x) => etDay(new Date(x.due_at!)) > today && Date.parse(x.due_at!) <= t + windowHours * 3_600_000)
     .sort(byUrgency);
   const reminders: DueSoonDoc["reminders"] = [];
-  for (const x of overdue) reminders.push({ taskId: x.id, title: x.title, kind: "overdue" });
+  // Today first; overdue collapsed to the 3 most recent so a backlog never buries today.
   for (const x of dueToday) reminders.push({ taskId: x.id, title: x.title, kind: "due_today" });
+  for (const x of overdue.slice(0, 3)) reminders.push({ taskId: x.id, title: x.title, kind: "overdue" });
   const evening = etHour(now) >= 16;
   for (const x of dueSoonList) {
     if (evening && etDay(new Date(x.due_at!)) === tomorrow)
@@ -51,7 +53,8 @@ export function dueSoon(tasks: TaskLite[], now: Date, windowHours = 48): DueSoon
     else if (x.priority === "high") reminders.push({ taskId: x.id, title: x.title, kind: "high_priority_soon" });
   }
   return {
-    overdue: overdue.slice(0, 20),
+    overdue: overdue.slice(0, 5),
+    overdueCount: overdue.length,
     dueToday: dueToday.slice(0, 20),
     dueSoon: dueSoonList.slice(0, 20),
     reminders: reminders.slice(0, 10),

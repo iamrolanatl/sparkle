@@ -36,7 +36,7 @@ export function wrapUserText(text: string): string {
 }
 
 export interface Completer {
-  complete(req: { system: string; user: string }): Promise<string>;
+  complete(req: { system: string; user: string; budgetKey?: string }): Promise<string>;
 }
 
 /**
@@ -47,6 +47,7 @@ export async function guardedComplete(
   router: Completer,
   text: string,
   band: AgeBand,
+  budgetKey?: string,
 ): Promise<
   { kind: "ok"; text: string; mode: "coach" | "normal" } | { kind: "crisis" } | { kind: "blocked"; reason: string }
 > {
@@ -55,7 +56,7 @@ export async function guardedComplete(
   const mode = studyHelperMode(text);
   let out: string;
   try {
-    out = await router.complete({ system: studyHelperSystemPrompt(band, mode), user: wrapUserText(v.text) });
+    out = await router.complete({ system: studyHelperSystemPrompt(band, mode), user: wrapUserText(v.text), budgetKey });
   } catch {
     return { kind: "blocked", reason: "unavailable" };
   }
