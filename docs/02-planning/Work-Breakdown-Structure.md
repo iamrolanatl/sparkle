@@ -97,15 +97,15 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 6.5 | Update landing page features & marketing content | | Recurring | At G4 |
 | 6.6 | School mail vault (FR-24) incl. OCR acceptance | | Not started | Gated: legal + security review (R-16); flag `vault_enabled=false`; R2 `sparkle-vault` ready |
 | 6.7 | OCR for calendar / bell schedules (FR-23 → FR-13) | | Not started | |
-| 6.7.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0006 |
-| 6.7.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0006 |
-| 6.7.3 | Minimization detectors, auto-redaction, sensitivity classifier |  | Not started | CR-0006 |
-| 6.7.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | Not started | CR-0006 |
-| 6.7.5 | Vault RLS + access log + break-glass view-as |  | Not started | CR-0006 |
-| 6.7.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | Not started | CR-0006 |
-| 6.7.7 | Incident runbook, notification templates, tabletop |  | Not started | CR-0006 |
-| 6.7.8 | Subprocessor DPAs + public subprocessor page |  | Not started | CR-0006 |
-| 6.7.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Not started | CR-0006 |
+| 6.7.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.3 | Minimization detectors, auto-redaction, sensitivity classifier |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.5 | Vault RLS + access log + break-glass view-as |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.7 | Incident runbook, notification templates, tabletop |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.8 | Subprocessor DPAs + public subprocessor page |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
+| 6.7.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Superseded | Duplicate of 6.8.x (CR-0005); kept for traceability — Team C review 2026-10-21 |
 | 6.8 | **Mail vault compliance & security (CR-0005)** — vault stays behind `vault_enabled` until launch gate | G4/G5 | Not started | DEC-37 |
 | 6.8.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0005 |
 | 6.8.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0005 |
