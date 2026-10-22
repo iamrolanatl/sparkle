@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-GOV-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.2 |
+| Version | 1.3 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -43,3 +43,4 @@
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | CR-0005 entry. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | CR-0006 entry. |
+| 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | SA-11 decided by Rolan: keep plain Sparkle; DEC-40 and R-26 updated; Runbook item 12 added. |

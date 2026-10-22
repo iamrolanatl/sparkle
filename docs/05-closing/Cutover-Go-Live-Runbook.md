@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-CLO-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Operations Lead — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -31,6 +31,7 @@
 | 9 | Crisis protocol verified | AI/Platform | | ☐ |
 | 10 | Backups / restore tested (Supabase) | Eng | | ☐ |
 | 11 | Sponsor G5 go/no-go recorded in Decision Log | Sponsor | | ☐ |
+| 12 | Trademark re-check: counsel full clearance of 'Sparkle' (DEC-40, R-26, SA-11) done before domain purchase and public launch | Rolan / Counsel | | ☐ |
 
 ## 2. Go-Live Steps
 1. Enable production feature flags for initial cohort (cohort definition **TBD (Rolan)**).
@@ -62,3 +63,4 @@ Daily health review for the first two weeks; then hand-off to the [Target Operat
 |---|---|---|---|---|
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Cutover & Go-Live Runbook (01M5GCZSBMAWEYD0NJ472GNN79.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Added item 12 trademark re-check (DEC-40). |

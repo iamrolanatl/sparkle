@@ -45,7 +45,7 @@
 | R-23 | R2 location is a hint, not a guarantee; Workers AI may process outside US | 2 | 3 | 6 | Accept/Mitigate | Sensitive OCR on-device; re-evaluate jurisdiction options | Eng | Open |
 | R-24 | Key compromise of KEK held as Workers secret | 2 | 5 | 10 | Mitigate | Least-privilege tokens, rotation, KMS migration at 100k users | Eng | Open |
 | R-25 | VPC friction lowers vault adoption | 3 | 2 | 6 | Accept | Card check is quick; fallback method; vault optional | PM | Open |
-| R-26 | Trademark conflict forces rename of 'Sparkle' after launch (Viacom SPARKLER, pending SPARKLE in 9/41/42, AI 'SPARKLE ASSISTANT') | 4 | 4 | 16 | Avoid | DEC-40 compound brand; counsel clearance before domain/app-store launch | Rolan | Open |
+| R-26 | Trademark conflict forces rename of 'Sparkle' after launch (Viacom SPARKLER, pending SPARKLE in 9/41/42, AI 'SPARKLE ASSISTANT') | 4 | 4 | 16 | Accept (time-boxed) | Rolan kept plain 'Sparkle' (DEC-40); keep brand assets swappable; counsel full clearance before domain purchase (SA-07) and public launch (Runbook item 12) | Rolan | Open — accepted |
 | R-27 | No branch protection / push protection on Free private repo → accidental secret or unreviewed merge | 3 | 3 | 9 | Mitigate | Dependabot on; gitleaks CI; GitHub Pro (SA-10) | Rolan | Open |
 | R-28 | Dev/test work against the prod Supabase project until sparkle-dev exists | 3 | 4 | 12 | Mitigate | Only synthetic data in prod pre-launch; create dev (SA-12) | Eng | Open |
 | R-29 | Cloud/AI bill shock (only $10 Cloudflare budget alert active; AI provider caps not yet set) | 2 | 3 | 6 | Mitigate | DEC-43; SA-13 | Rolan | Open |

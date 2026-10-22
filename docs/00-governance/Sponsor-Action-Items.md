@@ -23,7 +23,7 @@
 | SA-08 | Choose a go-live target month so gate dates can be set | Rolan | TBD | Open | WBS |
 | SA-09 | Decide age threshold 13 vs 14 | Rolan | TBD | Open | DEC-04 |
 | SA-10 | Decide on GitHub Pro ($4/mo) — on the Free plan a private repo can't use branch protection, required reviews, or secret-scanning push protection. Dependabot alerts + automated security fixes are already enabled (2026-10-21) | Rolan | TBD | Open | DEC-44, R-27 |
-| SA-11 | Trademark direction: keep "Sparkle" as a product nickname but choose a distinctive compound brand (e.g., "Sparkle Student") and have counsel run a full clearance | Rolan | TBD | Open | [Trademark notes](../02-planning/Trademark-Clearance-Notes.md), DEC-40 |
+| SA-11 | Trademark direction | Rolan | 2026-10-21 | Decided — keep plain 'Sparkle' for now; revisit before SA-07 and public launch with counsel clearance | [Trademark notes](../02-planning/Trademark-Clearance-Notes.md), DEC-40, R-26 |
 | SA-12 | Approve creating `sparkle-dev` Supabase project (free tier) — token couldn't confirm org plan; create in dashboard or issue an account-level token | Rolan | TBD | Open | [Environments](../02-planning/Environments-and-Cost-Guardrails.md) |
 | SA-13 | Set AI spend limits in xAI and Anthropic consoles; confirm Supabase spend cap ON; add Cloudflare usage alerts (or grant token "Notifications: Edit") | Rolan | TBD | Open | [Cost guardrails](../02-planning/Environments-and-Cost-Guardrails.md) |
 
