@@ -82,6 +82,8 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 4.8 | Natural-language tasks (FR-21) | | Not started | CR-0004 |
 | 4.9 | School-day weather (FR-22) | | In progress | NWS, free, no key (DEC-66); API #19 in review; applet next |
 | 4.10 | OCR scanning (FR-23) | | Not started | R2 `sparkle-scans` ready |
+| 4.9 | School-day weather (FR-22) | | Not started | Weather provider TBD (cost/terms) |
+| 4.10 | OCR scanning (FR-23) | Team B | In progress | API pipeline + `scans` table in review (DEC-120..126); next: web camera/upload + on-device OCR + review UI; 30-day purge cron |
 | 5.0 | **Phase 3 — Sparkle & AI** | G3 | Not started | |
 | 5.1 | Rive integration + personality states | | Not started | Depends on animator (2.5) |
 | 5.2 | AI router, budgets, circuit breakers, citations | | In progress | Router #20 in review (DEC-68); T1 Workers AI live; T2/T3 need xAI + Anthropic keys (D-02) |
