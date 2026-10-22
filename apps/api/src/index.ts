@@ -6,6 +6,7 @@ import { students, type StudentsEnv } from "./students/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 import { makeDispatcher, queueHandlers } from "./queues";
+import { cronHandlers, makeScheduler } from "./scheduled";
 
 export interface Env extends ChatEnv, StudentsEnv {
   APP_ENV?: string;
@@ -77,4 +78,5 @@ export default {
   fetch: app.fetch,
   request: app.request,
   queue: makeDispatcher<Env>(queueHandlers as never),
+  scheduled: makeScheduler<Env>(cronHandlers as never),
 };
