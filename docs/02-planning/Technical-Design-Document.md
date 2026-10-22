@@ -116,6 +116,31 @@ Not applied to the live project in CR-0002. Procedure: local `supabase start && 
 - `/admin`: server-side gate on `app_metadata.role = admin`; service-role reads only after the gate; actions written to `admin_audit_log`.
 - R2: `SCANS_BUCKET` → `sparkle-scans`, `VAULT_BUCKET` → `sparkle-vault` (private, ENAM). Vault gated by `feature_flags.vault_enabled = false`.
 
+## 8.7 Desktop sync agent & ingest pipeline (Team D, DEC-160..167)
+- **Agent** (`apps/desktop`, Tauri + Playwright): signs in with the family's Google/Supabase session; portal credentials live only in the OS keychain (DEC-160) and are never sent to Sparkle. Only adapters for the **mock portal fixtures** exist until a portal's terms are reviewed (DEC-161, SA-D1).
+- **Contract**: `POST /ingest/:studentId/batch` (JSON `SyncBatch`: source, runKey, capturedAt, classes[], assignments[]). Caller must be an active guardian or the student (RLS RPCs with the caller's own token). Any credential-shaped key (password/token/cookie/session/…) at any depth → 422. Max 2 MB, 50 classes, 5,000 assignments. Body capped at 2 MB **bytes**: `Content-Length` rejected before auth, streamed bodies cut off at the cap (413). The generic Idempotency-Key middleware is not used here; the DO is the idempotency mechanism. Credential filter matches whole snake_cased key parts (`accessToken` blocked, `author` allowed).
+- **SyncCoordinator Durable Object** (one per student), two-phase: `reserve` (dedupe committed runKeys 24 h, in-flight lock 2 min, ≥ 5 min between committed runs → 429 + Retry-After) → write/enqueue → `commit` on success or `release` on failure, so a failed save is never replayed as a duplicate (DEC-162, DEC-167). DO calls have a 1.5 s timeout; `reserve` fails **closed** (503 + Retry-After 30) to protect Postgres at peak; commit/release failures are logged only (writes are idempotent).
+- **Queue** `sparkle-ingest` → consumer `ingestQueue` (registered in `apps/api/src/queues.ts` via the Integration dispatcher (#55)) → `writeBatch` (service role) upserts by `(student_id, external_key)` with source-namespaced keys, persists scores to `grades` (keyed by `(student_id, external_key)`), stamps `source` + `entered_by` (guardian/student) on assignments/grades and `actor` on `sync_runs` (DEC-166, migration `20261022130000_d_ingest_provenance.sql`), records `sync_runs`, invalidates the Today KV doc. Retries with exponential backoff (5 s·2^n, cap 300 s); DLQ `sparkle-ingest-dlq` after 5 attempts (DEC-163).
+- **Fallback**: without the Queue/DO bindings (dev/CI, or until SA-D2 Workers Paid is approved) the route admits all runs and writes inline (DEC-164). Queues/DO spending is sponsor-gated: **SA-D2** in Sponsor-Action-Items (docs PR #51).
+- **Bindings to add at deploy (Integration team; not yet in wrangler.toml):**
+```toml
+[[durable_objects.bindings]]
+name = "SYNC_COORDINATOR"
+class_name = "SyncCoordinator"
+[[migrations]]
+tag = "d-v1"
+new_sqlite_classes = ["SyncCoordinator"]
+[[queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "sparkle-ingest"
+[[queues.consumers]]
+queue = "sparkle-ingest"
+max_batch_size = 10
+max_retries = 5
+dead_letter_queue = "sparkle-ingest-dlq"
+```
+- **Provenance (DEC-166)**: rows uploaded by the student's own agent carry `entered_by = student`; guardian UIs must show a "Reported by student" label. Clients still have SELECT only.
+
 ## 9. Corrections vs. original (v1.0)
 Added ADR-07, KV/Queues/Workflows/R2, observability and identity stack (all in handoff §5 but missing), rate limits and error boundaries; flagged Next.js hosting and scale-trigger values as open.
 
