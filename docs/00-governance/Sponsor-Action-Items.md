@@ -28,8 +28,8 @@
 | SA-13 | Set AI spend limits in xAI and Anthropic consoles; confirm Supabase spend cap ON; add Cloudflare usage alerts (or grant token "Notifications: Edit") | Rolan | TBD | Open | [Cost guardrails](../02-planning/Environments-and-Cost-Guardrails.md) |
 | SA-14 | Sign in once at https://sparkle-web.crystal-iamrolan.workers.dev/login with iamrolan@gmail.com so I can grant admin (DEC-50) | Rolan | — | Open | DEC-50 |
 | SA-15 | Before public launch: Supabase Pro ($25/mo) for PITR (RPO 5 min, NFR-40), no auto-pause, bigger pool | Rolan | Before G5 | Open | DEC-51 |
-| SA-16 | Before public launch: Workers Paid ($5/mo) for CPU limits/Queues headroom and a full-scale load test window | Rolan | Before G5 | Open | DEC-55 |
-| SA-17 | Create a free Sentry account and share the DSN (via secret form) to switch on crash reporting | Rolan | Phase 1 | Open | DEC-54, D-10 |
+| SA-16 | Before public launch: Workers Paid ($5/mo) for CPU limits, Queues and Durable Objects (needed by Team D ingest #30 / SA-D2) and a full-scale load test window; capacity model shows the DB needs a paid Supabase tier plus the pooler (≈2.2k DB RPS at design load) | Rolan | Before G5 | Open | DEC-55, DEC-187 |
+| SA-17 | Create a free Sentry account and share the DSN (via secret form) to switch on crash reporting. Web (`NEXT_PUBLIC_SENTRY_DSN`) and API (`SENTRY_DSN`) adapters are ready and do nothing until it's set | Rolan | Phase 1 | Open | DEC-54, D-10, DEC-184 |
 | SA-18 | (Optional, later) choose a transactional email provider for invitation emails — free tiers exist; needs your OK to send email from the app | Rolan | Phase 2+ | Open | DEC-57 |
 | SA-19 | Engage privacy counsel for the G1 entry review (FERPA/COPPA/GA SDPATA, DEC-04/06) and portal-ToS review for the desktop agent (WBS 2.10, 3.2) | Rolan | Before G1 | Open | DEC-63 |
 

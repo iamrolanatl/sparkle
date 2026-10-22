@@ -52,6 +52,9 @@
 | R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
 | R-31 | Rich effects (video, glow, tilt) regress mobile performance / battery | 3 | 3 | 9 | Mitigate | Perf budget, Lighthouse CI, auto-degrade < 30 fps, poster fallback (DEC-52) | Grok Bot | Open |
 | R-32 | Free tiers cannot actually serve 1M users (Supabase Free pauses, 60 conns, no PITR) | 4 | 4 | 16 | Mitigate | Capacity model; cache-first design; SA-15/16 before G5 | Rolan | Open |
+| R-35 | No human on-call; incidents depend on bot automation and Rolan's availability | 3 | 4 | 12 | Accept/Mitigate | Runbooks RB-01..06, email alerts, kill switches fail closed (DEC-189) | Rolan | Open |
+| R-36 | Public pages keep script-src 'unsafe-inline' (static CSP) | 2 | 3 | 6 | Accept | No user data on public pages; nonce CSP on signed-in routes (DEC-186) | Team E | Open |
+| R-37 | Crash-free SLO (NFR-37) unmeasurable until a Sentry DSN exists | 3 | 3 | 9 | Mitigate | No-op adapters ready (DEC-184); SA-17 | Rolan | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
