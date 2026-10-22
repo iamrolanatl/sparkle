@@ -43,7 +43,16 @@ export interface RouterDeps {
   providers: Partial<Record<Tier, { model: string; call: Provider }>>;
   /** Required: screens every model output (Team A's screenModelOutput plugs in here). */
   outputFilter: OutputFilter;
-  budget?: { get(key: string): Promise<number>; add(key: string, n: number): Promise<void> };
+  /**
+   * Budget: reserve before the provider call (in-memory, cannot fail), then commit the actual usage or release.
+   * A failed commit is logged, never retried through another tier (no double charge).
+   */
+  budget?: {
+    get(key: string): Promise<number>;
+    reserve(key: string, n: number): void;
+    release(key: string, n: number): void;
+    commit(key: string, reserved: number, actual: number): Promise<void>;
+  };
   dailyBudget?: number;
   now?: () => number;
   /** e.g. ctx.waitUntil — lets best-effort work outlive the response. */
@@ -126,17 +135,19 @@ export function createRouter(deps: RouterDeps) {
         if (breakers[tier].open) continue;
         const p = deps.providers[tier]!;
         let out: { text: string; tokens: number };
+        deps.budget?.reserve(req.budgetKey, maxTokens);
         try {
           out = await p.call({ system: req.system, prompt, maxTokens });
         } catch (e) {
+          deps.budget?.release(req.budgetKey, maxTokens);
           breakers[tier].failure();
           lastErr = e;
           continue;
         }
         breakers[tier].success();
-        // Best-effort accounting: a failing budget write must never discard a paid answer or re-route.
+        // Commit is best-effort and outside the provider try: a failing write never discards a paid answer or re-routes.
         const acct = Promise.resolve()
-          .then(() => deps.budget?.add(req.budgetKey, out.tokens))
+          .then(() => deps.budget?.commit(req.budgetKey, maxTokens, out.tokens))
           .catch((e) =>
             console.error(JSON.stringify({ level: "warn", msg: "ai_budget_write_failed", err: String(e) })),
           );
@@ -190,14 +201,20 @@ export function kvBudget(
   const now = opts.now ?? Date.now;
   const flushTokens = opts.flushTokens ?? 2_000;
   const flushMs = opts.flushMs ?? 30_000;
-  const pending = new Map<string, { n: number; since: number }>();
+  const pending = new Map<string, { n: number; since: number }>(); // committed, not yet flushed
+  const reserved = new Map<string, number>(); // in-flight reservations (count against the budget)
   const k = (key: string) => `aibudget:${day()}:${key}`;
+  const bump = (m: Map<string, number>, kk: string, d: number) => m.set(kk, Math.max(0, (m.get(kk) ?? 0) + d));
   return {
-    get: async (key: string) => Number((await kv.get(k(key))) ?? 0) + (pending.get(k(key))?.n ?? 0),
-    add: async (key: string, n: number) => {
+    get: async (key: string) =>
+      Number((await kv.get(k(key))) ?? 0) + (pending.get(k(key))?.n ?? 0) + (reserved.get(k(key)) ?? 0),
+    reserve: (key: string, n: number) => void bump(reserved, k(key), n),
+    release: (key: string, n: number) => void bump(reserved, k(key), -n),
+    commit: async (key: string, held: number, actual: number) => {
       const kk = k(key);
+      bump(reserved, kk, -held);
       const p = pending.get(kk) ?? { n: 0, since: now() };
-      p.n += n;
+      p.n += actual;
       pending.set(kk, p);
       if (p.n < flushTokens && now() - p.since < flushMs) return;
       pending.delete(kk);

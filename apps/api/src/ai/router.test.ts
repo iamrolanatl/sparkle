@@ -53,7 +53,7 @@ describe("AI router (WBS 5.2)", () => {
     const r = createRouter({
       outputFilter: pass,
       providers: { t1: { model: "m1", call: ok("x") } },
-      budget: { get: async () => 20_000, add: async () => {} },
+      budget: { get: async () => 20_000, reserve() {}, release() {}, commit: async () => {} },
     });
     await expect(
       r.run({ task: "summarize", system: "", prompt: "x", sources: src, budgetKey: "s" }),
@@ -96,7 +96,12 @@ describe("Team E review fixes (#20)", () => {
     const r = createRouter({
       outputFilter: pass,
       providers: { t1: { model: "m1", call: t1 }, t2: { model: "m2", call: t2 } },
-      budget: { get: async () => 0, add: async () => Promise.reject(new Error("kv 429")) },
+      budget: {
+        get: async () => 0,
+        reserve() {},
+        release() {},
+        commit: async () => Promise.reject(new Error("kv 429")),
+      },
       defer: (p) => void deferred.push(p),
     });
     const out = await r.run({ task: "draft", system: "", prompt: "x", sources: src, budgetKey: "s" });
@@ -144,11 +149,18 @@ describe("Team E review fixes (#20)", () => {
     const put = vi.fn(async (k: string, v: string) => void store.set(k, v));
     const kv = { get: async (k: string) => store.get(k) ?? null, put } as unknown as KVNamespace;
     const b = kvBudget(kv, { day: () => "d", flushTokens: 100, flushMs: 1e9, now: () => 0 });
-    await b.add("s", 40);
-    await b.add("s", 40);
+    b.reserve("s", 400);
+    expect(await b.get("s")).toBe(400); // reservation counts before the call returns
+    await b.commit("s", 400, 40);
+    b.reserve("s", 400);
+    await b.commit("s", 400, 40);
     expect(put).not.toHaveBeenCalled();
     expect(await b.get("s")).toBe(80);
-    await b.add("s", 40);
+    b.reserve("s", 400);
+    b.release("s", 400); // failed call: reservation released, nothing charged
+    expect(await b.get("s")).toBe(80);
+    b.reserve("s", 400);
+    await b.commit("s", 400, 40);
     expect(put).toHaveBeenCalledOnce();
     expect(store.get("aibudget:d:s")).toBe("120");
   });
