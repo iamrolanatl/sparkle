@@ -4,10 +4,16 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Sparkle",
     short_name: "Sparkle",
-    start_url: "/",
+    start_url: "/app/today",
+    scope: "/",
+    description: "Your calm, sparkly school-day helper.",
     display: "standalone",
     background_color: "#05080f",
     theme_color: "#05080f",
-    icons: [],
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
   };
 }
