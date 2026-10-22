@@ -1,4 +1,5 @@
 -- Team B / FR-23 (WBS 4.10): OCR scans of school documents. Additive only (SOP-15).
+-- integration-signoff: 44 (scans_due_for_purge: SECURITY DEFINER, search_path pinned, execute revoked from public/anon/authenticated, service_role only, read-only, limit capped at 1000)
 -- rollback: drop function if exists public.scans_due_for_purge(int); drop function if exists public.scans_touch(); drop table if exists public.scans;
 --           (no existing objects altered; R2 objects under scans/ are removed by the purge job or manually)
 -- Writes only via the API (service role). Reads via RLS: the student, or an active guardian unless a student over the
@@ -36,8 +37,7 @@ create index if not exists scans_pending_idx on public.scans (status, updated_at
 
 create or replace function public.scans_touch() returns trigger language plpgsql set search_path = public as $$
 begin new.updated_at := now(); return new; end $$;
-drop trigger if exists scans_touch on public.scans;
-create trigger scans_touch before update on public.scans for each row execute function public.scans_touch();
+create or replace trigger scans_touch before update on public.scans for each row execute function public.scans_touch();
 
 alter table public.scans enable row level security;
 drop policy if exists scans_select on public.scans;
