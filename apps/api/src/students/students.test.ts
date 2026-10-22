@@ -15,7 +15,7 @@ describe("CSV import validation (WBS 3.3)", () => {
   it("accepts a valid file and rejects bad rows with line numbers", () => {
     const ok = validateImport("class,assignment,due,status\nMath,Worksheet 3,2026-10-22,assigned\n");
     expect(ok.errors).toEqual([]);
-    expect(ok.rows[0]!.dueAt).toBe("2026-10-23T04:59:00.000Z");
+    expect(ok.rows[0]!.dueAt).toBe("2026-10-23T03:59:00.000Z");
     const bad = validateImport("class,assignment,due,status\nMath,,2026-10-22,x\nSci,Lab,notadate,\n");
     expect(bad.errors).toEqual(["Line 2: class and assignment are required.", 'Line 3: bad due date "notadate".']);
   });

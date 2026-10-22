@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@sparkle/ui"],
   // Expose only public values to the browser.
   poweredByHeader: false,
+  // Class materials uploads (10 MB cap enforced in the action + bucket).
+  experimental: { serverActions: { bodySizeLimit: "11mb" } },
   async headers() {
     const api = (process.env.NEXT_PUBLIC_API_URL ?? "https://sparkle-api.crystal-iamrolan.workers.dev").split(",");
     // Static CSP for public/prerendered pages; signed-in routes get a nonce CSP from middleware (DEC-186).

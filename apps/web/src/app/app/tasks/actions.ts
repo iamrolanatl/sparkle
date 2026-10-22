@@ -47,9 +47,9 @@ export async function saveTaskAction(
   );
 }
 
-export async function listTasksAction(studentId: string) {
+export async function listTasksAction(studentId: string, done = false) {
   if (!UUID.test(studentId)) return { status: 400, body: { error: "bad_request" } };
-  return call(`/students/${studentId}/tasks`);
+  return call(`/students/${studentId}/tasks${done ? "?status=done" : ""}`);
 }
 
 export async function dueSoonAction(studentId: string) {

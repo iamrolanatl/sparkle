@@ -119,7 +119,9 @@ tasks.get("/:id/tasks", async (c) => {
     c.env,
     a.user.token,
   )<unknown[]>(
-    `tasks?student_id=eq.${a.id}&done_at=is.null&select=id,title,due_at,priority,class_id,created_at&order=due_at.asc.nullslast&limit=100`,
+    c.req.query("status") === "done"
+      ? `tasks?student_id=eq.${a.id}&done_at=not.is.null&select=id,title,due_at,priority,class_id,created_at,done_at&order=done_at.desc&limit=50`
+      : `tasks?student_id=eq.${a.id}&done_at=is.null&select=id,title,due_at,priority,class_id,created_at&order=due_at.asc.nullslast&limit=100`,
   );
   if (!r.ok) return c.json({ error: "load_failed" }, 502);
   c.header("Cache-Control", "private, no-store");

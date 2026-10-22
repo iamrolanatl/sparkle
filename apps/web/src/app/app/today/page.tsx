@@ -1,120 +1,177 @@
-import { NeonWindow } from "@sparkle/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DueSoonTasks } from "../tasks/due-soon";
-import { formatDue, isEmpty, type TodayDoc, type TodayItem } from "@/lib/today-view";
+import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
+import { daysUntil, dueText } from "@/lib/classes/due";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Today", robots: { index: false } };
 
-const API = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
-
-async function loadToday(studentId: string, token: string): Promise<TodayDoc | null> {
-  try {
-    const res = await fetch(`${API}/students/${encodeURIComponent(studentId)}/today`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(8_000),
-    });
-    return res.ok ? ((await res.json()) as TodayDoc) : null;
-  } catch {
-    return null; // Graceful degradation (NFR-38): page still renders.
-  }
-}
-
-function Section({ title, items, tone }: { title: string; items: TodayItem[]; tone?: string }) {
-  if (!items.length) return null;
-  return (
-    <section className="mt-4">
-      <h3 className={`font-semibold ${tone ?? ""}`}>{title}</h3>
-      <ul className="mt-2 grid gap-2">
-        {items.map((a) => (
-          <li key={a.id} className="flex flex-wrap justify-between gap-2 rounded-md bg-white/5 px-3 py-2 text-sm">
-            <span>
-              <span className="font-medium">{a.title}</span>
-              {a.class_name ? <span className="text-muted"> · {a.class_name}</span> : null}
-              {a.status === "missing" ? <span className="ml-2 text-rose-300">missing</span> : null}
-            </span>
-            <span className="text-muted">{formatDue(a.due_at)}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+const TZ = "America/New_York";
 
 export default async function TodayPage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
   const supabase = await createClient();
   const user = supabase ? (await supabase.auth.getUser()).data.user : null;
   if (!supabase || !user) redirect("/login?next=/app/today");
-  const [{ data: students }, { data: sess }] = await Promise.all([
-    supabase.from("students").select("id, display_name").order("created_at").limit(50),
-    supabase.auth.getSession(),
-  ]);
-  const list = (students ?? []) as { id: string; display_name: string }[];
   const { s } = await searchParams;
-  const current = list.find((x) => x.id === s) ?? list[0];
-  const doc = current && sess.session ? await loadToday(current.id, sess.session.access_token) : null;
-
+  const students = await loadStudents(supabase);
+  const me = pickStudent(students, user.id, s);
+  const now = new Date();
+  const hour = Number(now.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hour12: false }));
+  const hello = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const dateLine = now.toLocaleDateString("en-US", { timeZone: TZ, weekday: "long", month: "short", day: "numeric" });
+  if (!me)
+    return (
+      <div className="page">
+        <h1>{hello}</h1>
+        <div className="sub">{dateLine}</div>
+        <div className="panel empty" style={{ marginTop: 20 }}>
+          No student yet.{" "}
+          <Link href="/app/family" style={{ textDecoration: "underline" }}>
+            Add a student
+          </Link>{" "}
+          to see grades, tasks and classes here.
+        </div>
+      </div>
+    );
+  const [classes, tasksRes] = await Promise.all([
+    loadClasses(supabase, me.id),
+    supabase
+      .from("tasks")
+      .select("id, title, due_at, priority")
+      .eq("student_id", me.id)
+      .is("done_at", null)
+      .order("due_at", { nullsFirst: false })
+      .limit(100),
+  ]);
+  type Row = { id: string; title: string; due: string | null; cls: string; color: string; chip: string };
+  const rows: Row[] = [
+    ...classes.flatMap((c) =>
+      c.upcoming.map((a) => ({
+        id: a.id,
+        title: a.title,
+        due: a.due_at,
+        cls: c.name,
+        color: c.color,
+        chip: a.category ?? "Assignment",
+      })),
+    ),
+    ...((tasksRes.data ?? []) as { id: string; title: string; due_at: string | null; priority: string }[]).map((t) => ({
+      id: t.id,
+      title: t.title,
+      due: t.due_at,
+      cls: "Personal · added by you",
+      color: "#e8edf3",
+      chip: t.priority === "high" ? "Priority" : "Personal",
+    })),
+  ]
+    .filter((r) => r.due && daysUntil(r.due, now) >= 0 && daysUntil(r.due, now) <= 7)
+    .sort((a, b) => Date.parse(a.due!) - Date.parse(b.due!));
+  const tomorrow = rows.filter((r) => daysUntil(r.due!, now) === 1).length;
+  const gpa = gpaOf(classes);
+  const summative = rows.filter((r) => /summative|test|quiz|project/i.test(r.chip)).length;
+  const first =
+    me.profile_id === user.id
+      ? me.display_name.split(" ")[0]
+      : ((user.user_metadata?.full_name as string) ?? "").split(" ")[0];
   return (
-    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-8">
-      <header className="flex items-center justify-between">
-        <span className="text-muted text-sm">Student</span>
-        <nav className="flex gap-3 text-sm">
-          {list.map((x) => (
-            <Link
-              key={x.id}
-              href={`/app/today?s=${x.id}`}
-              className={x.id === current?.id ? "font-semibold underline" : "underline"}
-            >
-              {x.display_name}
-            </Link>
-          ))}
-        </nav>
-      </header>
-      {!current ? (
-        <NeonWindow title="Today">
-          <p className="text-sm">
-            No students yet.{" "}
-            <Link href="/app/family" className="underline">
-              Add one
-            </Link>
-            .
-          </p>
-        </NeonWindow>
-      ) : !doc ? (
-        <NeonWindow title="Today">
-          <p className="text-sm" role="status">
-            We couldn&apos;t load today&apos;s plan right now. Try again in a minute.
-          </p>
-        </NeonWindow>
-      ) : (
-        <NeonWindow title={`Today · ${current.display_name}`}>
-          <p className="text-xl font-semibold">{doc.headline}</p>
-          {doc.missingCount ? <p className="text-muted text-sm">{doc.missingCount} marked missing by school</p> : null}
-          <Section title="Catch up" items={doc.overdue} tone="text-rose-300" />
-          <Section title="Due today" items={doc.dueToday} tone="text-amber-200" />
-          <Section title="Coming up (7 days)" items={doc.upcoming} />
-          {isEmpty(doc) ? (
-            <p className="mt-4 text-sm">
-              Nothing scheduled.{" "}
-              <Link href="/app/import" className="underline">
-                Import assignments
+    <div className="page">
+      <h1>{`${hello}${first ? `, ${first}` : ""}`}</h1>
+      <div className="sub">
+        {dateLine}
+        {rows.length
+          ? ` · ${tomorrow ? `${tomorrow} thing${tomorrow > 1 ? "s" : ""} due tomorrow` : `${rows.length} due this week`}`
+          : " · Nothing due this week"}
+      </div>
+      <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginTop: 20 }}>
+        <div className="panel stat">
+          <div className="l">Unweighted GPA</div>
+          <div className="v">{gpa ? gpa.unweighted.toFixed(2) : "—"}</div>
+          <div className="d" style={gpa ? undefined : { color: "var(--mut)" }}>
+            {gpa ? `${gpa.credits} graded classes` : "No grades yet"}
+          </div>
+        </div>
+        <div className="panel stat">
+          <div className="l">Weighted GPA</div>
+          <div className="v">{gpa ? gpa.weighted.toFixed(2) : "—"}</div>
+          <div className="d" style={gpa ? undefined : { color: "var(--mut)" }}>
+            {gpa ? "Honors/Advanced +0.5" : "No grades yet"}
+          </div>
+        </div>
+        <div className="panel stat">
+          <div className="l">Due this week</div>
+          <div className="v">{rows.length}</div>
+          <div className="d" style={{ color: summative ? "var(--warn)" : "var(--mut)" }}>
+            {summative ? `${summative} summative` : "No tests or quizzes"}
+          </div>
+        </div>
+        <div className="panel stat">
+          <div className="l">Attendance</div>
+          <div className="v">—</div>
+          <div className="d" style={{ color: "var(--mut)" }}>
+            Not synced yet
+          </div>
+        </div>
+      </div>
+      <div className="grid s2" style={{ gridTemplateColumns: "1.3fr 1fr", marginTop: 14 }}>
+        <div className="panel">
+          <div className="ph">
+            Due soon <span>Next 7 days</span>
+          </div>
+          {rows.length ? (
+            rows.slice(0, 8).map((r) => (
+              <div className="row" key={r.id}>
+                <span className="dot" style={{ background: r.color }} />
+                <div style={{ minWidth: 0 }}>
+                  <div>{r.title}</div>
+                  <div style={{ fontSize: 12, color: "var(--dim)" }}>{r.cls}</div>
+                </div>
+                <span className="chip">{r.chip}</span>
+                <span className={`due ${daysUntil(r.due!, now) <= 1 ? "h" : ""}`}>{dueText(r.due, now)}</span>
+              </div>
+            ))
+          ) : (
+            <div className="empty">
+              Nothing due in the next 7 days.{" "}
+              <Link href="/app/tasks" style={{ textDecoration: "underline" }}>
+                Add a task
               </Link>{" "}
-              to get started.
-            </p>
-          ) : null}
-        </NeonWindow>
-      )}
-      {current ? <DueSoonTasks studentId={current.id} /> : null}
-      {current ? (
-        <p className="text-sm">
-          <Link href="/app/tasks" className="underline">
-            Add or finish tasks →
-          </Link>
-        </p>
-      ) : null}
-    </main>
+              or{" "}
+              <Link href="/app/import" style={{ textDecoration: "underline" }}>
+                import assignments
+              </Link>
+              .
+            </div>
+          )}
+        </div>
+        <div className="panel">
+          <div className="ph">
+            Grades snapshot <span>To date</span>
+          </div>
+          {classes.length ? (
+            classes.map((c) => (
+              <Link href={`/app/classes?open=${c.id}`} className="row" key={c.id}>
+                <span className="dot" style={{ background: c.color }} />
+                <span style={{ width: 150, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {c.name}
+                </span>
+                <div className="bar">
+                  <i style={{ width: `${Math.min(c.pct ?? 0, 100)}%`, background: c.color }} />
+                </div>
+                <span style={{ fontSize: 12, color: "var(--mut)", width: 44, textAlign: "right" }}>
+                  {c.pct != null ? c.pct.toFixed(1) : "—"}
+                </span>
+                <span className="gl">{c.letter ?? ""}</span>
+              </Link>
+            ))
+          ) : (
+            <div className="empty">No classes yet. They appear here after an import or school sync.</div>
+          )}
+          <div style={{ padding: "6px 16px 14px", fontSize: 12, color: "var(--dim)" }}>
+            GPA trend appears after a few weeks of grade history.
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

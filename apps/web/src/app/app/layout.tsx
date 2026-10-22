@@ -1,29 +1,46 @@
-import Link from "next/link";
+import "./app-shell.css";
 import { createClient } from "@/lib/supabase/server";
+import { loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { signOut } from "../login/actions";
-import { AppNav } from "./nav";
+import { Crumb, MobileTabs, SideNav } from "./nav";
 
+/** Signed-in shell (approved mockup sparkle-classes): sidebar, top bar, pinned mobile tab bar. */
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  if (!supabase || !user) return <>{children}</>;
+  const students = await loadStudents(supabase);
+  const me = pickStudent(students, user.id);
+  const classes = me ? await loadClasses(supabase, me.id) : [];
+  const { count } = me
+    ? await supabase
+        .from("tasks")
+        .select("id", { count: "exact", head: true })
+        .eq("student_id", me.id)
+        .is("done_at", null)
+    : { count: null };
+  const name = me && me.profile_id === user.id ? me.display_name : ((user.user_metadata?.full_name as string) ?? "You");
+  const sub = me ? (me.profile_id === user.id ? "Student" : `Following ${me.display_name}`) : "No student yet";
   return (
-    <div className="min-h-dvh">
-      {user ? (
-        <header className="sticky top-0 z-20 border-b border-[var(--spk-border)] bg-black/60 backdrop-blur">
-          <div className="mx-auto flex max-w-4xl flex-col gap-2 px-4 py-3">
-            <div className="flex items-center justify-between">
-              <Link href="/app" className="text-lg font-semibold tracking-wide">
-                Sparkle
-              </Link>
-              <form action={signOut}>
-                <button className="text-muted text-sm hover:text-white">Sign out</button>
-              </form>
-            </div>
-            <AppNav isAdmin={user.app_metadata?.role === "admin"} />
-          </div>
-        </header>
-      ) : null}
-      {children}
+    <div className="sa">
+      <SideNav
+        isAdmin={user.app_metadata?.role === "admin"}
+        taskCount={count ?? null}
+        classes={classes.map((c) => ({ id: c.id, name: c.name, color: c.color, letter: c.letter }))}
+        who={{ name, sub }}
+      />
+      <div className="sa-main">
+        <div className="top">
+          <Crumb who={me?.display_name ?? name} />
+          <form action={signOut} style={{ marginLeft: "auto" }}>
+            <button className="out" style={{ background: "none", border: 0, cursor: "pointer" }}>
+              Sign out
+            </button>
+          </form>
+        </div>
+        {children}
+      </div>
+      <MobileTabs />
     </div>
   );
 }

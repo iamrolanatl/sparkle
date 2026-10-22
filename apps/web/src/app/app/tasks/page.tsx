@@ -1,18 +1,40 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { TaskComposer } from "./composer";
+import { loadClasses, loadLate, loadStudents, pickStudent } from "@/lib/classes/load";
+import { TaskComposer, type SchoolItem } from "./composer";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Tasks", robots: { index: false } };
 
-export default async function TasksPage() {
+export default async function TasksPage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
   const supabase = await createClient();
   const user = (await supabase?.auth.getUser())?.data.user;
   if (!supabase || !user) redirect("/login?next=/app/tasks");
-  const { data } = await supabase.from("students").select("id, display_name").order("display_name").limit(50);
+  const { s } = await searchParams;
+  const students = await loadStudents(supabase);
+  const me = pickStudent(students, user.id, s);
+  const classes = me ? await loadClasses(supabase, me.id) : [];
+  const late = me ? await loadLate(supabase, me.id) : [];
+  const color = new Map(classes.map((c) => [c.id, { name: c.name, color: c.color }]));
+  const school: SchoolItem[] = [
+    ...classes.flatMap((c) => c.upcoming),
+    ...((late ?? []) as (typeof classes)[number]["upcoming"]),
+  ].map((a) => ({
+    id: a.id,
+    title: a.title,
+    due_at: a.due_at,
+    category: a.category,
+    status: a.status,
+    className: color.get(a.class_id ?? "")?.name ?? "Class",
+    color: color.get(a.class_id ?? "")?.color ?? "#94a3b8",
+  }));
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <TaskComposer students={data ?? []} />
-    </main>
+    <div className="page">
+      <TaskComposer
+        students={students.map((x) => ({ id: x.id, display_name: x.display_name }))}
+        initial={me?.id ?? ""}
+        school={school}
+      />
+    </div>
   );
 }

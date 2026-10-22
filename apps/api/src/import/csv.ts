@@ -1,3 +1,4 @@
+import { nyToUtc } from "../tasks/parse";
 /** Manual import (WBS 3.3): a small, strict CSV format families can export or type. Pure + testable. */
 const IMPORT_COLUMNS = ["class", "teacher", "period", "assignment", "due", "status", "score", "max_score"] as const;
 const MAX_ROWS = 2000;
@@ -71,7 +72,9 @@ export function validateImport(text: string): { rows: ImportRow[]; errors: strin
     const dueRaw = get("due");
     let dueAt: string | null = null;
     if (dueRaw) {
-      const d = /^\d{4}-\d{2}-\d{2}$/.test(dueRaw) ? new Date(`${dueRaw}T23:59:00-05:00`) : new Date(dueRaw);
+      const ymd = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dueRaw);
+      // Date-only = 11:59 PM America/New_York on that day (DST-aware; was a fixed -05:00 offset).
+      const d = ymd ? nyToUtc(+ymd[1]!, +ymd[2]!, +ymd[3]!, 23, 59) : new Date(dueRaw);
       if (Number.isNaN(d.getTime())) return void errors.push(`Line ${line}: bad due date "${dueRaw}".`);
       dueAt = d.toISOString();
     }
