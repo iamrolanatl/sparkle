@@ -5,7 +5,7 @@ import { BLOCKED_REPLY, CRISIS_REPLY, classify, estimateTokens, redact } from ".
 import { allow, type RateLimitBinding } from "./ratelimit";
 import { Store } from "./store";
 
-export const CHAT_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+export const CHAT_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
 
 export interface ChatEnv {
   AI?: { run: (model: string, input: unknown, opts?: unknown) => Promise<unknown> };
@@ -103,7 +103,8 @@ chat.post("/", async (c) => {
       }
       await stream.writeSSE({ event: "done", data: "" });
       await save(reply, false);
-    } catch {
+    } catch (e) {
+      console.error("chat_ai_error", e instanceof Error ? e.message : String(e));
       const msg = "Sorry, I'm having trouble right now. You can use \"Talk to a human\".";
       await stream.writeSSE({ event: "token", data: msg });
       await stream.writeSSE({ event: "done", data: "" });

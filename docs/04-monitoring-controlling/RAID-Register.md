@@ -79,7 +79,7 @@
 | D-09 | xAI + Anthropic API keys | WBS 5.2 | Open |
 | D-10 | Sentry account | WBS 2.3 | Open |
 | D-11 | Privacy Policy / Terms content with legal review | Public launch | Open |
-| D-12 | Cloudflare AI Gateway `sparkle-gateway` + Workers AI enabled | Chat go-live | Open |
+| D-12 | Cloudflare AI Gateway `sparkle-gateway` + Workers AI enabled | Chat go-live | Closed 2026-10-21 (DEC-48) |
 | D-13 | Weather data provider (cost/terms) | FR-22 | Open |
 | D-14 | Legal + security review of mail vault | FR-24 enablement | Open — owner Rolan |
 | D-20 | Privacy counsel (edtech/COPPA) engagement and sign-off — LG-01 | Vault launch | Open |
