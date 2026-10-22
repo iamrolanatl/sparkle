@@ -10,7 +10,7 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test && pnpm test:db",
+    "test": "pnpm -r --workspace-concurrency=1 test && pnpm test:db",
     "test:db": "vitest run supabase"
   },
   "devDependencies": {
@@ -21,5 +21,11 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.72.0",
     "vitest": "^5.0.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": ">=8.5.23",
+      "glob@>=10.2.0 <10.5.0": "^10.5.0"
+    }
   }
 }
