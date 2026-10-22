@@ -23,7 +23,10 @@ export default async function TodayPage() {
       </header>
       <GlassPanel glow className="p-6 sm:p-8">
         <h1 className="text-2xl font-semibold sm:text-3xl">{`Hi ${user.user_metadata?.full_name ?? "there"}!`}</h1>
-        <p className="text-muted mt-2">Today view arrives in Phase 2. Meanwhile, set up your family and helpers.</p>
+        <p className="text-muted mt-2">See what's due, or set up your family and helpers.</p>
+        <Link href="/app/today" className="mt-4 mr-6 inline-block underline">
+          Today →
+        </Link>
         <Link href="/app/family" className="mt-4 inline-block underline">
           Family &amp; helpers →
         </Link>
