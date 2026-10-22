@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "@sparkle/ui/theme.css";
+
+@source "../../../../packages/ui/src";
+@source "../../../../packages/sparkle-character/src";
+
+@theme {
+  --color-neon: #22d3ee;
+  --color-neon-2: #2dd4bf;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html, body { background: var(--spk-bg); color: var(--spk-text); min-height: 100dvh; }
+.text-muted { color: var(--spk-text-muted); }
+.text-neon { color: var(--spk-neon); }
+:focus-visible { outline: 2px solid var(--spk-neon); outline-offset: 2px; }

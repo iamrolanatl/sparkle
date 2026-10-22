@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-004 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -17,47 +17,67 @@
 
 ---
 
+## Resourcing reality (as of 2026-10-21)
+Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng Lead, Design, Ops, Compliance). Grok Bot performs build and PM work via `gh` on its own computer, with Rolan's approval at each gate (PR merge = approval). There is **no human engineering, design, or legal staff yet**; items needing them are marked *Blocked* or carry a dependency. All dates TBD.
+
 ## WBS
-| WBS | Element | Gate |
-|---|---|---|
-| 1.0 | **Project Management** — charter, plans, CR control, status, RAID, phase gates | All |
-| 2.0 | **Phase 0 — Foundation** | G0 |
-| 2.1 | Architecture runway, ADRs, scale-trigger values | |
-| 2.2 | Repo, CI/CD, branch protection, environments (dev/staging/prod), secrets | |
-| 2.3 | Feature flags + observability baseline (OTel, Sentry, synthetics) | |
-| 2.4 | Design system: glass, neon, light/dark, responsive, a11y, animated background w/ auto-disable | |
-| 2.5 | Sparkle character Rive states (idle, excited, bored/thoughtful, helping) | |
-| 3.0 | **Phase 1 — Core Data & Identity** | G1 |
-| 3.1 | Google auth (Supabase Auth) + family invitation (email link / short code) + sharing/RLS model | |
-| 3.2 | Desktop agent skeleton (Tauri, secure store, schedule) + first connector (StudentVue) | |
-| 3.3 | Web fallback: manual upload path | |
-| 3.4 | Normalized data model + Today document precomputation | |
-| 3.5 | Admin: basic sync health view *(moved earlier — handoff §9 says "in parallel once core data path exists")* | |
-| 3.6 | Explicit-confirmation framework for outbound comms (from first implementation, handoff §9) | |
-| 4.0 | **Phase 2 — Student Experience** | G2 |
-| 4.1 | Today view + item statuses + "What changed" + focus mode | |
-| 4.2 | Classes + unit workspace | |
-| 4.3 | GPA engine + simulator | |
-| 4.4 | Student daily input | |
-| 4.5 | Additional connectors (ParentVue, CTLS Learn/Parent, O365, Synergy, Clever) | |
-| 5.0 | **Phase 3 — Sparkle & AI** | G3 |
-| 5.1 | Rive integration + personality states in app | |
-| 5.2 | AI router, budgets, circuit breakers, source citation | |
-| 5.3 | Voice pipeline with text fallback | |
-| 5.4 | Crisis protocol, hide/mute, coach-mode guardrails | |
-| 6.0 | **Phase 4 — Supporting Features & Admin** | G4 |
-| 6.1 | Shared shopping list | |
-| 6.2 | Communication hub + AI drafts (confirm gate) | |
-| 6.3 | Calendar / bell-schedule digitization with human review | |
-| 6.4 | Full admin console: diagnostics, KPI, flags, audit, view-as, platform profiles | |
-| 7.0 | **Phase 5 — Hardening & Go-Live** | G5 |
-| 7.1 | Performance & resilience testing against budgets | |
-| 7.2 | UAT, security & privacy review | |
-| 7.3 | Runbooks, training, staged rollout & monitoring | |
-| 8.0 | **Closing** — acceptance, lessons learned, transition to operations | |
+| WBS | Element | Gate | Status | Notes / Dependency |
+|---|---|---|---|---|
+| 1.0 | **Project Management** — charter, plans, CR control, status, RAID, gates | All | In progress | Docs baseline done (PR #1, awaiting sponsor merge); CR-0002 in PR for Phase 0 |
+| 2.0 | **Phase 0 — Foundation** | G0 | In progress | |
+| 2.1 | Architecture runway, ADRs, scale-trigger values | | In progress | Data model & access control (TDD §8) done in CR-0002; scale-trigger numbers TBD |
+| 2.2 | Repo, CI/CD, environments, secrets | | In progress | GitHub Actions secrets/vars set; Supabase prod project `nklbdyezbsugkdvaidtt` exists; CI + manual API deploy workflow in CR-0002 |
+| 2.2.1 | Separate dev/staging Supabase projects | | Not started | Needs Rolan to create projects (free tier limits) |
+| 2.2.2 | Branch protection on `main` | | Not started | Rolan to enable once CI is green |
+| 2.3 | Feature flags + observability baseline | | Not started | Needs Sentry account (2.11) |
+| 2.4 | Design system: glass, neon, light/dark, responsive, a11y, FPS-guarded aurora | | In progress | `packages/ui` in CR-0002 |
+| 2.5 | Sparkle character states | | In progress | **Placeholder only** (`packages/sparkle-character`, Rive integration point stubbed). Production full-body Rive character needs an illustrator/animator — who/how TBD (D-03, R-11) |
+| 2.6 | Access and tooling | | Done | Supabase token; Google auth enabled in Supabase; GCP project `sparkle-app-2566` with OAuth Web client (web + mobile via Supabase, DEC-05); Cloudflare token verified; Rolan's Windows laptop: git, node, gh, gcloud, wrangler, supabase CLI |
+| 2.6.1 | Enable Cloudflare R2 | | Blocked | Needs payment method in Cloudflare dashboard (Rolan) — I-03 |
+| 2.7 | Landing page and sign-up (FR-17) | | In progress | Draft copy; waitlist table; depends on 2.8 domain and 2.10 legal text before public launch |
+| 2.8 | Production domain + DNS (Cloudflare) | | Not started | Domain name TBD (Rolan) |
+| 2.9 | Google OAuth consent screen verification / publishing | | Not started | Required before public launch; needs domain, privacy policy URL |
+| 2.10 | Privacy & legal review — FERPA/COPPA/state law, Privacy Policy, Terms, DEC-06 | | Not started | **G1 entry criterion** (moved earlier from Phase 5). Needs counsel (none engaged) |
+| 2.11 | Sentry account + DSN | | Not started | Rolan |
+| 2.12 | Update landing page features & marketing content | | Recurring | At each gate, per [Communications & Marketing Plan](Communications-Marketing-Plan.md) |
+| 3.0 | **Phase 1 — Core Data & Identity** | G1 | Not started | Entry: 2.10 complete |
+| 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema, RLS, `redeem_invitation` + tests in CR-0002; UI not started |
+| 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | | Blocked | **Gated** by legal/ToS review of automated access to StudentVue/Cobb portals (R-05); needs Apple + Windows code-signing certificates (D-05) |
+| 3.3 | Web fallback: manual upload | | Not started | |
+| 3.4 | Normalized data model + Today doc precompute | | Not started | Academic tables stubbed in migration |
+| 3.5 | Admin basic sync health | | Not started | |
+| 3.6 | Explicit-confirmation framework for outbound comms | | Not started | `ai_drafts.confirmed_at` in schema |
+| 3.7 | Update landing page features & marketing content | | Recurring | At G1 |
+| 4.0 | **Phase 2 — Student Experience** | G2 | Not started | |
+| 4.1 | Today view + statuses + "What changed" + focus mode | | Not started | |
+| 4.2 | Classes + unit workspace | | Not started | |
+| 4.3 | GPA engine + simulator | | Not started | |
+| 4.4 | Student daily input | | Not started | `daily_notes` table in CR-0002 |
+| 4.5 | Additional connectors | | Not started | Same gating as 3.2 |
+| 4.6 | Mobile delivery: responsive web / PWA | | In progress | MVP = responsive web/PWA; native apps out of MVP unless a CR adds them |
+| 4.7 | Update landing page features & marketing content | | Recurring | At G2 |
+| 5.0 | **Phase 3 — Sparkle & AI** | G3 | Not started | |
+| 5.1 | Rive integration + personality states | | Not started | Depends on animator (2.5) |
+| 5.2 | AI router, budgets, circuit breakers, citations | | Not started | Needs xAI + Anthropic API keys (D-02) |
+| 5.2.1 | Tier 1 model selection (Workers AI vs Ollama-class) | | Not started | |
+| 5.3 | Voice pipeline with text fallback | | Not started | |
+| 5.4 | Crisis protocol, hide/mute, coach-mode guardrails | | Not started | Crisis content needs counsel/expert |
+| 5.5 | Update landing page features & marketing content | | Recurring | At G3 |
+| 6.0 | **Phase 4 — Supporting Features & Admin** | G4 | Not started | |
+| 6.1 | Shared shopping list | | Not started | households/shopping_items in schema |
+| 6.2 | Communication hub + AI drafts | | Not started | |
+| 6.3 | Calendar / bell schedule digitization | | Not started | |
+| 6.4 | Full admin console | | Not started | view-as stubbed (audited) |
+| 6.5 | Update landing page features & marketing content | | Recurring | At G4 |
+| 7.0 | **Phase 5 — Hardening & Go-Live** | G5 | Not started | |
+| 7.1 | Performance & resilience testing | | Not started | |
+| 7.2 | UAT, security & privacy re-review | | Not started | |
+| 7.3 | Runbooks, training, staged rollout | | Not started | |
+| 7.4 | Update landing page for launch | | Recurring | Needs 2.8, 2.9, 2.10 |
+| 8.0 | **Closing** | | Not started | |
 
 ## WBS Dictionary
-Each work package's acceptance criteria = linked requirement acceptance + sprint Definition of Done (see [Product Backlog](Product-Backlog.md)). Estimates and owners are assigned in sprint planning — **TBD**.
+Each work package's acceptance = linked requirement acceptance + sprint Definition of Done ([Product Backlog](Product-Backlog.md)). Owner for all packages today: Rolan (accountable) with Grok Bot (responsible for build/docs) — no other staff. Estimates and dates TBD.
 
 ## Corrections vs. original
 Added 1.0 PM and 8.0 Closing branches; added web fallback, connectors beyond StudentVue, daily input, crisis protocol, comms confirm framework; pulled basic admin sync health into Phase 1 to match handoff §9/§11.
@@ -78,3 +98,4 @@ Added 1.0 PM and 8.0 Closing branches; added web fallback, connectors beyond Stu
 |---|---|---|---|---|
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Work Breakdown Structure (01M5GCZRQDWWN9EC6SFSEKHJA9.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added Status and Notes/Dependency columns; reflected actual progress; added 2.2.x, 2.6–2.12, recurring landing-page updates per phase, mobile=PWA, legal gating of 3.2, privacy review as G1 entry; resourcing reality. |

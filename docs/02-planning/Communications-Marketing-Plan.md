@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-012 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -28,6 +28,8 @@
 
 Channels: in-app onboarding + Sparkle intro; parent invitation email; district partnership materials.
 Guardrails: no claims that Sparkle replaces effort or guarantees grade improvement; AI always coach mode; no district endorsement claims without written agreement.
+
+**Landing page (FR-17):** draft at `/`; content updated at every phase gate (WBS 2.12, 3.7, 4.7, 5.5, 6.5, 7.4). Public launch needs production domain, OAuth consent verification, and reviewed Privacy/Terms.
 
 ## Part B — Project Communications Matrix
 | Communication | Audience | Owner | Frequency | Channel |
@@ -57,3 +59,4 @@ Guardrails: no claims that Sparkle replaces effort or guarantees grade improveme
 |---|---|---|---|---|
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Marketing & Communication Plan (01M5GCZSAX0RSBB5DBBBP5GJ2Q.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Landing page ownership and per-gate update cadence. |

@@ -1,0 +1,14 @@
+# Account ID comes from CLOUDFLARE_ACCOUNT_ID env var (not committed).
+name = "sparkle-api"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[observability]
+enabled = true
+
+[vars]
+APP_ENV = "production"
+SUPABASE_URL = "https://nklbdyezbsugkdvaidtt.supabase.co"
+# Secrets (set with `wrangler secret put`): SUPABASE_SECRET_KEY
