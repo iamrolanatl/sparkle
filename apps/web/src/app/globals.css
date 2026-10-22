@@ -13,4 +13,5 @@
 html, body { background: var(--spk-bg); color: var(--spk-text); min-height: 100dvh; }
 .text-muted { color: var(--spk-text-muted); }
 .text-neon { color: var(--spk-neon); }
+.legal h2 { font-weight: 600; font-size: 1.1rem; margin-top: .5rem; }
 :focus-visible { outline: 2px solid var(--spk-neon); outline-offset: 2px; }

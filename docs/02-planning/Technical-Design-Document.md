@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-003 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Engineering Lead — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -105,6 +105,12 @@ No admin read policies. Admin access only via `admin_request_view_as` (stub: req
 ### 8.5 Applying the migration
 Not applied to the live project in CR-0002. Procedure: local `supabase start && supabase db reset` → run `rls_test.sql` → `supabase link --project-ref nklbdyezbsugkdvaidtt` → `supabase db push --dry-run` → sponsor approval → `supabase db push`.
 
+## 8.6 Public chat, legal & admin (CR-0003)
+- `apps/api` `POST /chat` (SSE) → guard (`classify`, `redact`) → Workers AI `@cf/meta/llama-3.1-8b-instruct` via AI Gateway `sparkle-gateway`; `POST /chat/handoff` → `support_tickets`. Rate limiting: Workers Rate Limiting binding `CHAT_RATE_LIMITER` (10/min/IP). Kill switch/budget: `feature_flags.sales_chat`. Storage via PostgREST with service role; `chat_sessions` expire after 30 days (`purge_expired_chats()` via pg_cron).
+- `privacy_requests`, `waitlist`: insert-only for anon/authed; trigger rate-limits per `ip_hash`.
+- `/admin`: server-side gate on `app_metadata.role = admin`; service-role reads only after the gate; actions written to `admin_audit_log`.
+- R2: `SCANS_BUCKET` → `sparkle-scans`, `VAULT_BUCKET` → `sparkle-vault` (private, ENAM). Vault gated by `feature_flags.vault_enabled = false`.
+
 ## 9. Corrections vs. original (v1.0)
 Added ADR-07, KV/Queues/Workflows/R2, observability and identity stack (all in handoff §5 but missing), rate limits and error boundaries; flagged Next.js hosting and scale-trigger values as open.
 
@@ -125,3 +131,4 @@ Added ADR-07, KV/Queues/Workflows/R2, observability and identity stack (all in h
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Technical Design Document (01M5GCZT2B8FBR5T6NDN14HG45.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | New §8 Data Model & Access Control (multi-tenant, can_view_student, helpers, guardian limits, waitlist); Next.js hosting = OpenNext; DEC-05 identity. |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003 | §8.6 chat/legal/admin architecture; R2 bindings. |

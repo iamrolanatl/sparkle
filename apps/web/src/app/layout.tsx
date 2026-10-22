@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AuroraBackground } from "@sparkle/ui";
 import { SITE_URL } from "@/lib/site";
+import { CookieConsent } from "@/components/CookieConsent";
 import "./globals.css";
 
 const description = "Sparkle brings grades, assignments, and class updates into one calm place and shows students what matters next.";
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         <AuroraBackground />
         {children}
+        <CookieConsent />
       </body>
     </html>
   );

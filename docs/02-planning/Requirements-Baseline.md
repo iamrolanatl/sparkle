@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -39,6 +39,21 @@ Priority uses MoSCoW (M = Must for MVP acceptance, S = Should, C = Could). Featu
 | FR-15 | *(new)* Quiet hours and daily digest options for notifications. | S | F-02 | 2 |
 | FR-16 | *(CR-0002)* Helper access: a guardian (always) or the student (at/over the age threshold; below it a guardian must approve) can invite helpers — parent, guardian, sibling, cousin, aunt, uncle, grandparent, babysitter/caregiver, tutor, teacher, other (+ free-text label) — via email link or short code (hashed, single use, 72 h expiry, rate-limited, email-bound when set). Helper signs in with own Google account and redeems via `redeem_invitation`; creates a read-only share (or a guardian link for parent/guardian invited by a guardian). Helpers may hold access to many students (student switcher). Teachers/tutors default to academic scopes only. Shares revocable by inviter, any guardian, or the student (at/over threshold); all grants/revokes audit-logged and shown on the student's access list. | M | F-14 | Sponsor 2026-10-21 |
 | FR-17 | *(CR-0002)* Public marketing landing page at `/` (responsive, glass/neon) with hero, features, how it works, FAQ, Privacy/Terms links; primary CTA "Sign up with Google"; secondary waitlist email capture (insert-only, rate-limited, honeypot); SEO metadata, OG image, sitemap, robots; signed-in app at `/app`. Copy is draft, grade-8, no unverifiable claims. | M | F-15 | Sponsor 2026-10-21 |
+
+### 1.1 Additions under CR-0003 (landing, legal, chat, admin)
+| ID | Requirement | Pri | Feature | Source |
+|---|---|---|---|---|
+| FR-18 | Legal/compliance pages, each marked *draft — pending legal review*: Terms of Service; Privacy Policy with a children's/student data section (COPPA, FERPA); Cookie Policy + consent banner (essential-only default, analytics opt-in, GPC forces opt-out); Accessibility Statement (WCAG 2.2 AA target + feedback contact); "Do Not Sell or Share My Personal Information" (CCPA/CPRA) request form saved to `privacy_requests` (insert-only for anon/authed; read by service role/admin only), honoring Global Privacy Control. Public launch also needs production domain/DNS. | M | F-16 | Sponsor 2026-10-21 |
+| FR-19 | Public "Questions?" sales & support chat on the landing page: Hono `/chat` route streaming from Cloudflare Workers AI (Tier 1 open Llama-class instruct model) through AI Gateway; system prompt grounded in a repo knowledge file; no account; per-IP rate limits; per-day token budget + kill switch (feature flag `sales_chat`); refuses off-topic/unsafe asks; crisis safety reply; never collects sensitive student data (redacts emails/phones/IDs before storage); "Talk to a human" handoff to `support_tickets`; AI disclosure; `chat_sessions`/`chat_messages` with 30-day retention TTL. | M | F-17 | Sponsor 2026-10-21 |
+| FR-20 | Admin command center minimum slice (pulled forward from FR-12/Phase 4): `/admin`, role-gated by `app_metadata.role = admin` (404 otherwise, never public, noindex); *Sales & Support Chat* module (live/recent sessions, redacted transcripts, flagged conversations, escalations/tickets, token usage vs budget, error rate, kill-switch toggle) and *Privacy requests* queue; all admin actions audit-logged. **TODO before launch:** company SSO + hardware MFA. | M | F-18 | Sponsor 2026-10-21 |
+
+### 1.2 Additions under CR-0004 (scope addition — amends handoff §1)
+| ID | Requirement | Pri | Feature | Phase |
+|---|---|---|---|---|
+| FR-21 | **Natural-language tasks.** Student/parent types or says e.g. "remind me Friday to study for the bio quiz"; parsed into a task with due date, class/unit link and priority. Deterministic date parsing first, Tier 1 AI fallback. Interpretation shown for confirm/edit before saving. Tasks feed Today prioritization (FR-02). | S | F-19 | 2 |
+| FR-22 | **Live weather (school-day context).** Local forecast on Today: rain/cold, severe-weather or closure alerts for the school morning. Location from a user-set school ZIP (no continuous GPS). Cached in KV; graceful fallback when unavailable. Provider TBD (cost/terms). | C | F-20 | 2 |
+| FR-23 | **OCR document scanning.** Snap or upload handouts, syllabi, flyers, permission slips, report cards, school calendars, bell schedules. OCR on-device/in-browser first, Workers AI vision as fallback. Extracted text becomes tasks, due dates, unit resources, or feeds FR-13 calendar digitization. **Always human review before saving.** Originals stored in private R2 bucket `sparkle-scans`. | S | F-21 | 2 (calendar/bell use in 4) |
+| FR-24 | **School mail vault.** Secure per-student/household vault for scanned physical school mail and documents (school letters, permission slips, report cards, IEP/504 docs, school medical/immunization forms). RLS scoped like other student data; **sensitive-doc flag** defaults to guardians-only and is excluded from helper/teacher shares unless explicitly granted; encrypted in private R2 bucket `sparkle-vault` with short-lived signed URLs; retention and deletion controls; audit log. Non-school personal mail is out of scope. Behind feature flag `vault_enabled=false` (sample data only) until legal/security review. **Acceptance criteria (OCR explicit):** (a) every item added — camera capture, photo upload, PDF, multi-page scan — runs through the FR-23 OCR pipeline; (b) OCR text stored RLS-protected alongside the original; (c) full-text search over extracted text; (d) auto-classification/tagging; (e) extraction of key fields — sender, date, due date or action; (f) human review before any action item is saved. | S | F-22 | 4 |
 
 ## 2. Non-Functional Requirements
 | ID | Requirement | Verification |
@@ -83,3 +98,4 @@ Progressive disclosure; one idea per message; growth-mindset language; no punish
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Requirements Baseline (01M5GCZT4HQPAJHSN86DM3E1N4.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added FR-16 (helper access) and FR-17 (landing page + waitlist). |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | CR-0003: FR-18 legal/compliance + GPC, FR-19 sales/support chat, FR-20 admin chat monitoring. CR-0004: FR-21 NL tasks, FR-22 weather, FR-23 OCR, FR-24 mail vault (OCR acceptance explicit). |

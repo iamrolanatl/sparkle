@@ -32,6 +32,9 @@ Owner: **Rolan Chowdhury** (Sponsor / Project Manager) · Standard: PMBOK-aligne
 | SPK-CLO-001 | [Cutover & Go-Live Runbook](05-closing/Cutover-Go-Live-Runbook.md) | Closing / Transition | Runbook |
 | SPK-CLO-002 | [Lessons Learned Register](05-closing/Lessons-Learned-Register.md) | Closing | New |
 | SPK-OPS-001 | [Target Operating Model](06-operations/Target-Operating-Model.md) | Operations | TOM |
+| SPK-OPS-002 | [SOP Library (SOP-01..12)](06-operations/sops/README.md) | Operations | New (CR-0003) |
+| SPK-GOV-005 | [Definition of Done](00-governance/Definition-of-Done.md) | Governance | New (CR-0003) |
+| — | [ADR Template](00-governance/ADR-Template.md) | Governance | New (CR-0003) |
 
 ## Document Control Convention
 

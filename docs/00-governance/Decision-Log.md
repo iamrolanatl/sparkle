@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-GOV-003 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) / Engineering Lead |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -34,6 +34,9 @@
 | DEC-06 | 2026-10-21 | After the age threshold (DEC-04) the student can limit some guardian access. **Proposed default (pending Rolan's confirmation):** core school records (grades, attendance, assignments, schedule, teacher messages) always visible to guardians and not limitable; student may limit private daily notes, Sparkle/AI chat history, personal resources/links. Every limit is visible to guardians as "limited by student" — never hidden silently | Student autonomy vs. parental rights; FERPA gives parents rights to education records until 18 → legal review (R-10) | Full student control; no limits | Rolan Chowdhury (sponsor) | Accepted in principle; defaults pending confirmation |
 | DEC-07 | 2026-10-21 | Helper access model (FR-16): guardians can always invite; students can invite at/over threshold, below it a guardian must approve; relationship enum + label; code_hash single-use 72 h, rate-limited; redemption only via SECURITY DEFINER `redeem_invitation`; teachers/tutors academic scopes only; many-to-many helpers; revocable by inviter/any guardian/student (≥ threshold); grant/revoke audited | Extended family & caregivers need visibility without becoming guardians | Guardian-only access | Rolan Chowdhury | Accepted |
 
+| DEC-08 | 2026-10-21 | Public sales/support chat uses Workers AI Tier 1 (`@cf/meta/llama-3.1-8b-instruct`) via AI Gateway, grounded in a repo knowledge file, with kill switch + daily budget | Low cost, edge latency, consistent with handoff Tier 1 | Grok/Claude tiers | Rolan Chowdhury | Accepted |
+| DEC-09 | 2026-10-21 | Scope addition CR-0004: NL tasks, weather, OCR, school mail vault — **amends handoff §1** ("adult/life-management out of scope"): features are admitted only in student-success form; personal/adult use stays out of scope | Sponsor request | Keep out of scope | Rolan Chowdhury | Accepted |
+
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
 ---
@@ -52,3 +55,4 @@ All ADRs are "Accepted" as inputs from the handoff and are ratified on approval 
 |---|---|---|---|---|
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added DEC-05 (Google OAuth client), DEC-06 (guardian limits), DEC-07 (helper access). |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added DEC-08 (chat model), DEC-09 (CR-0004 scope amendment). |

@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-GOV-004 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -34,7 +34,14 @@
 | F-13 | Admin backend & operations console | 3.11 | FR-12 | E7 | 1 / 4 | Must | Planned |
 | F-00 | Design system (glass, neon, light/dark, animated background) | 2 | NFR-02, 11, 13 | E2 | 0 | Must | In Progress (CR-0002) |
 | F-14 | Helper access (invite, redeem, scoped shares, multi-student) | Sponsor | FR-16 | E5 | 1 | Must | In Progress (schema/RLS/RPC + tests, CR-0002; UI not started) |
-| F-15 | Marketing landing page + sign-up + waitlist | Sponsor | FR-17 | — | 0 | Must | In Progress (draft, CR-0002) |
+| F-15 | Marketing landing page + sign-up + waitlist | Sponsor | FR-17 | — | 0 | Must | In Progress (Crystal-style redesign, CR-0003) |
+| F-16 | Legal/compliance pages, cookie consent, privacy requests + GPC | Sponsor | FR-18 | — | 0 | Must | In Progress (drafts pending legal review, CR-0003) |
+| F-17 | Sales & support chat (Workers AI, AI Gateway) | Sponsor | FR-19 | — | 0 | Must | In Progress (CR-0003) |
+| F-18 | Admin command center — chat monitoring + privacy queue | Sponsor | FR-20 | E7 | 0/1 | Must | In Progress (CR-0003; SSO/MFA TODO) |
+| F-19 | Natural-language tasks | CR-0004 | FR-21 | E2 | 2 | Should | Planned (landing "coming soon") |
+| F-20 | School-day weather | CR-0004 | FR-22 | E2 | 2 | Could | Planned (landing "coming soon") |
+| F-21 | OCR document scanning | CR-0004 | FR-23 | E6 | 2 / 4 | Should | Planned (R2 bucket ready; landing "coming soon") |
+| F-22 | School mail vault | CR-0004 | FR-24 | E6 | 4 | Should | Planned — flag `vault_enabled=false`, sample data only (landing "coming soon") |
 
 ---
 
@@ -52,3 +59,4 @@
 |---|---|---|---|---|
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Statuses updated for Phase 0; added F-14, F-15. |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added F-16..F-22. |

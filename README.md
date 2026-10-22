@@ -44,3 +44,10 @@ supabase db push
 - Web: `cd apps/web && pnpm deploy` (OpenNext → Cloudflare Workers) with the Supabase public vars set. Add the deployed URL `/auth/callback` to Supabase Auth redirect URLs.
 
 Never commit secrets. Use `.env.example` for names only.
+
+## Sales/support chat & admin (CR-0003)
+
+- Create AI Gateway `sparkle-gateway` in Cloudflare (AI → AI Gateway), then deploy the API. `wrangler.toml` binds Workers AI (`AI`), the rate limiter, and R2 (`SCANS_BUCKET`, `VAULT_BUCKET`).
+- Set `ALLOWED_ORIGINS` (wrangler var) to the web origin and `NEXT_PUBLIC_API_URL` (web) to the API URL.
+- Admin: give a user `app_metadata.role = "admin"` (Supabase dashboard → Auth → user → raw app metadata, or the admin API). Visit `/admin`. SSO + hardware MFA are a TODO before launch.
+- Retention: enable `pg_cron` and schedule `select public.purge_expired_chats()` daily.
