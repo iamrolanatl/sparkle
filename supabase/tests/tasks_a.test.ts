@@ -25,7 +25,7 @@ describe("Team A tasks RLS (FR-21)", () => {
     await db.exec(read("tests/tasks_a_test.sql"), { onNotice: (n) => notices.push(n.message ?? "") }).catch((e) => {
       throw new Error(`${e.message}\npassed so far:\n${notices.join("\n")}`);
     });
-    expect(notices.filter((n) => n.startsWith("ok - ") && /task|helper|spoof/.test(n)).length).toBe(8);
+    expect(notices.filter((n) => n.startsWith("ok - ") && /task|helper|spoof|scope/.test(n)).length).toBe(12);
     await db.close();
   }, 60_000);
 });

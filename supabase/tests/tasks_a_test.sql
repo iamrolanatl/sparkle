@@ -60,6 +60,12 @@ update public.tasks set title = 'pwned';
 reset role;
 select tests.ok((select count(*) from public.tasks where title = 'pwned') = 0, 'other family cannot update tasks');
 insert into public.shares (student_id, grantee_profile_id, scopes, granted_by)
+values ('10000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000c2', '{grades}', '00000000-0000-0000-0000-00000000000a');
+set local role authenticated;
+select tests.as_user('00000000-0000-0000-0000-0000000000c2');
+select tests.ok((select count(*) from public.tasks) = 0, 'helper without assignments scope sees no tasks');
+reset role;
+insert into public.shares (student_id, grantee_profile_id, scopes, granted_by)
 values ('10000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000f0', '{assignments}', '00000000-0000-0000-0000-00000000000a');
 set local role authenticated;
 select tests.as_user('00000000-0000-0000-0000-0000000000f0');
@@ -68,10 +74,21 @@ do $$ begin
   insert into public.tasks (student_id, title) values ('10000000-0000-0000-0000-00000000000a', 'x');
   raise exception 'FAIL: helper inserted a task';
 exception when insufficient_privilege then raise notice 'ok - helpers are read-only on tasks'; end $$;
+delete from public.tasks;
+reset role;
+select tests.ok((select count(*) from public.tasks) = 2, 'helpers cannot delete tasks');
+do $$ begin
+  insert into public.guardian_access_limits (student_id, scope, limited_by)
+  values ('10000000-0000-0000-0000-00000000000a', 'assignments', '00000000-0000-0000-0000-0000000000a5');
+  raise exception 'FAIL: assignments scope was limitable';
+exception when check_violation then raise notice 'ok - assignments is a core scope (DEC-06), so guardian task writes cannot bypass a limit'; end $$;
+set local role authenticated;
 select tests.as_user('00000000-0000-0000-0000-0000000000a5');
 do $$ begin
   insert into public.tasks (student_id, title, created_by) values ('10000000-0000-0000-0000-00000000000a', 'x', '00000000-0000-0000-0000-00000000000a');
   raise exception 'FAIL: spoofed created_by';
 exception when insufficient_privilege then raise notice 'ok - created_by cannot be spoofed'; end $$;
+delete from public.tasks where title = 'Study for bio quiz';
+select tests.ok((select count(*) from public.tasks) = 1, 'student can delete a mistaken task');
 reset role;
 rollback;
