@@ -61,7 +61,6 @@ export async function studyStatusAction(studentId?: string) {
   return call(`/study-helper/status${studentId && UUID.test(studentId) ? `?student=${studentId}` : ""}`);
 }
 
-
 export async function setTaskDoneAction(studentId: string, taskId: string, done: boolean) {
   if (!UUID.test(studentId) || !UUID.test(taskId)) return { status: 400, body: { error: "bad_request" } };
   return call(`/students/${studentId}/tasks/${taskId}`, { method: "PATCH", body: JSON.stringify({ done }) });
