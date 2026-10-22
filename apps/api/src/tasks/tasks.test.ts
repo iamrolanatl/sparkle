@@ -116,7 +116,7 @@ describe("tasks routes", () => {
     insert = vi.fn(async () => Response.json([{ id: "t1" }], { status: 201 })),
     writable = can,
   ) => stubFull(can, insert, writable);
-  const stubFull = (can: boolean, insert: () => unknown, writable: boolean) =>
+  const stubFull = (can: boolean, insert: (init?: RequestInit) => unknown, writable: boolean) =>
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -125,7 +125,7 @@ describe("tasks routes", () => {
         if (url.includes("rpc/can_write_tasks")) return Response.json(writable);
         if (url.includes("rpc/student_age")) return Response.json(15);
         if (url.includes("/classes?")) return Response.json(classes);
-        if (url.endsWith("/rest/v1/tasks") && init?.method === "POST") return insert();
+        if (url.endsWith("/rest/v1/tasks") && init?.method === "POST") return insert(init);
         return Response.json([]);
       }),
     );
@@ -172,6 +172,25 @@ describe("tasks routes", () => {
       env,
     );
     expect(ok.status).toBe(201);
+  });
+  it("save never persists raw input (DEC-104: no source_text column)", async () => {
+    let sent: Record<string, unknown> = {};
+    stub(
+      true,
+      vi.fn(async (init?: RequestInit) => {
+        sent = JSON.parse(String(init?.body)) as Record<string, unknown>;
+        return Response.json([{ id: "t1" }], { status: 201 });
+      }),
+    );
+    const body = { title: "Study bio", confirmed: true, sourceText: "study bio friday" };
+    const r = await app.request(
+      `/students/${SID}/tasks`,
+      { method: "POST", headers: auth, body: JSON.stringify(body) },
+      env,
+    );
+    expect(r.status).toBe(201);
+    expect(sent).not.toHaveProperty("source_text");
+    expect(JSON.stringify(sent)).not.toContain("study bio friday");
   });
   it("helpers get a clear 403 on save; dueAt is bounded; crisis on save returns support", async () => {
     stub(true, undefined, false);

@@ -105,7 +105,6 @@ tasks.post("/:id/tasks", async (c) => {
       due_at: dueAt,
       priority,
       class_id: classId,
-      source_text: typeof b.sourceText === "string" ? b.sourceText.slice(0, 500) : null,
     }),
   });
   if (!r.ok) return c.json({ error: r.status === 403 ? "forbidden" : "save_failed" }, r.status === 403 ? 403 : 502);
