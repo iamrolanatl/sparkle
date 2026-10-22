@@ -55,6 +55,7 @@ export function listen(
   r.interimResults = true;
   r.continuous = false;
   let final = "";
+  let done = false; // deliver at most one final transcript per session; abort() suppresses it
   r.onresult = (e) => {
     let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -74,7 +75,8 @@ export function listen(
     );
   r.onend = () => {
     const t = final.trim().slice(0, 1000);
-    if (t) ev.onFinal(t);
+    if (t && !done) ev.onFinal(t);
+    done = true;
     ev.onEnd?.();
   };
   try {
@@ -83,7 +85,13 @@ export function listen(
     ev.onError?.("other");
     return null;
   }
-  return { stop: () => r.stop(), abort: () => r.abort() };
+  return {
+    stop: () => r.stop(),
+    abort: () => {
+      done = true;
+      r.abort();
+    },
+  };
 }
 
 /** Text to speech for a reply chunk. Strips markdown-ish symbols. Returns false when unsupported. */
@@ -147,4 +155,9 @@ export function sentenceSplitter(onSentence: (s: string) => void) {
       buf = "";
     },
   };
+}
+
+/** Apply an update to one request's own message only (stops two streams interleaving into one bubble). */
+export function patchById<M extends { rid?: number }>(log: M[], rid: number, f: (m: M) => M): M[] {
+  return log.map((m) => (m.rid === rid ? f(m) : m));
 }

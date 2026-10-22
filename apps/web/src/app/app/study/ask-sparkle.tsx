@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Bot } from "../chrome";
-import { listen, readAsk, sentenceSplitter, speak, stopSpeaking, voiceSupport } from "@/lib/voice/speech";
+import { listen, patchById, readAsk, sentenceSplitter, speak, stopSpeaking, voiceSupport } from "@/lib/voice/speech";
 
-type Msg = { who: "me" | "ai"; text: string; voice?: boolean; sources?: string[]; coach?: boolean };
+type Msg = { who: "me" | "ai"; text: string; voice?: boolean; sources?: string[]; coach?: boolean; rid?: number };
 type Cls = { id: string; name: string; color: string; pct: number | null; unit: string | null };
 type Mode = "idle" | "listening" | "speaking";
 
@@ -51,7 +51,11 @@ export function AskSparkle(props: {
   );
   const sup = { stt: sttOk, tts: ttsOk };
   const [note, setNote] = useState<string | null>(null);
-  const stopRef = useRef<{ stop: () => void } | null>(null);
+  const stopRef = useRef<{ stop: () => void; abort: () => void } | null>(null);
+  // Synchronous guards: state-based `busy` is stale inside a single tick, so two quick sends
+  // (double voice final, double click) could interleave two streams into one bubble.
+  const busyRef = useRef(false);
+  const seq = useRef(0);
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "nearest" });
@@ -65,17 +69,15 @@ export function AskSparkle(props: {
 
   async function send(q: string, voice = false) {
     q = q.trim();
-    if (!q || busy) return;
+    if (!q || busy || busyRef.current) return;
+    busyRef.current = true;
+    const rid = ++seq.current;
     setBusy(true);
     setText("");
     const history = log.slice(-6).map((m) => ({ role: m.who === "me" ? "user" : "assistant", text: m.text }));
-    setLog((l) => [...l, { who: "me", text: q, voice }, { who: "ai", text: "" }]);
-    const patch = (f: (m: Msg) => Msg) =>
-      setLog((l) => {
-        const c = l.slice();
-        c[c.length - 1] = f(c[c.length - 1]!);
-        return c;
-      });
+    setLog((l) => [...l, { who: "me", text: q, voice }, { who: "ai", text: "", rid }]);
+    // Patch only this request's own bubble, never "whatever is last".
+    const patch = (f: (m: Msg) => Msg) => setLog((l) => patchById(l, rid, f));
     let pending = 0;
     const tts = voice && sup.tts;
     const say = sentenceSplitter((s) => {
@@ -120,6 +122,7 @@ export function AskSparkle(props: {
     } catch {
       patch((m) => ({ ...m, text: m.text || REPLY.unavailable! }));
     } finally {
+      busyRef.current = false;
       setBusy(false);
       if (!tts || pending === 0) setMode((x) => (x === "speaking" && pending > 0 ? x : "idle"));
     }
@@ -131,6 +134,7 @@ export function AskSparkle(props: {
       return;
     }
     stopSpeaking();
+    stopRef.current?.abort();
     setLive("");
     setMode("listening");
     stopRef.current = listen({
@@ -153,7 +157,7 @@ export function AskSparkle(props: {
     });
   }
   const typeInstead = () => {
-    stopRef.current?.stop();
+    stopRef.current?.abort();
     stopSpeaking();
     setMode("idle");
   };
