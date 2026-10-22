@@ -9,7 +9,7 @@ describe("wrangler.toml APP_ENV", () => {
     const { readFileSync } = (await import(/* @vite-ignore */ nodeFs)) as {
       readFileSync: (p: string, enc: "utf8") => string;
     };
-    const toml = readFileSync("wrangler.toml", "utf8") // vitest cwd = apps/api;
+    const toml = readFileSync("wrangler.toml", "utf8"); // vitest cwd = apps/api;
     const top = toml.split(/^\[env\./m)[0]!;
     expect(top).toMatch(/^APP_ENV = "dev"/m);
     expect(top).not.toMatch(/^APP_ENV = "production"/m);
