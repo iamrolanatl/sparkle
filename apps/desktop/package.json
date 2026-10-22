@@ -6,6 +6,6 @@
   "scripts": {
     "lint": "eslint src",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "TZ=America/New_York vitest run --dir src"
   }
 }

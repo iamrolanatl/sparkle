@@ -1,4 +1,4 @@
-/** Mirrors apps/api/src/ingest/schema.ts SyncBatch (TDD §8.7). */
+/** Wire contract; kept identical to apps/api/src/ingest/schema.ts SyncBatch (enforced by contract.test.ts). */
 export interface SyncBatch {
   studentId: string;
   source: "mock-portal";
@@ -19,8 +19,10 @@ export interface SyncBatch {
 /** Minimal slice of Playwright's Page used by adapters (keeps core testable without a browser). */
 export interface PageLike {
   goto(url: string): Promise<unknown>;
+  url(): string;
   fill(selector: string, value: string): Promise<void>;
   click(selector: string): Promise<void>;
+  waitForSelector(selector: string, opts?: { timeout?: number; state?: "attached" }): Promise<unknown>;
   $$eval<R>(selector: string, fn: (els: Element[]) => R): Promise<R>;
 }
 
