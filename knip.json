@@ -28,6 +28,6 @@
       "project": ["src/**/*.ts", "e2e/**/*.ts"]
     }
   },
-  "ignoreDependencies": ["tailwindcss", "k6"],
+  "ignoreDependencies": ["tailwindcss", "k6", "tesseract.js-core", "@tesseract.js-data/eng"],
   "ignore": ["tests/load/**"]
 }

@@ -57,7 +57,13 @@ export function Scanner(props: {
       const blob = await prepare(file);
       // On-device OCR only (DEC-127). Loaded lazily so the page stays light.
       const { createWorker } = await import("tesseract.js");
+      // DEC-77: same-origin assets only (no CDN); no blob: worker so CSP can stay 'self'.
       const worker = await createWorker("eng", 1, {
+        workerPath: "/scan-assets/worker.min.js",
+        corePath: "/scan-assets/core",
+        langPath: "/scan-assets/lang",
+        workerBlobURL: false,
+        gzip: true,
         logger: (m: { status: string; progress: number }) =>
           m.status === "recognizing text" && setStep({ s: "reading", pct: Math.round(m.progress * 100) }),
       });

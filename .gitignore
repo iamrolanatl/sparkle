@@ -21,3 +21,6 @@ backups/
 *.dump
 *.backup
 /supabase/.backups/
+
+# DEC-77: self-hosted OCR assets, copied at build time
+apps/web/public/scan-assets/
