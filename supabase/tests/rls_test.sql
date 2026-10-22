@@ -197,6 +197,26 @@ set local role authenticated;
 select tests.as_user('00000000-0000-0000-0000-00000000000a');
 select tests.ok(not has_table_privilege('public.waitlist', 'select'), 'authenticated cannot read waitlist');
 
+-- ===== CR-0003 privacy requests / chat =====
+reset role;
+set local role anon;
+insert into public.privacy_requests (request_type, email, gpc_signal) values ('do_not_sell_share', 'p@example.com', true);
+select tests.ok(not has_table_privilege('public.privacy_requests', 'select'), 'anon cannot read privacy requests');
+select tests.ok(not has_table_privilege('public.chat_messages', 'select') and not has_table_privilege('public.chat_messages', 'insert'), 'anon has no access to chat messages');
+select tests.ok(not has_table_privilege('public.feature_flags', 'update'), 'anon cannot flip feature flags');
+reset role;
+set local role authenticated;
+select tests.as_user('00000000-0000-0000-0000-00000000000a');
+select tests.ok(not has_table_privilege('public.support_tickets', 'select'), 'authenticated cannot read support tickets');
+do $$ begin
+  perform public.chat_usage_today();
+  raise exception 'FAIL: client called chat_usage_today';
+exception when insufficient_privilege then raise notice 'ok - clients cannot call chat usage function'; end $$;
+reset role;
+insert into public.chat_sessions (id, expires_at) values ('40000000-0000-0000-0000-000000000001', now() - interval '1 day');
+select tests.ok(public.purge_expired_chats() = 1, 'expired chat sessions are purged (retention TTL)');
+set local role authenticated;
+
 -- Admin: no read policy
 select tests.ok(not has_table_privilege('public.admin_audit_log', 'select'), 'clients cannot read audit log');
 

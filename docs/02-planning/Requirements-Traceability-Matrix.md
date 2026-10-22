@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-002 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -36,6 +36,14 @@
 | FR-15 | F-02 | E2 | — | Unit, UAT | Not started |
 | FR-16 | F-14 | E5 | TDD §8.3, DEC-07 | RLS tests (multi-student helper, revoke, tutor scopes, approval, rate limit) | In progress |
 | FR-17 | F-15 | — | Landing, waitlist RLS | Waitlist RLS tests; build | In progress |
+| FR-18 | F-16 | — | Legal pages, consent banner, `privacy_requests` | RLS tests (insert-only, no read); manual GPC check | In progress |
+| FR-19 | F-17 | — | `apps/api` /chat, Workers AI + AI Gateway, feature flag | API tests (stream, crisis, rate limit, kill switch, redaction); RLS (no client access) | In progress |
+| FR-20 | F-18 | E7 | `/admin` role gate, audit | Build; manual role check; SSO/MFA TODO | In progress |
+| FR-21 | F-19 | E2 | Parser + Tier 1 fallback | Unit (date parsing), UAT confirm/edit | Not started |
+| FR-22 | F-20 | E2 | KV cache, provider TBD | Integration, fallback | Not started |
+| FR-23 | F-21 | E6 | OCR pipeline, R2 `sparkle-scans` | Integration, human-review UAT | Not started |
+| FR-24 | F-22 | E6 | Vault tables + RLS, R2 `sparkle-vault`, signed URLs | RLS (sensitive flag, helper exclusion), security review | Not started (flag off) |
+| FR-24 → FR-23 | F-22 → F-21 | — | Every vault item runs through the FR-23 OCR pipeline (acceptance a–f) | OCR + search + tagging + key-field extraction tests | Not started |
 | NFR-01..04, 09, 10 | — | All | ADR-02 | Performance suite | Not started |
 | NFR-05, 08 | — | E1, E5, E7 | ADR-01, RLS | Security & privacy suite | Not started |
 | NFR-06, 12 | — | E4, all | Resilience patterns | Resilience suite | Not started |
@@ -61,3 +69,4 @@
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Requirements Traceability Matrix (01M5GCZRRWHGCGR3HNV2MT26PW.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added FR-16/17; statuses for FR-03/04. |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Traced FR-18..FR-24, plus a dependency row FR-24 → FR-23. |

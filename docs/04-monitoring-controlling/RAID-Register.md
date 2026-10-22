@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-MC-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -32,6 +32,11 @@
 | R-10 | DEC-06 student limits on guardian access may conflict with FERPA (parents' rights to education records until 18) or state law | 3 | 5 | 15 | Mitigate | Core records never limitable; limits always visible; **legal review before G1** | Rolan / counsel (none engaged) | Open |
 | R-11 | No illustrator/animator for production Rive character | 4 | 3 | 12 | Mitigate | Ship placeholder behind integration point; source animator (who/how TBD) | Rolan | Open |
 | R-12 | Single-person team: Rolan holds all roles, Grok Bot builds; no human eng/design/legal reviewers | 4 | 4 | 16 | Mitigate | Gate approvals via PR; automated tests incl. RLS; engage counsel and design before G1/G3 | Rolan | Open |
+| R-14 | All policy text (Terms, Privacy incl. COPPA/FERPA, Cookies, Accessibility, Do Not Sell/Share) is AI-drafted and unreviewed | 4 | 5 | 20 | Avoid | Pages marked draft; site not public until counsel review (2.10) | Rolan | Open |
+| R-15 | Public AI chat gives inaccurate or unsafe answers / prompt injection | 3 | 4 | 12 | Mitigate | Grounded knowledge file, refusals, crisis reply, redaction, flagging, admin review, kill switch | Rolan | Open |
+| R-16 | Mail vault holds highly sensitive docs (IEP/504, medical/immunization — FERPA/HIPAA-adjacent) | 3 | 5 | 15 | Avoid until reviewed | `vault_enabled=false`, sample data only; guardians-only default; legal + security review before enabling; non-school personal mail out of scope unless a future CR | Rolan | Open |
+| R-17 | Workers AI / chat cost overrun or abuse | 3 | 3 | 9 | Mitigate | Per-IP rate limits, daily token budget, kill switch, AI Gateway analytics | Rolan | Open |
+| R-18 | Scope creep from CR-0004 (amends handoff §1) dilutes student focus and adds privacy surface | 3 | 3 | 9 | Mitigate | Features framed as student-success only; phased (2/4); weather provider and OCR vendor terms reviewed | Rolan | Open |
 | R-13 | Landing page/waitlist live before Privacy Policy/Terms are reviewed | 3 | 4 | 12 | Avoid | Keep site non-public / unindexed until 2.8–2.10 done | Rolan | Open |
 
 ## Assumptions
@@ -45,7 +50,7 @@
 | ID | Issue | Owner | Opened | Status |
 |---|---|---|---|---|
 | I-01 | Service access (Supabase tokens, Cloudflare API token, Google OAuth client) not yet provisioned | Rolan | 2026-10-21 | **Closed 2026-10-21** — Supabase token + Google auth enabled; GCP project `sparkle-app-2566`; Cloudflare token verified; GitHub secrets/vars set |
-| I-03 | Cloudflare R2 not enabled (needs payment method in dashboard) | Rolan | 2026-10-21 | Open — action item |
+| I-03 | Cloudflare R2 not enabled (needs payment method in dashboard) | Rolan | 2026-10-21 | **Closed 2026-10-21** — R2 enabled; private buckets `sparkle-scans`, `sparkle-vault` (ENAM, no public access) |
 | I-02 | Most named roles, budget, and gate dates are TBD | Rolan | 2026-10-21 | Open |
 
 ## Dependencies
@@ -62,6 +67,9 @@
 | D-09 | xAI + Anthropic API keys | WBS 5.2 | Open |
 | D-10 | Sentry account | WBS 2.3 | Open |
 | D-11 | Privacy Policy / Terms content with legal review | Public launch | Open |
+| D-12 | Cloudflare AI Gateway `sparkle-gateway` + Workers AI enabled | Chat go-live | Open |
+| D-13 | Weather data provider (cost/terms) | FR-22 | Open |
+| D-14 | Legal + security review of mail vault | FR-24 enablement | Open — owner Rolan |
 
 **Corrections vs. original:** added scoring, owners, status; added R-05..R-09, A-03, issues I-01/I-02 (original said "none open" though access was already blocking), D-04/D-05.
 
@@ -82,3 +90,4 @@
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (RAID Register (01M5GCZSY9EJ7Q070TY62K5S1A.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Closed I-01; added I-03 (R2), R-10..R-13, D-06..D-11; resourcing reality. |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Closed I-03 (R2); added R-14..R-18, D-12..D-14. |
