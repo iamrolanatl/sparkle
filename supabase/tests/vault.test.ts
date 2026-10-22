@@ -26,7 +26,7 @@ describe("Team C vault schema + RLS (FR-24)", () => {
       throw new Error(`${e.message}\npassed so far:\n${notices.join("\n")}`);
     });
     const oks = notices.filter((n) => n.startsWith("ok - "));
-    expect(oks.length).toBe(53);
+    expect(oks.length).toBe(62);
     await db.close();
   }, 60_000);
 });

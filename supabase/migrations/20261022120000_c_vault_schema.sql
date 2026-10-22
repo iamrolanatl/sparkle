@@ -218,6 +218,13 @@ returns boolean language sql stable security definer set search_path = public as
 $$;
 
 -- Internal logger (no client grant: forgery fix).
+-- Audit log visibility for the caller (guardian, or the adult student after handover). Caller-scoped: no info leak.
+create or replace function public.vault_log_visible(p_student uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select public.is_active_guardian(p_student)
+      or (public.is_student_self(p_student) and public.vault_student_controls(p_student))
+$$;
+
 create or replace function public.vault_log(p_actor uuid, p_student uuid, p_doc uuid, p_action text, p_ip_hash text, p_ua text)
 returns void language sql security definer set search_path = public as $$
   insert into public.vault_access_log (actor, student_id, doc_id, action, ip_hash, user_agent)
@@ -262,6 +269,8 @@ returns boolean language sql stable security definer set search_path = public as
       on g.student_id = c.student_id and g.guardian_profile_id = c.guardian_id and g.status = 'active'
     where c.student_id = p_student and c.kind = 'vault_vpc' and c.revoked_at is null
       and c.version = (select value from public.app_settings where key = 'vault_consent_version'))
+    -- caller check: only the student's managers/self (or service role, auth.uid() null) may ask (Integration review)
+    and (public.vault_can_manage(p_student) or public.is_student_self(p_student) or (select auth.uid()) is null)
     -- sample_only consent is acceptable only because every row is is_sample (CHECK); revisit at launch gate.
 $$;
 
@@ -545,7 +554,7 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 do $$ begin
   create policy vault_access_log_select on public.vault_access_log for select to authenticated
-    using (public.is_active_guardian(student_id) or public.vault_student_controls(student_id) and public.is_student_self(student_id));
+    using (public.vault_log_visible(student_id));
 exception when duplicate_object then null; end $$;
 do $$ begin
   create policy consents_select on public.consents for select to authenticated using (guardian_id = (select auth.uid()));
@@ -565,13 +574,25 @@ grant select on public.vault_documents, public.vault_grants, public.vault_access
 revoke insert, update, delete on public.vault_documents, public.vault_grants, public.vault_access_log, public.consents,
   public.household_keys, public.vault_student_control, public.vault_break_glass, public.vault_lifecycle_events from authenticated, anon;
 
+-- Defense in depth: strip default PUBLIC/anon EXECUTE from every vault function, then grant minimally.
+do $$ declare f regprocedure; begin
+  for f in select p.oid::regprocedure from pg_proc p
+           where p.pronamespace = 'public'::regnamespace
+             and (p.proname like 'vault\_%' or p.proname in ('can_view_vault_doc', 'is_support_admin'))
+  loop
+    execute format('revoke execute on function %s from public, anon', f);
+  end loop;
+end $$;
+-- Internal helpers: called only from other SECURITY DEFINER functions.
+revoke all on function public.vault_student_controls(uuid), public.vault_guardian_access(uuid, public.access_scope),
+  public.vault_break_glass_active(uuid, boolean) from public, anon, authenticated;
 revoke all on function public.vault_log(uuid, uuid, uuid, text, text, text), public.vault_record_consent(uuid, uuid, text, text),
   public.vault_purge_claim(int), public.vault_purge_finalize(text[]), public.vault_access_log_prune(),
   public.vault_shred_household(uuid), public.vault_lifecycle_run(timestamptz) from public, anon, authenticated;
 grant execute on function public.vault_record_consent(uuid, uuid, text, text), public.vault_purge_claim(int),
   public.vault_purge_finalize(text[]), public.vault_access_log_prune(), public.vault_shred_household(uuid),
   public.vault_lifecycle_run(timestamptz) to service_role;
-grant execute on function public.can_view_vault_doc(uuid), public.vault_has_consent(uuid), public.vault_can_manage(uuid),
+grant execute on function public.can_view_vault_doc(uuid), public.vault_has_consent(uuid), public.vault_log_visible(uuid), public.is_support_admin(), public.vault_can_manage(uuid),
   public.vault_log_access(uuid, text, text, text),
   public.vault_insert_document(uuid, public.vault_class, text, text, text, bigint, text, text, bytea, text[], uuid, uuid),
   public.vault_reclassify(uuid, public.vault_class), public.vault_grant_sensitive(uuid, uuid, int), public.vault_revoke_grant(uuid),

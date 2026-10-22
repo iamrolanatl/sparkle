@@ -14,7 +14,7 @@ create or replace function tests.raises(sql text, msg text) returns void languag
 begin execute sql; raise exception 'FAIL: % (no error)', msg;
 exception when insufficient_privilege or invalid_parameter_value or check_violation or raise_exception then
   raise notice 'ok - %', msg; end $$;
-grant usage on schema tests to authenticated; grant execute on all functions in schema tests to authenticated;
+grant usage on schema tests to authenticated, anon; grant execute on all functions in schema tests to authenticated, anon;
 alter table auth.users add column if not exists last_sign_in_at timestamptz;  -- present in real Supabase
 
 insert into auth.users (id, email, last_sign_in_at) values
@@ -89,6 +89,24 @@ grant select on ids to authenticated;
 set local role authenticated;
 select tests.as_user('00000000-0000-0000-0000-00000000000b');
 select tests.raises($$select public.vault_log_access((select id from ids where title='IEP annual review'), 'view', null, null)$$, 'audit write denied for unreadable doc');
+
+-- Integration review: no info leak from helpers; anon denied
+select tests.as_user('00000000-0000-0000-0000-00000000000b');
+select tests.ok(public.vault_has_consent('10000000-0000-0000-0000-00000000000a') = false, 'other family cannot learn consent status');
+select tests.raises($$select public.vault_student_controls('10000000-0000-0000-0000-00000000000a')$$, 'internal helper vault_student_controls not callable');
+select tests.raises($$select public.vault_guardian_access('10000000-0000-0000-0000-00000000000a', 'grades')$$, 'internal helper vault_guardian_access not callable');
+select tests.raises($$select public.vault_break_glass_active('10000000-0000-0000-0000-00000000000a', false)$$, 'internal helper vault_break_glass_active not callable');
+select tests.as_user('00000000-0000-0000-0000-00000000000a');
+select tests.ok(public.vault_has_consent('10000000-0000-0000-0000-00000000000a'), 'guardian sees own consent status');
+reset role;
+set local role anon;
+select tests.raises($$select public.vault_has_consent('10000000-0000-0000-0000-00000000000a')$$, 'anon cannot call vault_has_consent');
+select tests.raises($$select public.can_view_vault_doc('10000000-0000-0000-0000-00000000000a')$$, 'anon cannot call can_view_vault_doc');
+select tests.raises($$select public.vault_insert_document('10000000-0000-0000-0000-00000000000a', 'standard', 'x', 'v1/10000000-0000-0000-0000-00000000000a/q', repeat('a',64), 1, 'image/png', null, null, null, null, null)$$, 'anon cannot upload');
+select tests.ok(not exists (select 1 from pg_proc p where p.pronamespace = 'public'::regnamespace
+  and (p.proname like 'vault\_%' or p.proname = 'can_view_vault_doc') and has_function_privilege('anon', p.oid, 'execute')), 'no vault function executable by anon');
+reset role;
+set local role authenticated;
 
 -- Grants
 select tests.as_user('00000000-0000-0000-0000-00000000000a');
