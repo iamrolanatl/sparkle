@@ -80,6 +80,7 @@
 | DEC-61 | 2026-10-21 | Today document cached in Workers KV 5 min, invalidated on import; 'today' = America/New_York school day | Cache-first for 1M users (NFR-35); free tier | Durable Objects (later) | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-62 | 2026-10-21 | Outbound confirmation enforced twice: DB check constraint (sent requires confirmed_by/at) + API sendConfirmed() | Handoff §9 / ADR-04 defense in depth | App-only check | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-63 | 2026-10-21 | Phase 1 is built and run on dev with no real student data; **G1 formal pass is held** until 2.10 privacy/legal review and 3.2 portal-ToS review (counsel, sponsor-gated) | Hard limits: legal sign-off, school-portal terms | Proceed with real data | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-71 | 2026-10-21 | Adopt SOP-14 (cross-team review; Integration sole merger; no auto-merge) and SOP-15 (additive-only migrations; CI destructive-SQL + order lint; backup → dry-run → sparkle-dev → main); pre-SOP-15 migrations (≤20261022020000) grandfathered | Rolan's mandatory safeguards (CR-0010) | Branch protection with required reviewers (needs multiple GitHub users / paid for private repos) | Grok Bot (Integration lead) under Rolan's directive (2026-10-21) | Decided |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
