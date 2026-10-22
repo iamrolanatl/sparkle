@@ -25,6 +25,8 @@ Every SOP change is logged in the [Change Log](../../00-governance/Change-Log.md
 | SOP-11 | [Backup & Restore Test](SOP-11-Backup-Restore-Test.md) |
 | SOP-12 | [Adding a School Platform or District Platform Profile](SOP-12-New-Platform-Profile.md) |
 | SOP-13 | [Repository Hygiene](SOP-13-Repo-Hygiene.md) |
+| SOP-14 | [Cross-Team Review and Merge](SOP-14-Cross-Team-Review-Merge.md) |
+| SOP-15 | [Database Change Safety](SOP-15-Database-Change-Safety.md) |
 
 ## SOP Template
 ```markdown
