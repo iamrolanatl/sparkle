@@ -22,8 +22,8 @@ export const tokens = {
   motion: { fast: 0.15, base: 0.3, slow: 0.6 },
 } as const;
 
-/** Performance budget (NFR-02): effects target >= 50 fps, auto-disable under 30 fps. */
-export const FPS_TARGET = 50;
+/** Performance budget (NFR-02): effects target 60 fps (NFR-48), auto-disable under 30 fps. */
+export const FPS_TARGET = 60;
 export const FPS_DISABLE_BELOW = 30;
 
 export type ThemeName = "light" | "dark";

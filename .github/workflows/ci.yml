@@ -50,3 +50,32 @@ jobs:
           pnpm exec wrangler dev -c wrangler.ci.toml --port 8788 > /tmp/wrangler.log 2>&1 &
           for i in $(seq 1 30); do curl -fs localhost:8788/health >/dev/null && break; sleep 2; done
           k6 run --quiet ../../tests/load/smoke.js || (cat /tmp/wrangler.log; exit 1)
+  e2e:
+    # CR-0008: Playwright E2E + visual regression, Lighthouse mobile budget (NFR-47).
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: https://nklbdyezbsugkdvaidtt.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'pk_ci_placeholder' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sparkle/web build
+      - run: pnpm --filter @sparkle/web exec playwright install --with-deps chromium
+      - name: Playwright (E2E + visual)
+        run: pnpm --filter @sparkle/web e2e
+      - name: Lighthouse CI (mobile >= 90)
+        working-directory: apps/web
+        run: npx -y @lhci/cli@0.15 autorun
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-artifacts
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+            apps/web/.lighthouseci
