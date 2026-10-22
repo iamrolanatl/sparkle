@@ -1,6 +1,6 @@
 # Tech Lead Review: Team E (Quality and Launch Readiness, Phases 3-5)
 
-## 2026-10-21 (start of lane)
+## 2026-10-21 22:45 ET (start of lane)
 **Docs reviewed:** Requirements Baseline (FRs, NFR-11, NFR-33, NFR-35..48), Scalability-Reliability Plan, TDD §8, Design System (CR-0008), WBS, Decision Log (to DEC-69), RAID (to R-32), SOP library, Definition of Done, Test Strategy, Cutover/Go-Live Runbook, Vault Compliance Plan.
 
 | # | Gap | Type | Action |
@@ -14,3 +14,5 @@
 | 7 | Nonce-based CSP missing (script-src allows 'unsafe-inline') | Residual risk | Proposed RAID R-E1, follow-up PR |
 
 **Interface changes:** PR #27 adds a CSP. Any team that adds a new browser-side origin (fetch, image or script) must add it to `apps/web/src/lib/security-headers.ts`. This is announced in an `interface-change` issue.
+
+**Reviews given (SOP-14):** #30 (Team D ingest), with changes requested: data loss when a write fails after admission, scores dropped, student self-ingest integrity, TDD heading placement. #28 (Integration safeguards): approved with follow-ups, mainly that authz function replacements bypass the migration lint.
