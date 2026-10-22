@@ -10,7 +10,7 @@ export class PortalError extends Error {
 }
 
 /** Client-side bounds (fail fast; the server validates again). Match apps/api ingest limits. */
-export const LIMITS = { classes: 50, assignments: 500, id: 128, name: 120, title: 200, teacher: 120, period: 20 };
+const LIMITS = { classes: 50, assignments: 500, id: 128, name: 120, title: 200, teacher: 120, period: 20 };
 
 /**
  * Origin pin (DEC-168): the mock adapter may only type credentials into the bundled fixture (file:)

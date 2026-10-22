@@ -43,7 +43,7 @@ export function httpUploader(
   };
 }
 
-export const RUN_BUDGET_MS = 90_000;
+const RUN_BUDGET_MS = 90_000;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Full-jitter backoff so 1M agents waking at 03:00 don't retry in lock-step. */
