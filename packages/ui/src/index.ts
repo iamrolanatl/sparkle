@@ -8,6 +8,8 @@ export { GlassPanel } from "./GlassPanel";
 export { NeonWindow } from "./NeonWindow";
 export { ErrorBoundary } from "./ErrorBoundary";
 export { CursorGlow, useCursorGlow, MagneticButton, TiltCard } from "./interactive";
+export { AppletCard } from "./AppletCard";
+export type { AppletCardProps } from "./AppletCard";
 export { VideoBackground } from "./VideoBackground";
 export { Applet, AppletSkeleton, defineApplet, listApplets } from "./applets";
 export type { AppletDefinition, DefinedApplet } from "./applets";

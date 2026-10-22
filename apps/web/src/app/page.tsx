@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GlassPanel } from "@sparkle/ui";
+import { AppletCard, GlassPanel, MagneticButton, NeonWindow, VideoBackground } from "@sparkle/ui";
 import { SparkleCharacter } from "@sparkle/character";
 import { signInWithGoogle } from "./login/actions";
 import { WaitlistForm } from "@/components/WaitlistForm";
@@ -81,46 +81,53 @@ export default function Landing() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <span className="font-semibold tracking-widest">◆ SPARKLE</span>
         <nav className="flex items-center gap-4 text-sm">
-          <a href="#systems" className="hidden sm:inline">
+          <a href="#systems" className="spk-link hidden sm:inline">
             Features
           </a>
-          <Link href="/login" className="spk-glass px-3 py-1.5">
+          <Link href="/login" className="spk-neon-btn spk-neon-btn-ghost px-4 py-1.5">
             Log in
           </Link>
         </nav>
       </header>
 
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-10 pt-6 md:grid-cols-[1.3fr_1fr] md:pt-14">
-          <div>
-            <p className="text-neon font-mono text-xs tracking-widest">// systems online · student pilot ready</p>
-            <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-6xl">
-              Take command
-              <br />
-              of your school day.
-            </h1>
-            <p className="text-muted mt-4 max-w-xl text-lg">
-              Sparkle is your calm cockpit for school: grades, assignments, and class updates in one place, with a
-              cheerful AI coach riding along. See what matters next, focus, and keep growing.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <form action={signInWithGoogle}>
-                <input type="hidden" name="next" value="/app" />
-                <button className="spk-glass spk-glow px-6 py-3 font-semibold hover:brightness-110">
-                  Launch your cockpit
-                </button>
-              </form>
-              <a href="#systems" className="spk-glass px-6 py-3">
-                See the systems
-              </a>
+        <section className="relative isolate">
+          <VideoBackground
+            className="spk-hero-video"
+            av1Src="/media/nebula-av1.mp4"
+            h264Src="/media/nebula-h264.mp4"
+            poster="/media/nebula-poster.jpg"
+            fade={1.2}
+          />
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-10 pt-6 md:grid-cols-[1.3fr_1fr] md:pt-14">
+            <div>
+              <p className="text-neon font-mono text-xs tracking-widest">// systems online · student pilot ready</p>
+              <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-6xl">
+                Take command
+                <br />
+                <span className="spk-gradient-text">of your school day.</span>
+              </h1>
+              <p className="text-muted mt-4 max-w-xl text-lg">
+                Sparkle is your calm cockpit for school: grades, assignments, and class updates in one place, with a
+                cheerful AI coach riding along. See what matters next, focus, and keep growing.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <form action={signInWithGoogle}>
+                  <input type="hidden" name="next" value="/app" />
+                  <MagneticButton className="spk-neon-btn px-6 py-3">Launch your cockpit →</MagneticButton>
+                </form>
+                <a href="#systems" className="spk-neon-btn spk-neon-btn-ghost px-6 py-3">
+                  See the systems
+                </a>
+              </div>
+              <p className="text-muted mt-4 text-sm">Free preview · Google sign-in · Works on phone and desktop</p>
             </div>
-            <p className="text-muted mt-4 text-sm">Free preview · Google sign-in · Works on phone and desktop</p>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <GlassPanel glow className="relative flex flex-col items-center p-8">
-              <p className="spk-glass mb-4 px-4 py-2 text-sm">“Hi pilot! I&apos;m Sparkle.”</p>
-              <SparkleCharacter state="excited" size={150} />
-            </GlassPanel>
+            <div className="flex flex-col items-center gap-3">
+              <NeonWindow title="Co-pilot online" className="relative flex flex-col items-center p-8">
+                <p className="spk-glass mb-4 px-4 py-2 text-sm">“Hi pilot! I&apos;m Sparkle.”</p>
+                <SparkleCharacter state="excited" size={150} />
+              </NeonWindow>
+            </div>
           </div>
         </section>
 
@@ -129,30 +136,17 @@ export default function Landing() {
           <h2 className="mt-1 text-2xl font-semibold sm:text-3xl">Everything for school on one dashboard</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {SYSTEMS.map((f) => (
-              <GlassPanel key={f.title} className="p-5">
-                <span aria-hidden className="text-neon text-xl">
-                  {f.icon}
-                </span>
-                <h3 className="mt-2 font-semibold">{f.title}</h3>
-                <p className="text-muted mt-2 text-sm">{f.body}</p>
-              </GlassPanel>
+              <AppletCard key={f.title} title={f.title} icon={f.icon}>
+                {f.body}
+              </AppletCard>
             ))}
           </div>
           <p className="text-neon mt-10 font-mono text-xs tracking-widest">MODULES COMING SOON</p>
           <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {SOON.map((f) => (
-              <GlassPanel key={f.title} className="p-5 opacity-90">
-                <span aria-hidden className="text-neon text-xl">
-                  {f.icon}
-                </span>
-                <h3 className="mt-2 font-semibold">
-                  {f.title}{" "}
-                  <span className="text-muted ml-1 rounded-full border border-[var(--spk-border)] px-2 py-0.5 text-[10px] uppercase">
-                    Coming soon
-                  </span>
-                </h3>
-                <p className="text-muted mt-2 text-sm">{f.body}</p>
-              </GlassPanel>
+              <AppletCard key={f.title} title={f.title} icon={f.icon} badge="Coming soon">
+                {f.body}
+              </AppletCard>
             ))}
           </div>
         </section>
@@ -166,7 +160,7 @@ export default function Landing() {
               ["Start with Today", "Check what's next, focus on one thing, and let Sparkle cheer you on."],
             ].map(([t, b], i) => (
               <li key={t}>
-                <GlassPanel className="h-full p-5">
+                <GlassPanel className="spk-glass-edge h-full p-5">
                   <span className="text-neon text-sm font-semibold">Step {i + 1}</span>
                   <h3 className="mt-1 font-semibold">{t}</h3>
                   <p className="text-muted mt-2 text-sm">{b}</p>
@@ -177,7 +171,7 @@ export default function Landing() {
         </section>
 
         <section className="mx-auto max-w-3xl px-4 py-12">
-          <GlassPanel glow className="p-6 text-center sm:p-10">
+          <NeonWindow className="p-6 text-center sm:p-10">
             <p className="text-neon font-mono text-xs tracking-widest">PRE-FLIGHT</p>
             <h2 className="mt-1 text-2xl font-semibold sm:text-3xl">Your cockpit is ready.</h2>
             <ul className="text-muted mx-auto mt-4 max-w-md space-y-1 text-left text-sm">
@@ -187,7 +181,7 @@ export default function Landing() {
             </ul>
             <form action={signInWithGoogle} className="mt-6">
               <input type="hidden" name="next" value="/app" />
-              <button className="spk-glass spk-glow px-6 py-3 font-semibold">Sign up with Google</button>
+              <MagneticButton className="spk-neon-btn px-6 py-3">Sign up with Google</MagneticButton>
             </form>
             <p className="text-muted mt-6 text-sm">Not ready yet? Join the waitlist:</p>
             <div className="mx-auto mt-2 max-w-xl">
@@ -195,16 +189,16 @@ export default function Landing() {
             </div>
             <p className="text-muted mt-4 text-xs">
               By continuing you agree to the{" "}
-              <Link href="/terms" className="underline">
+              <Link href="/terms" className="spk-link underline">
                 Terms
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="underline">
+              <Link href="/privacy" className="spk-link underline">
                 Privacy Policy
               </Link>
               .
             </p>
-          </GlassPanel>
+          </NeonWindow>
         </section>
       </main>
 

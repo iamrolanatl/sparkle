@@ -23,15 +23,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#05080f" },
-    { media: "(prefers-color-scheme: light)", color: "#f1f7fb" },
-  ],
+  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#05080f" }],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <body className="font-sans antialiased">
         <ReporterInit />
         <ServiceWorker />

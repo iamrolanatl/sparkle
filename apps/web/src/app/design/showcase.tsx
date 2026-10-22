@@ -8,9 +8,9 @@ export function DesignShowcase() {
     <main className="relative mx-auto max-w-5xl space-y-8 p-6">
       <section className="relative isolate h-56 overflow-hidden rounded-2xl" data-testid="video-hero">
         <VideoBackground
-          av1Src="/media/aurora-av1.mp4"
-          h264Src="/media/aurora-h264.mp4"
-          poster="/media/aurora-poster.jpg"
+          av1Src="/media/nebula-av1.mp4"
+          h264Src="/media/nebula-h264.mp4"
+          poster="/media/nebula-poster.jpg"
         />
         <h1 className="relative p-6 text-3xl font-semibold text-white drop-shadow">Sparkle design system</h1>
       </section>

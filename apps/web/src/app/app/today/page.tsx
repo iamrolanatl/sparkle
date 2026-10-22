@@ -1,4 +1,4 @@
-import { NeonWindow } from "@sparkle/ui";
+import { AppletCard, NeonWindow } from "@sparkle/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -29,7 +29,10 @@ function Section({ title, items, tone }: { title: string; items: TodayItem[]; to
       <h3 className={`font-semibold ${tone ?? ""}`}>{title}</h3>
       <ul className="mt-2 grid gap-2">
         {items.map((a) => (
-          <li key={a.id} className="flex flex-wrap justify-between gap-2 rounded-md bg-white/5 px-3 py-2 text-sm">
+          <li
+            key={a.id}
+            className="flex flex-wrap justify-between gap-2 spk-glass-edge flex-wrap px-3 py-2 text-sm transition-shadow hover:shadow-[0_0_24px_-8px_rgba(34,211,238,0.6)]"
+          >
             <span>
               <span className="font-medium">{a.title}</span>
               {a.class_name ? <span className="text-muted"> · {a.class_name}</span> : null}
@@ -59,15 +62,15 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
-        <Link href="/app" className="text-lg font-semibold tracking-wide">
-          Sparkle
+        <Link href="/app" className="spk-link text-lg font-semibold tracking-widest">
+          ◆ SPARKLE
         </Link>
         <nav className="flex gap-3 text-sm">
           {list.map((x) => (
             <Link
               key={x.id}
               href={`/app/today?s=${x.id}`}
-              className={x.id === current?.id ? "font-semibold underline" : "underline"}
+              className={`spk-neon-btn spk-neon-btn-ghost px-3 py-1 ${x.id === current?.id ? "border-cyan-300" : ""}`}
             >
               {x.display_name}
             </Link>
@@ -108,6 +111,23 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           ) : null}
         </NeonWindow>
       )}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Link href="/app/tasks" className="block rounded-[1.25rem]">
+          <AppletCard title="Tasks" icon="✓">
+            Plan and check off work.
+          </AppletCard>
+        </Link>
+        <Link href="/app/gpa" className="block rounded-[1.25rem]">
+          <AppletCard title="GPA simulator" icon="∑">
+            Try what-if grades.
+          </AppletCard>
+        </Link>
+        <Link href="/app/import" className="block rounded-[1.25rem]">
+          <AppletCard title="Import" icon="⇪">
+            Bring in a CSV of assignments.
+          </AppletCard>
+        </Link>
+      </div>
     </main>
   );
 }

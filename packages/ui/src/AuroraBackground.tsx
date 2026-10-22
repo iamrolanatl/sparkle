@@ -6,7 +6,7 @@ import { useEffectsGuard } from "./hooks";
 export function AuroraBackground() {
   const animate = useEffectsGuard();
   return (
-    <div aria-hidden className="spk-aurora" data-animated={animate}>
+    <div aria-hidden className="spk-aurora spk-space" data-animated={animate}>
       {animate &&
         [0, 1, 2].map((i) => (
           <motion.span

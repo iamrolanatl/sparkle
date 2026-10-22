@@ -25,7 +25,7 @@ test("a crashing applet is isolated (NFR-41)", async ({ page }) => {
 test("reduced motion shows the video poster only", async ({ page }) => {
   await page.goto("/design");
   const hero = page.getByTestId("video-hero");
-  await expect(hero.locator("img")).toHaveAttribute("src", "/media/aurora-poster.jpg");
+  await expect(hero.locator("img")).toHaveAttribute("src", "/media/nebula-poster.jpg");
   await expect(hero.locator("video")).toHaveCount(0);
 });
 
