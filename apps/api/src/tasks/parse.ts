@@ -1,5 +1,5 @@
 /** FR-21 deterministic natural-language task parser (DEC-100). Pure, no network; AI fallback only when confidence is low. */
-export type Priority = "low" | "normal" | "high";
+type Priority = "low" | "normal" | "high";
 export interface ClassRef {
   id: string;
   name: string;
