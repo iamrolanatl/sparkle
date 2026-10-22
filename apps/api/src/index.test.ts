@@ -11,7 +11,7 @@ describe("api", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as Record<string, unknown>;
     expect(body.status).toBe("ok");
-    expect(body.checks).toEqual({ supabaseConfigured: true });
+    expect(body.checks).toEqual({ supabaseConfigured: true, aiT1: false, aiT2: false, aiT3: false });
     expect(JSON.stringify(body)).not.toContain("s3cret");
   });
   it("404s unknown routes", async () => expect((await app.request("/nope")).status).toBe(404));
