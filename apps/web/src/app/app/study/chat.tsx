@@ -7,8 +7,16 @@ import { safetyMessage } from "../tasks/safety-message";
 type Msg = { who: "you" | "sparkle"; text: string; coach?: boolean };
 const field = "rounded-lg border border-[var(--spk-border)] bg-transparent px-3 py-2 w-full";
 
-function Chat({ students }: { students: { id: string; display_name: string }[] }) {
+type Student = { id: string; display_name: string };
+
+/** Owns the selected student. The log lives in <Chat key={sid}> so switching students remounts it with an
+ *  empty log, and late replies for the previous student land on the unmounted instance and are dropped. */
+function StudentChat({ students }: { students: Student[] }) {
   const [sid, setSid] = useState(students[0]?.id ?? "");
+  return <Chat key={sid} sid={sid} setSid={setSid} students={students} />;
+}
+
+function Chat({ students, sid, setSid }: { students: Student[]; sid: string; setSid: (id: string) => void }) {
   const [text, setText] = useState("");
   const [log, setLog] = useState<Msg[]>([]);
   const [pending, start] = useTransition();
@@ -77,10 +85,10 @@ function Chat({ students }: { students: { id: string; display_name: string }[] }
   );
 }
 
-export function StudyChat(props: { students: { id: string; display_name: string }[] }) {
+export function StudyChat(props: { students: Student[] }) {
   return (
     <ErrorBoundary name="study-helper">
-      <Chat {...props} />
+      <StudentChat {...props} />
     </ErrorBoundary>
   );
 }
