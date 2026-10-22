@@ -371,3 +371,6 @@
     display: none;
   }
 }
+/* Open assign/edit menu must sit above the next (backdrop-filtered) card */
+.sa .lv-card:has(.lv-menu) { position: relative; z-index: 20; }
+.sa .lv-row:has(.lv-menu) { z-index: 21; }
