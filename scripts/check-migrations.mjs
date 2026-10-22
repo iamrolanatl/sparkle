@@ -9,6 +9,16 @@ const DIR = "supabase/migrations";
 const CUTOFF = "20261022020000";
 const NAME = /^(\d{14})_[a-z0-9_]+\.sql$/;
 const NEW_NAME = /^\d{14}_(int|a|b|c|d|e)_[a-z0-9_]+\.sql$/;
+// Applied before the <int|a..e> rule was enforced (workstreams f–i). Already recorded in
+// supabase_migrations.schema_migrations on sparkle-dev + main and referenced by other workstreams; renaming an
+// applied file would desync the recorded name, so they are allowlisted by exact filename. Do not extend: new
+// migrations must use int|a..e.
+const NAME_ALLOW = new Set([
+  "20261022170000_f_portal_sync.sql",
+  "20261022180000_g_ingest_tokens.sql",
+  "20261022190000_h_post_insights.sql",
+  "20261022200000_i_tutor_logs.sql",
+]);
 const OVERRIDE = /--\s*destructive-ok:\s*CR-\d{4}/i;
 // Access-widening changes need explicit Integration sign-off + RLS tests (Team E review of #28).
 const SIGNOFF = /--\s*integration-signoff:\s*\S+/i;
@@ -56,9 +66,11 @@ for (const f of files) {
   if (seen.has(m[1])) errors.push(`${f}: duplicate timestamp ${m[1]}`);
   seen.add(m[1]);
   if (m[1] <= CUTOFF) continue;
-  if (!NEW_NAME.test(f)) errors.push(`${f}: new migrations must be <timestamp>_<int|a|b|c|d|e>_<name>.sql`);
+  if (!NEW_NAME.test(f) && !NAME_ALLOW.has(f)) errors.push(`${f}: new migrations must be <timestamp>_<int|a|b|c|d|e>_<name>.sql`);
   const raw = readFileSync(`${DIR}/${f}`, "utf8");
-  const rb = /--\s*rollback:[ \t]*(.*)/i.exec(raw);
+  // Note may be inline or on the following "--" comment lines (multi-line rollback block).
+  const rb = /--\s*rollback:[ \t]*(.*)((?:\r?\n--[^\n]*)*)/i.exec(raw);
+  if (rb && !rb[1].trim()) rb[1] = rb[2].replace(/(^|\n)--/g, " ").trim();
   if (!rb) errors.push(`${f}: missing "-- rollback:" note`);
   else if (rb[1].trim().length < 5 || /^(n\/?a|none|tbd|-)$/i.test(rb[1].trim()))
     errors.push(`${f}: "-- rollback:" note must describe the rollback (not blank / n/a)`);

@@ -34,3 +34,11 @@ describe("shopping routes auth", () => {
     expect((await app.request("/students/00000000-0000-0000-0000-000000000001/list", {}, env)).status).toBe(401);
   });
 });
+
+import { matchClass } from "./parse";
+describe("class shorthand", () => {
+  const C = ["Int Chorus 7 Q2", "Language Arts 7 Q2", "Math 7 Q2", "Phys Ed 7Q2", "Reading 7 Q2", "Science 7 Q2", "Soc Stdy 7Q2"];
+  it.each([["ELA","Language Arts 7 Q2"],["LA","Language Arts 7 Q2"],["SS","Soc Stdy 7Q2"],["Sci","Science 7 Q2"],["Math","Math 7 Q2"],["PE","Phys Ed 7Q2"]])("%s", (k, v) => expect(matchClass(k, C)).toBe(v));
+  it("parse uses real name", () => expect(parseItem("2 folders for SS", C).classLabel).toBe("Soc Stdy 7Q2"));
+  it("no classes keeps typed", () => expect(parseItem("glue for ELA").classLabel).toBe("ELA"));
+});
