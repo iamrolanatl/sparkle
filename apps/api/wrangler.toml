@@ -37,3 +37,18 @@ bucket_name = "sparkle-vault"
 [[kv_namespaces]]
 binding = "TODAY_CACHE"
 id = "73fefa053a9b434f9a36d5d16a1ae283"
+
+# OCR scan jobs (Team B, FR-23). Free-tier queue created 2026-10-21 (DEC-73). SCANS_OCR_SERVER stays OFF (R-23 data location).
+[[queues.producers]]
+binding = "SCAN_QUEUE"
+queue = "sparkle-scans-ocr"
+
+[[queues.consumers]]
+queue = "sparkle-scans-ocr"
+max_batch_size = 5
+max_retries = 3
+dead_letter_queue = "sparkle-scans-ocr-dlq"  # free queue; poison messages land here after 3 retries (no consumer; inspect manually)
+
+# Daily jobs (UTC). 03:30 = vaultDaily (Team C) + purgeScans (Team B, DEC-126 30-day purge) — dispatched via src/scheduled.ts.
+[triggers]
+crons = ["30 3 * * *"]

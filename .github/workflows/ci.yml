@@ -19,6 +19,11 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Migration safety & order lint (SOP-15)
+        run: |
+          git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main || true
+          node scripts/check-migrations.mjs --base origin/main
+          bash scripts/check-migrations.test.sh
       - name: Format check
         run: pnpm format:check
       - name: Lint
