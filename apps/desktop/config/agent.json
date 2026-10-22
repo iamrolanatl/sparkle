@@ -1,0 +1,4 @@
+{
+  "dev": { "apiBase": "https://sparkle-api.crystal-iamrolan.workers.dev" },
+  "production": { "apiBase": "https://api.TBD-production-domain.example" }
+}

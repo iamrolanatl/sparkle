@@ -1,0 +1,20 @@
+[package]
+name = "sparkle-desktop"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Sparkle desktop sync agent shell (Team D, FR-11). Unsigned dev scaffold."
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+zeroize = { version = "1", features = ["serde"] }
+keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service"] }
+
+[profile.release]
+strip = true
+lto = true
