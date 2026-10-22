@@ -32,6 +32,7 @@
 | SA-17 | Create a free Sentry account and share the DSN (via secret form) to switch on crash reporting | Rolan | Phase 1 | Open | DEC-54, D-10 |
 | SA-18 | (Optional, later) choose a transactional email provider for invitation emails — free tiers exist; needs your OK to send email from the app | Rolan | Phase 2+ | Open | DEC-57 |
 | SA-19 | Engage privacy counsel for the G1 entry review (FERPA/COPPA/GA SDPATA, DEC-04/06) and portal-ToS review for the desktop agent (WBS 2.10, 3.2) | Rolan | Before G1 | Open | DEC-63 |
+| SA-A1 | Have a child-safety / counsel expert review the crisis reply and the K-12 AI guardrail policy (DEC-102/103) before real students use the study helper | Rolan | Before G3 | Open | DEC-102 |
 
 ## Revision History
 | Version | Date | Author | CR | Description |

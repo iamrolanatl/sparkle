@@ -52,6 +52,7 @@
 | R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
 | R-31 | Rich effects (video, glow, tilt) regress mobile performance / battery | 3 | 3 | 9 | Mitigate | Perf budget, Lighthouse CI, auto-degrade < 30 fps, poster fallback (DEC-52) | Grok Bot | Open |
 | R-32 | Free tiers cannot actually serve 1M users (Supabase Free pauses, 60 conns, no PITR) | 4 | 4 | 16 | Mitigate | Capacity model; cache-first design; SA-15/16 before G5 | Rolan | Open |
+| R-A1 | AI study helper or task text gives age-inappropriate or unsafe output to a minor | 2 | 5 | 10 | Mitigate | Pre/post screening, age bands, coach mode (DEC-102/103); crisis copy needs child-safety expert review (Sponsor action) | Team A | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |

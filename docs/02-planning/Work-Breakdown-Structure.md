@@ -79,7 +79,11 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 4.5 | Additional connectors | | Not started | Same gating as 3.2 |
 | 4.6 | Mobile delivery: responsive web / PWA | | In progress | MVP = responsive web/PWA; native apps out of MVP unless a CR adds them |
 | 4.7 | Update landing page features & marketing content | | Recurring | At G2 |
-| 4.8 | Natural-language tasks (FR-21) | | Not started | CR-0004 |
+| 4.8 | Natural-language tasks (FR-21) | Team A | In progress | CR-0004; DEC-100..103 |
+| 4.8.1 | `tasks` table + RLS (migration `_a_tasks`) | Team A | In review | DEC-101 |
+| 4.8.2 | Deterministic parser + parse/save/list API with review step | Team A | In review | DEC-100 |
+| 4.8.3 | Safety + age-appropriate guardrails (tasks, study helper prompts) | Team A | In review | DEC-102/103; AI fallback wiring waits on PR #20 |
+| 4.8.4 | Tasks UI (type, review/edit, save, list) | Team A | In progress | Neon glass per CR-0008 |
 | 4.9 | School-day weather (FR-22) | | Not started | Weather provider TBD (cost/terms) |
 | 4.10 | OCR scanning (FR-23) | | Not started | R2 `sparkle-scans` ready |
 | 5.0 | **Phase 3 — Sparkle & AI** | G3 | Not started | |

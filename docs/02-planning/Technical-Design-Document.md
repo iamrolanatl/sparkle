@@ -79,6 +79,7 @@ Implemented in `supabase/migrations/20261021000000_initial_tenant_model.sql`; pr
 | `guardian_access_limits` | Student-set limits after age threshold | `student_id, scope (daily_notes / ai_chat / resources only), limited_by` |
 | `households`, `household_members`, `shopping_items` | Shopping list, **separate from academic data** | |
 | `daily_notes` | Student input | `visibility private / guardians / shared` (default private) |
+| `tasks` *(FR-21, DEC-101)* | User-authored to-dos from natural language | `student_id, class_id?, title, due_at, priority, source_text, done_at, created_by`; insert/update by student self or active guardian; read via `can_view_student(...,'assignments')`; helpers read-only |
 | `classes, units, assignments, grades, sync_runs, ai_drafts` | School data; every row has `student_id` | **Service-role ingest worker writes only**; clients have SELECT only |
 | `share_audit_log`, `admin_audit_log` | Audit | no client write; admin log has no client read |
 | `app_settings` | `guardian_limit_age_threshold` (placeholder 13, DEC-04) | read-only to clients |
