@@ -3,7 +3,7 @@ import { probe, runProbes, targets } from "./monitor";
 
 const env = { API_URL: "https://api.test", WEB_URL: "https://web.test" };
 const ok: typeof fetch = async (u) =>
-  String(u).endsWith("/health") ? Response.json({ ok: true }) : new Response("hi", { status: 200 });
+  String(u).endsWith("/health") ? Response.json({ status: "ok" }) : new Response("hi", { status: 200 });
 
 describe("synthetic monitor", () => {
   it("passes when api /health is ok and web serves 200", async () => {
@@ -12,7 +12,7 @@ describe("synthetic monitor", () => {
   });
   it("throws (alerts) when a target fails", async () => {
     const bad: typeof fetch = async (u) =>
-      String(u).endsWith("/health") ? Response.json({ ok: false }) : new Response("x", { status: 503 });
+      String(u).endsWith("/health") ? Response.json({ status: "degraded" }) : new Response("x", { status: 503 });
     await expect(runProbes(targets(env), bad)).rejects.toThrow(/api-health=200, web-home=503/);
   });
   it("records network errors without leaking details", async () => {

@@ -35,7 +35,7 @@ export function targets(env: { API_URL: string; WEB_URL: string }): ProbeTarget[
     {
       name: "api-health",
       url: `${env.API_URL}/health`,
-      expect: async (r) => r.ok && (await r.json<{ ok?: boolean }>()).ok === true,
+      expect: async (r) => r.ok && (await r.json<{ status?: string }>()).status === "ok",
     },
     { name: "web-home", url: `${env.WEB_URL}/` },
   ];
