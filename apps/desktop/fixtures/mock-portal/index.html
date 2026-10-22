@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- Synthetic mock school portal for tests only. No real student data (team brief hard limit). -->
+<html>
+  <body>
+    <form id="login"><input name="username" /><input name="password" type="password" /><button>Sign in</button></form>
+    <p id="error" hidden>Invalid login</p>
+    <section id="classes" hidden>
+      <div data-class="c1" data-name="Algebra I" data-teacher="Ms. Rivera" data-period="2"></div>
+      <div data-class="c2" data-name="Biology" data-teacher="Mr. Okafor" data-period="4"></div>
+    </section>
+    <section id="assignments" hidden>
+      <div
+        data-assignment="a1"
+        data-class-ref="c1"
+        data-title="Worksheet 3"
+        data-due="2026-10-23T03:59:00Z"
+        data-status="assigned"
+        data-max="10"
+      ></div>
+      <div
+        data-assignment="a2"
+        data-class-ref="c2"
+        data-title="Cell lab"
+        data-due="2026-10-20T03:59:00Z"
+        data-status="missing"
+        data-max="20"
+      ></div>
+      <div
+        data-assignment="a3"
+        data-class-ref="c2"
+        data-title="Quiz 1"
+        data-due="2026-10-15T03:59:00Z"
+        data-status="graded"
+        data-score="18"
+        data-max="20"
+      ></div>
+    </section>
+    <script>
+      // Synthetic login: any non-empty username/password reveals the (fake) data. Nothing is sent anywhere.
+      document.getElementById("login").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const f = new FormData(e.target);
+        const ok = f.get("username") && f.get("password");
+        document.getElementById("error").hidden = Boolean(ok);
+        for (const id of ["classes", "assignments"]) document.getElementById(id).hidden = !ok;
+        document.getElementById("login").hidden = Boolean(ok);
+      });
+    </script>
+  </body>
+</html>

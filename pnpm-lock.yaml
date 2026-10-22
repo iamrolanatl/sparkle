@@ -53,6 +53,8 @@ importers:
         specifier: ^4.151.3
         version: 4.151.3(@cloudflare/workers-types@5.20261021.1)(@types/node@26.6.5)
 
+  apps/desktop: {}
+
   apps/web:
     dependencies:
       '@sparkle/character':
