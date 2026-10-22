@@ -25,7 +25,29 @@ interface Summary {
   label: string;
   tempF: number;
   forecast: string;
-  rainChance: number;
+  rainChance: number | null; // null = NWS gave no value (show "unknown", not 0%)
+}
+
+/** Rough US bounding boxes (CONUS, Alaska, Hawaii, Puerto Rico/USVI, Guam). NWS covers only these. */
+const US_BOXES: [number, number, number, number][] = [
+  [24.4, 49.5, -125.0, -66.9],
+  [51.0, 71.6, -179.9, -129.9],
+  [18.8, 22.4, -160.4, -154.7],
+  [17.6, 18.6, -67.4, -64.5],
+  [13.2, 13.7, 144.6, 145.0],
+];
+export const inUS = (lat: number, lon: number) =>
+  US_BOXES.some(([a, b, c, d]) => lat >= a && lat <= b && lon >= c && lon <= d);
+
+/** Only follow NWS-provided URLs that point back at api.weather.gov (SSRF defense in depth). */
+export function safeNwsUrl(u: string | undefined): string | null {
+  if (!u) return null;
+  try {
+    const x = new URL(u);
+    return x.protocol === "https:" && x.hostname === "api.weather.gov" ? x.toString() : null;
+  } catch {
+    return null;
+  }
 }
 
 export function roundCoord(lat: number, lon: number): [number, number] | null {
@@ -37,7 +59,7 @@ const toF = (p: Period) => (p.temperatureUnit === "C" ? Math.round((p.temperatur
 
 function summarize(p: Period | undefined, label: string): Summary | null {
   if (!p) return null;
-  return { label, tempF: toF(p), forecast: p.shortForecast, rainChance: p.probabilityOfPrecipitation?.value ?? 0 };
+  return { label, tempF: toF(p), forecast: p.shortForecast, rainChance: p.probabilityOfPrecipitation?.value ?? null };
 }
 
 /** Pick 7 AM and 3 PM local hours from hourly periods (startTime carries the local offset). */
