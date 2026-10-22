@@ -38,6 +38,7 @@
 | R-17 | Workers AI / chat cost overrun or abuse | 3 | 3 | 9 | Mitigate | Per-IP rate limits, daily token budget, kill switch, AI Gateway analytics | Rolan | Open |
 | R-18 | Scope creep from CR-0004 (amends handoff §1) dilutes student focus and adds privacy surface | 3 | 3 | 9 | Mitigate | Features framed as student-success only; phased (2/4); weather provider and OCR vendor terms reviewed | Rolan | Open |
 | R-13 | Landing page/waitlist live before Privacy Policy/Terms are reviewed | 3 | 4 | 12 | Avoid | Keep site non-public / unindexed until 2.8–2.10 done | Rolan | Open |
+| R-D1 *(Team D)* | Ingest burst at 3 AM/11 AM/7 PM (1M students) overwhelms Postgres if writes are inline (no Queue) | 3 | 4 | 12 | Mitigate | DEC-162 per-student DO throttle; Queue + DLQ once SA-D2 approved; chunked upserts | Team D | Open |
 | R-06 update (CR-0005) | Applicability assessed for vault (Vault Plan §2); downgraded 15→10. Residual: **privacy counsel sign-off before vault launch** (LG-01) | | | | Mitigate | Counsel engagement | Rolan | Open — downgraded |
 | R-20 | Families upload SSNs / full medical records despite detectors (false negatives) | 3 | 4 | 12 | Mitigate | Detectors + redaction, warnings, minimization copy, periodic corpus tests | Eng | Open |
 | R-21 | Georgia SDPATA / HBNR read differently by counsel or regulators (e.g., broader duties) | 2 | 4 | 8 | Mitigate | Already complying conservatively; LG-01 | Rolan | Open |

@@ -34,6 +34,9 @@
 | SA-19 | Engage privacy counsel for the G1 entry review (FERPA/COPPA/GA SDPATA, DEC-04/06) and portal-ToS review for the desktop agent (WBS 2.10, 3.2) | Rolan | Before G1 | Open | DEC-63 |
 | SA-20 | sparkle-dev cutover: connector can't read the **secret key** or set **Auth URL config**, and the CLI token is project-scoped. Either (a) in Supabase dashboard → sparkle-dev → API keys, create a secret key and add it to `~/.sparkle/keys-dev.json`/GitHub as `SUPABASE_SECRET_KEY_DEV`, and set Auth Site URL + redirect URLs as on the main project; or (b) issue an account-level access token. Then run `SPARKLE_SUPABASE_REF=wqfzzfggyirvgaxfqcts SPARKLE_KEYS=~/.sparkle/keys-dev.json scripts/deploy-dev.sh`. | Rolan | TBD | Open | [Environments](../02-planning/Environments-and-Cost-Guardrails.md) |
 | SA-21 | Approve CR-0011: portal credentials on-device only, never sent to Sparkle (FR-03/NFR-05 wording) | Rolan | TBD | Open | [CR Register](Change-Request-Register.md) |
+| SA-D1 | Counsel review of school-portal terms of use (StudentVue/Cobb first) before any real-portal adapter is built; prefer official APIs/agreements | Rolan + counsel | Before G2 | Open | DEC-161, R-05, D-06 |
+| SA-D2 | Approve Cloudflare Workers Paid ($5/mo) for Queues (ingest burst buffering); until then ingest writes inline | Rolan | Before real sync | Open | DEC-164 |
+| SA-D3 | Buy Apple Developer ($99/yr) + Windows code-signing certificate for the desktop agent installers | Rolan | Before G2 | Open | D-05, R-09 |
 
 ## Revision History
 | Version | Date | Author | CR | Description |
