@@ -38,6 +38,8 @@
 | SA-D2 | Approve Cloudflare Workers Paid ($5/mo) for Queues (ingest burst buffering); until then ingest writes inline | Rolan | Before real sync | Open | DEC-164 |
 | SA-D3 | Buy Apple Developer ($99/yr) + Windows code-signing certificate for the desktop agent installers | Rolan | Before G2 | Open | D-05, R-09 |
 | SA-A1 | Have a child-safety / counsel expert review the crisis reply and the K-12 AI guardrail policy (DEC-102/103) before real students use the study helper | Rolan | Before G3 | Open | DEC-102 |
+| SA-C1 | Choose and approve a verifiable-parental-consent vendor (card verification; ID + face-match fallback) and sign its DPA — paid; adapter is ready (DEC-154) | Rolan | Before vault launch gate | Open | DEC-21 |
+| SA-C2 | Approve a vault pen-test vendor (DEC-35) — paid | Rolan | Before vault launch gate | Open | DEC-35 |
 
 ## Revision History
 | Version | Date | Author | CR | Description |

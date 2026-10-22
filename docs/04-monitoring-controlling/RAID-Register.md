@@ -52,6 +52,11 @@
 | R-27 | No branch protection / push protection on Free private repo → accidental secret or unreviewed merge | 3 | 3 | 9 | Mitigate | Dependabot on; gitleaks CI; GitHub Pro (SA-10) | Rolan | Open |
 | R-28 | Dev/test work against the prod Supabase project until sparkle-dev exists | 3 | 4 | 12 | Mitigate | Only synthetic data in prod pre-launch; create dev (SA-12) | Eng | Open |
 | R-29 | Cloud/AI bill shock (only $10 Cloudflare budget alert active; AI provider caps not yet set) | 2 | 3 | 6 | Mitigate | DEC-43; SA-13 | Rolan | Open |
+| R-C1 | Vault audit table grows fastest at 1M users | 3 | 3 | 9 | Mitigate | Indexed; 24-month prune job; monthly partitioning before 100k users (Team C) | Team C | Open |
+| R-C2 | Step-up relies on Google re-sign-in (amr); no in-app MFA/AAL2 yet | 3 | 3 | 9 | Mitigate | Force re-auth prompt before sensitive download; evaluate Supabase MFA before launch gate | Team C | Open |
+| R-C3 | KEK held as a Workers secret (not KMS/HSM) | 2 | 4 | 8 | Mitigate | Annual re-wrap job (DEC-152); KMS by 100k users | Team C | Open |
+| R-C4 | Migration lint (#28) flags function-body UPDATE/DELETE and SECURITY DEFINER in vault migration | 4 | 2 | 8 | Mitigate | Integration sign-off marker or lint exemption for function bodies; Team C will not self-sign | Integration | Open |
+| R-C5 | Lifecycle notices produce events but no sender exists (email provider not chosen, SA-18) | 3 | 3 | 9 | Accept (pre-launch) | Events queued in vault_lifecycle_events; launch gate requires sender | Team C | Open |
 | R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
 | R-31 | Rich effects (video, glow, tilt) regress mobile performance / battery | 3 | 3 | 9 | Mitigate | Perf budget, Lighthouse CI, auto-degrade < 30 fps, poster fallback (DEC-52) | Grok Bot | Open |
 | R-32 | Free tiers cannot actually serve 1M users (Supabase Free pauses, 60 conns, no PITR) | 4 | 4 | 16 | Mitigate | Capacity model; cache-first design; SA-15/16 before G5 | Rolan | Open |

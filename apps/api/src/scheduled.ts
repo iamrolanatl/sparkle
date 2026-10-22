@@ -3,6 +3,7 @@
  * Errors are logged per handler so one failing job never blocks the others.
  */
 import { purgeScans, type ScansEnv } from "./scans/route";
+import { vaultDaily, type JobsEnv } from "./vault/jobs";
 
 export type CronHandler<E = unknown> = (env: E, ctx: ExecutionContext) => Promise<unknown>;
 
@@ -22,5 +23,5 @@ export function makeScheduler<E>(handlers: Record<string, CronHandler<E>[]>) {
  * Team B `purgeScans` (DEC-126: delete scan originals/unsaved scans older than 30 days). Each team adds one line.
  */
 export const cronHandlers: Record<string, CronHandler<never>[]> = {
-  "30 3 * * *": [(env) => purgeScans(env as ScansEnv)],
+  "30 3 * * *": [(env) => purgeScans(env as ScansEnv), (env) => vaultDaily(env as JobsEnv)],
 };
