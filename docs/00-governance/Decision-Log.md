@@ -84,8 +84,8 @@
 | DEC-72 | 2026-10-21 | PM sync cadence: Integration publishes a sync note every 2 hours, 8 AM–8 PM ET, in docs/03-executing/pm-sync/; teams record doc reviews in docs/03-executing/tech-lead-reviews/<team>.md; docs-gap and interface-change issues triaged by Integration each sync | Rolan's Tech Lead documentation duty | Daily only | Grok Bot (Integration lead) under Rolan's directive (2026-10-21) | Decided |
 | DEC-180 | 2026-10-21 | Static CSP + OWASP security headers on web and API; nonce CSP as follow-up | ASVS V14.4, NFR-33 | No CSP; nonce CSP now (breaks static pages) | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-181 | 2026-10-21 | Automated axe WCAG 2.2 AA audit in the Playwright E2E job (desktop + mobile) | NFR-11, DoD UI | Manual-only audits | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
-| DEC-182 | 2026-10-21 | WCAG 2.2 AA is the accessibility baseline (resolves NFR-11 TBD; matches Accessibility Statement) | Consistency, legal exposure | 2.1 AA | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided — sponsor may override |
-| DEC-183 | 2026-10-21 | Rollback triggers: 5xx > 1 % for 5 min, p95 > 2x SLO for 10 min, or any Sev-1 privacy issue | Fills Go-Live Runbook TBD; aligned to NFR-36/38 | Manual judgment only | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Proposed |
+| DEC-182 | 2026-10-21 | WCAG 2.2 AA is the accessibility baseline (resolves NFR-11 TBD; matches Accessibility Statement) | Consistency, legal exposure | 2.1 AA | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Accepted (PM, under Rolan's standing delegation, 2026-10-21) |
+| DEC-183 | 2026-10-21 | Rollback triggers: 5xx > 1 % for 5 min, p95 > 2x SLO for 10 min, or any Sev-1 privacy issue | Fills Go-Live Runbook TBD; aligned to NFR-36/38 | Manual judgment only | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Accepted (PM, under Rolan's standing delegation, 2026-10-21) |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
