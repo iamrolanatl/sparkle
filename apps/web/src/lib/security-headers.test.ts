@@ -15,3 +15,16 @@ describe("security headers (DEC-180)", () => {
     );
   });
 });
+
+describe("nonce CSP (DEC-186)", () => {
+  it("uses nonce + strict-dynamic and drops unsafe-inline for scripts", () => {
+    const csp = contentSecurityPolicy("https://x.supabase.co", [], "abc");
+    expect(csp).toContain("script-src 'self' 'nonce-abc' 'strict-dynamic'");
+    expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
+  });
+  it("matches only signed-in routes", async () => {
+    const { NONCE_ROUTES } = await import("./security-headers");
+    expect(["/app", "/app/tasks", "/admin", "/invite/x"].every((p) => NONCE_ROUTES.test(p))).toBe(true);
+    expect(["/", "/apply", "/privacy", "/login"].some((p) => NONCE_ROUTES.test(p))).toBe(false);
+  });
+});

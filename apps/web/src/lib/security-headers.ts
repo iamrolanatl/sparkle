@@ -3,11 +3,14 @@
  * Static CSP: Next.js App Router emits inline bootstrap scripts, so script-src keeps
  * 'unsafe-inline' until nonce-based CSP lands (tracked in RAID). Everything else is locked down.
  */
-export function contentSecurityPolicy(supabaseUrl: string, apiOrigins: string[] = []): string {
+/** Routes that are always dynamic (signed-in) and therefore get a per-request nonce CSP (DEC-186). */
+export const NONCE_ROUTES = /^\/(app|admin|invite)(\/|$)/;
+
+export function contentSecurityPolicy(supabaseUrl: string, apiOrigins: string[] = [], nonce?: string): string {
   const connect = ["'self'", supabaseUrl, supabaseUrl.replace(/^https:/, "wss:"), ...apiOrigins].filter(Boolean);
   return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
+    nonce ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'` : "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",

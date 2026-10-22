@@ -7,7 +7,13 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
     const api = (process.env.NEXT_PUBLIC_API_URL ?? "https://sparkle-api.crystal-iamrolan.workers.dev").split(",");
-    return [{ source: "/:path*", headers: securityHeaders(process.env.SUPABASE_URL ?? "", api) }];
+    // Static CSP for public/prerendered pages; signed-in routes get a nonce CSP from middleware (DEC-186).
+    const all = securityHeaders(process.env.SUPABASE_URL ?? "", api);
+    return [
+      { source: "/((?!app(?:/|$)|admin(?:/|$)|invite(?:/|$)).*)", headers: all },
+      { source: "/:p(app|admin|invite)/:rest*", headers: all.filter((h) => h.key !== "Content-Security-Policy") },
+      { source: "/:p(app|admin|invite)", headers: all.filter((h) => h.key !== "Content-Security-Policy") },
+    ];
   },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.SUPABASE_URL ?? "",
