@@ -1,4 +1,5 @@
 "use client";
+import { burst } from "../chrome";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { ErrorBoundary } from "@sparkle/ui";
@@ -294,9 +295,14 @@ function TaskComposerInner({
                   type="button"
                   className={`cb ${r.t.done_at ? "x" : ""}`}
                   disabled={pending}
-                  onClick={() => toggle(r.t.id, !r.t.done_at)}
+                  onClick={(e) => {
+                    if (!r.t.done_at) burst(e.currentTarget);
+                    toggle(r.t.id, !r.t.done_at);
+                  }}
                   aria-label={r.t.done_at ? `Reopen ${r.t.title}` : `Mark ${r.t.title} done`}
-                />
+                >
+                  ✓
+                </button>
                 <div style={{ minWidth: 0 }}>
                   <div style={r.t.done_at ? { textDecoration: "line-through", color: "var(--mut)" } : undefined}>
                     {r.t.title}

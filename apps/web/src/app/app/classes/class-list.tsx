@@ -250,7 +250,16 @@ export function ClassList({
         return (
           <div className={`panel cls ${isOpen ? "open" : ""}`} key={c.id} id={`c-${c.id}`}>
             <button className="ch" onClick={() => flip(c.id)} aria-expanded={isOpen}>
-              <span className="c" style={{ background: c.color }} />
+              <span className="cav" style={{ background: c.color }} aria-hidden="true">
+                {c.name
+                  .replace(/[^A-Za-z0-9 ]/g, "")
+                  .split(" ")
+                  .filter(Boolean)
+                  .map((w) => w[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </span>
               <div>
                 <div className="n">
                   {c.name}
@@ -269,7 +278,15 @@ export function ClassList({
               </div>
               <div className="pct">
                 {c.pct != null ? `${c.pct.toFixed(1)}%` : "—"}
-                <small>{c.letter ?? "No grade"}</small>
+                <small>
+                  {c.letter ? (
+                    <b className="badge" style={{ color: "var(--fg)" }}>
+                      {c.letter}
+                    </b>
+                  ) : (
+                    "No grade"
+                  )}
+                </small>
               </div>
               <span className="car">›</span>
             </button>

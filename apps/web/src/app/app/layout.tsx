@@ -2,6 +2,8 @@ import "./app-shell.css";
 import { createClient } from "@/lib/supabase/server";
 import { loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { signOut } from "../login/actions";
+import { cookies } from "next/headers";
+import { SparkleBg, ThemeToggle } from "./chrome";
 import { Crumb, MobileTabs, SideNav } from "./nav";
 
 /** Signed-in shell (approved mockup sparkle-classes): sidebar, top bar, pinned mobile tab bar. */
@@ -21,8 +23,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     : { count: null };
   const name = me && me.profile_id === user.id ? me.display_name : ((user.user_metadata?.full_name as string) ?? "You");
   const sub = me ? (me.profile_id === user.id ? "Student" : `Following ${me.display_name}`) : "No student yet";
+  const theme = (await cookies()).get("sparkle-theme")?.value === "dark" ? "dark" : "light";
   return (
-    <div className="sa">
+    <div className="sa" data-theme={theme}>
+      <SparkleBg />
       <SideNav
         isAdmin={user.app_metadata?.role === "admin"}
         taskCount={count ?? null}
@@ -32,7 +36,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="sa-main">
         <div className="top">
           <Crumb who={me?.display_name ?? name} />
-          <form action={signOut} style={{ marginLeft: "auto" }}>
+          <ThemeToggle initial={theme} />
+          <form action={signOut}>
             <button className="out" style={{ background: "none", border: 0, cursor: "pointer" }}>
               Sign out
             </button>

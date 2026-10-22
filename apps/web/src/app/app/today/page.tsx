@@ -4,6 +4,30 @@ import { createClient } from "@/lib/supabase/server";
 import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
+import { Bot } from "../chrome";
+
+const KIND: Record<string, string> = { missing: "Missing", assessment: "Test/quiz", bring: "Bring", due: "Due" };
+const initials = (n: string) =>
+  n
+    .replace(/[^A-Za-z0-9 ]/g, "")
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+function Av({ name, color }: { name: string; color: string }) {
+  const light = /^#(e|f)/i.test(color);
+  return (
+    <span
+      className="cav"
+      style={{ background: light ? "var(--pill)" : color, color: light ? "var(--pillt)" : "#fff" }}
+      aria-hidden="true"
+    >
+      {initials(name.startsWith("Personal") ? "Me" : name)}
+    </span>
+  );
+}
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Today", robots: { index: false } };
@@ -88,10 +112,16 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   const tomorrow = rows.filter((r) => daysUntil(r.due!, now) === 1).length;
   const gpa = gpaOf(classes);
   const summative = rows.filter((r) => /summative|test|quiz|project/i.test(r.chip)).length;
+  const nextUp = rows[0];
   const first =
     me.profile_id === user.id
       ? me.display_name.split(" ")[0]
       : ((user.user_metadata?.full_name as string) ?? "").split(" ")[0];
+  const tip = miss[0]
+    ? `Start with this from ${miss[0].className}: ${miss[0].text}`
+    : nextUp
+      ? `Start with ${nextUp.title}. It's due ${dueText(nextUp.due, now).toLowerCase()}.`
+      : "You're all caught up. Nice work!";
   return (
     <div className="page">
       <h1>{`${hello}${first ? `, ${first}` : ""}`}</h1>
@@ -137,117 +167,132 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </div>
-      <div className="panel dm" style={{ marginTop: 14 }}>
-        <div className="ph">
-          Don’t miss
-          <span>{newPosts ? <b className="nb">{newPosts} new posts</b> : null} From your teachers’ class boards</span>
-        </div>
-        {miss.length ? (
-          miss.map((d) => (
-            <div className="row" key={d.key}>
-              <span className="dot" style={{ background: d.color }} />
-              <div style={{ minWidth: 0 }}>
-                <div>
-                  {d.text}
-                  {d.flagged && d.kind !== "missing" ? <b className="flag">Not done yet</b> : null}
-                </div>
-                <small>
-                  <Link href={`/app/classes?open=${d.classId}`} style={{ textDecoration: "underline" }}>
-                    {d.className}
-                  </Link>
-                  {d.postTitle ? (
-                    <>
-                      {" · from "}
-                      {d.url ? (
-                        <a
-                          href={d.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ textDecoration: "underline" }}
-                        >
-                          “{d.postTitle}”
-                        </a>
-                      ) : (
-                        <>“{d.postTitle}”</>
-                      )}
-                    </>
-                  ) : null}
-                </small>
-              </div>
-              <span className="chip">
-                {d.kind === "missing"
-                  ? "Missing"
-                  : d.kind === "assessment"
-                    ? "Test/quiz"
-                    : d.kind === "bring"
-                      ? "Bring"
-                      : d.kind === "due"
-                        ? "Due"
-                        : "To do"}
+      <div className="grid s2" style={{ gridTemplateColumns: "1.4fr 1fr", marginTop: 16, alignItems: "start" }}>
+        <div className="grid">
+          <div className="panel dm">
+            <div className="ph">
+              <span style={{ color: "var(--fg)", fontSize: 15, fontWeight: 600 }}>
+                Don’t miss · from your teachers
+                <span className="spk" aria-hidden="true">
+                  ✦
+                </span>
               </span>
-              <span className={`due ${d.flagged ? "h" : ""}`}>{d.when ?? ""}</span>
+              <span>{newPosts ? <b className="nb">{newPosts} new</b> : null}</span>
             </div>
-          ))
-        ) : (
-          <div className="empty">You’re all caught up on class-board posts.</div>
-        )}
-      </div>
-      <div className="grid s2" style={{ gridTemplateColumns: "1.3fr 1fr", marginTop: 14 }}>
-        <div className="panel">
-          <div className="ph">
-            Due soon <span>Next 7 days</span>
-          </div>
-          {rows.length ? (
-            rows.slice(0, 6).map((r) => (
-              <div className="row" key={r.id}>
-                <span className="dot" style={{ background: r.color }} />
-                <div style={{ minWidth: 0 }}>
-                  <div>{r.title}</div>
-                  <div style={{ fontSize: 12, color: "var(--dim)" }}>{r.cls}</div>
+            {miss.length ? (
+              miss.map((d) => (
+                <div className="row" key={d.key}>
+                  <Av name={d.className} color={d.color} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontWeight: 600 }}>
+                      {d.text}
+                      {d.flagged && d.kind !== "missing" ? <b className="flag">Not done yet</b> : null}
+                    </div>
+                    <small>
+                      <Link href={`/app/classes?open=${d.classId}`} style={{ textDecoration: "underline" }}>
+                        {d.className}
+                      </Link>
+                      {d.postTitle ? (
+                        <>
+                          {" · from "}
+                          {d.url ? (
+                            <a
+                              href={d.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ textDecoration: "underline" }}
+                            >
+                              “{d.postTitle}”
+                            </a>
+                          ) : (
+                            <>“{d.postTitle}”</>
+                          )}
+                        </>
+                      ) : null}
+                    </small>
+                  </div>
+                  <span className="chip">{KIND[d.kind] ?? "To do"}</span>
+                  <span className={`due ${d.flagged ? "h" : ""}`}>{d.when ?? ""}</span>
                 </div>
-                <span className="chip">{r.chip}</span>
-                <span className={`due ${daysUntil(r.due!, now) <= 1 ? "h" : ""}`}>{dueText(r.due, now)}</span>
+              ))
+            ) : (
+              <div className="empty">You’re all caught up on class-board posts.</div>
+            )}
+          </div>
+          <div className="panel">
+            <div className="ph">
+              Up next <span>Next 7 days</span>
+            </div>
+            {rows.length ? (
+              rows.slice(0, 6).map((r) => (
+                <div className="row" key={r.id}>
+                  <Av name={r.cls} color={r.color} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontWeight: 600 }}>{r.title}</div>
+                    <div style={{ fontSize: 13, color: "var(--mut)" }}>
+                      {r.cls} · {r.chip}
+                    </div>
+                  </div>
+                  <span className={`due ${daysUntil(r.due!, now) <= 1 ? "h" : ""}`}>{dueText(r.due, now)}</span>
+                </div>
+              ))
+            ) : (
+              <div className="empty">
+                Nothing due in the next 7 days.{" "}
+                <Link href="/app/tasks" style={{ textDecoration: "underline" }}>
+                  Add a task
+                </Link>{" "}
+                or{" "}
+                <Link href="/app/import" style={{ textDecoration: "underline" }}>
+                  import assignments
+                </Link>
+                .
               </div>
-            ))
-          ) : (
-            <div className="empty">
-              Nothing due in the next 7 days.{" "}
-              <Link href="/app/tasks" style={{ textDecoration: "underline" }}>
-                Add a task
-              </Link>{" "}
-              or{" "}
-              <Link href="/app/import" style={{ textDecoration: "underline" }}>
-                import assignments
-              </Link>
-              .
-            </div>
-          )}
-        </div>
-        <div className="panel">
-          <div className="ph">
-            Grades snapshot <span>To date</span>
+            )}
           </div>
-          {classes.length ? (
-            classes.map((c) => (
-              <Link href={`/app/classes?open=${c.id}`} className="row" key={c.id}>
-                <span className="dot" style={{ background: c.color }} />
-                <span style={{ width: 150, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {c.name}
-                </span>
-                <div className="bar">
-                  <i style={{ width: `${Math.min(c.pct ?? 0, 100)}%`, background: c.color }} />
-                </div>
-                <span style={{ fontSize: 12, color: "var(--mut)", width: 44, textAlign: "right" }}>
-                  {c.pct != null ? c.pct.toFixed(1) : "—"}
-                </span>
-                <span className="gl">{c.letter ?? ""}</span>
+        </div>
+        <div className="grid">
+          <div className="panel">
+            <div className="mascot">
+              <Bot size={48} />
+              <div>
+                <div style={{ fontWeight: 600 }}>{first ? `Hi ${first}!` : "Hi!"}</div>
+                <div style={{ fontSize: 13, color: "var(--mut)" }}>{tip}</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, padding: "0 20px 20px" }}>
+              <Link className="pill" href={rows[0] ? "/app/tasks" : "/app/classes"}>
+                Start studying
               </Link>
-            ))
-          ) : (
-            <div className="empty">No classes yet. They appear here after an import or school sync.</div>
-          )}
-          <div style={{ padding: "6px 16px 14px", fontSize: 12, color: "var(--dim)" }}>
-            GPA trend appears after a few weeks of grade history.
+              <Link className="ghost" href="/app/classes">
+                See classes
+              </Link>
+            </div>
+          </div>
+          <div className="panel">
+            <div className="ph">
+              Classes <span>To date</span>
+            </div>
+            {classes.length ? (
+              classes.map((c) => (
+                <Link href={`/app/classes?open=${c.id}`} className="row" key={c.id}>
+                  <Av name={c.name} color={c.color} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div
+                      style={{ fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                    >
+                      {c.name}
+                    </div>
+                    <div style={{ fontSize: 13, color: "var(--mut)" }}>
+                      {c.pct != null ? `${c.pct.toFixed(1)}%` : "No grade yet"}
+                    </div>
+                  </div>
+                  {c.letter ? <b className="badge">{c.letter}</b> : null}
+                </Link>
+              ))
+            ) : (
+              <div className="empty">No classes yet. They appear here after an import or school sync.</div>
+            )}
           </div>
         </div>
       </div>

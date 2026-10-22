@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MAIN, MORE } from "../nav";
+import { MAIN, MORE } from "../links";
 
 export const metadata = { title: "More", robots: { index: false } };
 
