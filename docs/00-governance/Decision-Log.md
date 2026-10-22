@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-GOV-003 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.3 |
+| Version | 1.4 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) / Engineering Lead |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -56,6 +56,12 @@
 | DEC-37 | 2026-10-21 | vault_enabled stays off for real families until Launch Gate LG-01..14 met (incl. privacy counsel sign-off) | Plan §8. See [Vault Plan](../02-planning/Vault-Compliance-and-Security-Plan.md) | — | Grok Bot under Rolan's delegated authority (CR-0005) | Accepted — counsel sign-off pending (LG-01) |
 | DEC-38 | 2026-10-21 | No ads, no sale/sharing, no profiling beyond family's own features; GPC honored | GA 20-2-666(a); CCPA 1798.120; Pledge. See [Vault Plan](../02-planning/Vault-Compliance-and-Security-Plan.md) | — | Grok Bot under Rolan's delegated authority (CR-0005) | Accepted — counsel sign-off pending (LG-01) |
 | DEC-39 | 2026-10-21 | Vault requires Google sign-in + step-up re-auth for sensitive; guardians prompted to enable 2-Step Verification | ASVS V6/V7. See [Vault Plan](../02-planning/Vault-Compliance-and-Security-Plan.md) | — | Grok Bot under Rolan's delegated authority (CR-0005) | Accepted — counsel sign-off pending (LG-01) |
+| DEC-40 | 2026-10-21 | Do not adopt or file bare 'SPARKLE' as the brand; move to a distinctive compound (e.g., 'Sparkle Student') with 'Sparkle' as the character name, pending counsel clearance | USPTO knock-out: crowded classes 9/41/42 incl. Viacom SPARKLER and pending identical SPARKLE. See [Trademark notes](../02-planning/Trademark-Clearance-Notes.md) | Keep bare Sparkle | Grok Bot per Rolan's approval (2026-10-21) | Proposed — final brand = SA-11 |
+| DEC-41 | 2026-10-21 | Three environments: prod (exists), dev (separate Free-tier Supabase project), staging (Supabase Branching on Pro, else Workers staging env on dev DB) | Never test against real family data | Single project | Grok Bot per Rolan's approval (2026-10-21) | Accepted — dev blocked on SA-12 |
+| DEC-42 | 2026-10-21 | Analytics: cookieless Cloudflare Web Analytics + first-party server events only; no third-party trackers, ad pixels, or session replay | COPPA/GA SDPATA/CCPA; DEC-38 | GA4/Mixpanel | Grok Bot per Rolan's approval (2026-10-21) | Accepted |
+| DEC-43 | 2026-10-21 | Cost guardrails: Cloudflare budget + usage alerts to iamrolan@gmail.com, Supabase spend cap ON, xAI/Anthropic monthly spend limits ($25 each until G3) | Prevent bill shock | None | Grok Bot per Rolan's approval (2026-10-21) | Accepted — provider steps SA-13 |
+| DEC-44 | 2026-10-21 | Repo security: Dependabot alerts + auto fixes on; recommend GitHub Pro for branch protection/push protection; gitleaks in CI as interim | Free plan limits | Public repo | Grok Bot per Rolan's approval (2026-10-21) | Accepted — Pro = SA-10 |
+| DEC-45 | 2026-10-21 | Weekly status report automated Fridays ~4 PM ET to docs/04-monitoring-controlling/status/ and chat | Communications plan | Manual | Grok Bot per Rolan's approval (2026-10-21) | Accepted |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
@@ -77,3 +83,4 @@ All ADRs are "Accepted" as inputs from the handoff and are ratified on approval 
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added DEC-05 (Google OAuth client), DEC-06 (guardian limits), DEC-07 (helper access). |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added DEC-08 (chat model), DEC-09 (CR-0004 scope amendment). |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added DEC-20..DEC-39 (vault compliance & security posture). |
+| 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Added DEC-40..45. |

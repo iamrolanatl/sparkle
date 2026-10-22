@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-GOV-002 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.1 |
+| Version | 1.2 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -34,6 +34,7 @@ Statuses: Submitted · Under Assessment · Approved · Rejected · Deferred · I
 | CR-0002 | 2026-10-21 | Phase 0 foundation: monorepo code baseline, multi-tenant data model & RLS, Google sign-in, CI; new sponsor requirements FR-16 (helpers) and FR-17 (landing page); DEC-05/06/07; WBS re-baselined to actual status | Rolan Chowdhury | Scope addition + baseline update | Scope +FR-16, +FR-17; schedule: privacy review now G1 entry; risk: R-10..R-13; no budget baseline | Requirements, RTM, TDD, WBS, Feature Register, Decision Log, RAID, RACI, Comms plan | Rolan Chowdhury | Submitted — approved on PR merge |
 | CR-0001 | 2026-10-21 | Establish initial PMP documentation baseline (v1.0) reconciled with Implementation Handoff v1.0 | Rolan Chowdhury | Baseline | Establishes scope, requirements (FR-01..15, NFR-01..13), WBS, RAID; no budget/schedule baseline yet (TBD) | All | Rolan Chowdhury | Submitted — approved on PR merge |
 | CR-0005 | 2026-10-21 | FR-24 Mail vault compliance & security posture (Blocker 2): legal classification, consent, minimization, encryption, retention, breach, subprocessors, WISP, pen test, launch gate | Rolan Chowdhury | Requirements / privacy | Scope +NFR-20..34 and WBS 6.7/7.5; schedule: vault launch gated on counsel + pen test (est. 4–8 wks external lead time); cost: counsel review, pen test, VPC fees, ID vendor (TBD); risk ↓ R-06 | Vault plan, Decision Log, Req Baseline, RTM, RAID, WBS, Change Log | Grok Bot under Rolan's delegated sponsor authority (2026-10-21) | Approved |
+| CR-0006 | 2026-10-21 | Sponsor Action Items register; trademark knock-out research; environments (dev/staging) plan; repo security posture; cost guardrails; privacy-respecting analytics; automated weekly status | Rolan Chowdhury | Governance / scope | Scope: WBS 2.20–2.25, DEC-40..45, R-26..30; cost: possible GitHub Pro $4/mo, Supabase Pro if staging branching (sponsor decisions, not taken); schedule: brand decision before domain purchase | Sponsor-Action-Items (new), Trademark-Clearance-Notes (new), Environments-and-Cost-Guardrails (new), Decision Log, WBS, RAID, Change Log | Rolan Chowdhury (approved in chat 2026-10-21) | Approved |
 
 ---
 
@@ -51,3 +52,4 @@ Statuses: Submitted · Under Assessment · Approved · Rejected · Deferred · I
 |---|---|---|---|---|
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added CR-0005. |
+| 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Added CR-0006. |

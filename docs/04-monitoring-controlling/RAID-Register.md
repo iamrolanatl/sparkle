@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-MC-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.3 |
+| Version | 1.4 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -45,6 +45,11 @@
 | R-23 | R2 location is a hint, not a guarantee; Workers AI may process outside US | 2 | 3 | 6 | Accept/Mitigate | Sensitive OCR on-device; re-evaluate jurisdiction options | Eng | Open |
 | R-24 | Key compromise of KEK held as Workers secret | 2 | 5 | 10 | Mitigate | Least-privilege tokens, rotation, KMS migration at 100k users | Eng | Open |
 | R-25 | VPC friction lowers vault adoption | 3 | 2 | 6 | Accept | Card check is quick; fallback method; vault optional | PM | Open |
+| R-26 | Trademark conflict forces rename of 'Sparkle' after launch (Viacom SPARKLER, pending SPARKLE in 9/41/42, AI 'SPARKLE ASSISTANT') | 4 | 4 | 16 | Avoid | DEC-40 compound brand; counsel clearance before domain/app-store launch | Rolan | Open |
+| R-27 | No branch protection / push protection on Free private repo → accidental secret or unreviewed merge | 3 | 3 | 9 | Mitigate | Dependabot on; gitleaks CI; GitHub Pro (SA-10) | Rolan | Open |
+| R-28 | Dev/test work against the prod Supabase project until sparkle-dev exists | 3 | 4 | 12 | Mitigate | Only synthetic data in prod pre-launch; create dev (SA-12) | Eng | Open |
+| R-29 | Cloud/AI bill shock (only $10 Cloudflare budget alert active; AI provider caps not yet set) | 2 | 3 | 6 | Mitigate | DEC-43; SA-13 | Rolan | Open |
+| R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
@@ -79,6 +84,8 @@
 | D-14 | Legal + security review of mail vault | FR-24 enablement | Open — owner Rolan |
 | D-20 | Privacy counsel (edtech/COPPA) engagement and sign-off — LG-01 | Vault launch | Open |
 | D-21 | Pen-test vendor; payment processor for VPC; ID-verification vendor; DPAs | Vault launch | Open |
+| D-22 | Supabase account-level token or dashboard action to create sparkle-dev (SA-12) | G0 | Open |
+| D-23 | Cloudflare token with Notifications: Edit, or manual usage alerts (SA-13) | G0 | Open |
 
 **Corrections vs. original:** added scoring, owners, status; added R-05..R-09, A-03, issues I-01/I-02 (original said "none open" though access was already blocking), D-04/D-05.
 
@@ -101,3 +108,4 @@
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Closed I-01; added I-03 (R2), R-10..R-13, D-06..D-11; resourcing reality. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Closed I-03 (R2); added R-14..R-18, D-12..D-14. |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | R-06 downgraded; R-20..25, D-20/21 added (CR-0005). |
+| 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | R-26..30, D-22/23 (CR-0006). |

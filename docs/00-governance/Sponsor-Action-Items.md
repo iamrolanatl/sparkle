@@ -1,0 +1,33 @@
+# Sponsor Action Items (Rolan)
+
+| Field | Value |
+|---|---|
+| Document ID | SPK-GOV-010 |
+| Project | Sparkle — Student Success Platform |
+| Version | 1.0 |
+| Status | Active register (CR-0006) |
+| Document Owner | Rolan Chowdhury (Sponsor / PM) |
+| Last Updated | 2026-10-21 |
+
+> **Purpose.** Tracked list of items that only Rolan can do or decide. Grok Bot reviews it in every weekly status report. Statuses: Open · In progress · Done · Dropped.
+
+| ID | Item | Owner | Due | Status | Link |
+|---|---|---|---|---|---|
+| SA-01 | Hire an edtech/COPPA privacy lawyer; get vault & policy sign-off (LG-01) | Rolan | TBD | Open | [Vault Plan §8](../02-planning/Vault-Compliance-and-Security-Plan.md) |
+| SA-02 | Approve the WISP and accept the Information Security Coordinator role | Rolan | TBD | Open | DEC-34 |
+| SA-03 | Pick a pen-test firm, a consent card-check (payment) vendor, and an ID-check vendor | Rolan | TBD | Open | DEC-21, DEC-35 |
+| SA-04 | Sign DPAs: Supabase, Cloudflare, xAI and Anthropic (no-training / zero-retention), Sentry | Rolan | TBD | Open | DEC-30 |
+| SA-05 | Consider cyber-liability insurance | Rolan | TBD | Open | LG-14 |
+| SA-06 | Merge PR #1 (PMP baseline), then PR #3 (vault compliance) | Rolan | TBD | Open | https://github.com/iamrolanatl/sparkle/pulls |
+| SA-07 | Choose a production domain (after trademark direction, SA-11) | Rolan | TBD | Open | WBS 2.21 |
+| SA-08 | Choose a go-live target month so gate dates can be set | Rolan | TBD | Open | WBS |
+| SA-09 | Decide age threshold 13 vs 14 | Rolan | TBD | Open | DEC-04 |
+| SA-10 | Decide on GitHub Pro ($4/mo) — on the Free plan a private repo can't use branch protection, required reviews, or secret-scanning push protection. Dependabot alerts + automated security fixes are already enabled (2026-10-21) | Rolan | TBD | Open | DEC-44, R-27 |
+| SA-11 | Trademark direction: keep "Sparkle" as a product nickname but choose a distinctive compound brand (e.g., "Sparkle Student") and have counsel run a full clearance | Rolan | TBD | Open | [Trademark notes](../02-planning/Trademark-Clearance-Notes.md), DEC-40 |
+| SA-12 | Approve creating `sparkle-dev` Supabase project (free tier) — token couldn't confirm org plan; create in dashboard or issue an account-level token | Rolan | TBD | Open | [Environments](../02-planning/Environments-and-Cost-Guardrails.md) |
+| SA-13 | Set AI spend limits in xAI and Anthropic consoles; confirm Supabase spend cap ON; add Cloudflare usage alerts (or grant token "Notifications: Edit") | Rolan | TBD | Open | [Cost guardrails](../02-planning/Environments-and-Cost-Guardrails.md) |
+
+## Revision History
+| Version | Date | Author | CR | Description |
+|---|---|---|---|---|
+| 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Created and seeded. |

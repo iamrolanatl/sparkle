@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-004 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.3 |
+| Version | 1.4 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -26,6 +26,7 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 1.0 | **Project Management** — charter, plans, CR control, status, RAID, gates | All | In progress | Docs baseline done (PR #1, awaiting sponsor merge); CR-0002 in PR for Phase 0 |
 | 1.1 | SOP library creation & upkeep (`docs/06-operations/sops/`) | All | In progress | SOP-01..12 drafted (CR-0003); reviewed at every gate and on process change |
 | 1.2 | Definition of Done + ADR template | All | Done | `docs/00-governance/` (CR-0003) |
+| 1.3 | Automated weekly status report (Fridays ~4 PM ET) — DEC-45 *(in place)* |  | In place | CR-0006 |
 | 2.0 | **Phase 0 — Foundation** | G0 | In progress | |
 | 2.1 | Architecture runway, ADRs, scale-trigger values | | In progress | Data model & access control (TDD §8) done in CR-0002; scale-trigger numbers TBD |
 | 2.2 | Repo, CI/CD, environments, secrets | | In progress | GitHub Actions secrets/vars set; Supabase prod project `nklbdyezbsugkdvaidtt` exists; CI + manual API deploy workflow in CR-0002 |
@@ -45,6 +46,12 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.10 | Privacy & legal review — FERPA/COPPA/state law, Privacy Policy, Terms, DEC-06 | | Not started | **G1 entry criterion** (moved earlier from Phase 5). Needs counsel (none engaged) |
 | 2.11 | Sentry account + DSN | | Not started | Rolan |
 | 2.12 | Update landing page features & marketing content | | Recurring | At each gate, per [Communications & Marketing Plan](Communications-Marketing-Plan.md) |
+| 2.20 | Trademark clearance (knock-out done; counsel full search & filing) — DEC-40 |  | Not started | CR-0006 |
+| 2.21 | Production domain purchase + DNS (after brand decision) |  | Not started | CR-0006 |
+| 2.22 | Separate dev Supabase project; staging via Branching or Workers env — DEC-41 |  | Not started | CR-0006 |
+| 2.23 | Repo security: Dependabot (done), gitleaks CI, CODEOWNERS; branch protection if GitHub Pro — DEC-44 |  | Not started | CR-0006 |
+| 2.24 | Cost alerts & budgets: Cloudflare, Supabase, xAI, Anthropic — DEC-43 |  | Not started | CR-0006 |
+| 2.25 | Privacy-respecting analytics + KPI instrumentation — DEC-42 |  | Not started | CR-0006 |
 | 3.0 | **Phase 1 — Core Data & Identity** | G1 | Not started | Entry: 2.10 complete |
 | 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema, RLS, `redeem_invitation` + tests in CR-0002; UI not started |
 | 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | | Blocked | **Gated** by legal/ToS review of automated access to StudentVue/Cobb portals (R-05); needs Apple + Windows code-signing certificates (D-05) |
@@ -79,6 +86,15 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 6.5 | Update landing page features & marketing content | | Recurring | At G4 |
 | 6.6 | School mail vault (FR-24) incl. OCR acceptance | | Not started | Gated: legal + security review (R-16); flag `vault_enabled=false`; R2 `sparkle-vault` ready |
 | 6.7 | OCR for calendar / bell schedules (FR-23 → FR-13) | | Not started | |
+| 6.7.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0006 |
+| 6.7.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0006 |
+| 6.7.3 | Minimization detectors, auto-redaction, sensitivity classifier |  | Not started | CR-0006 |
+| 6.7.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | Not started | CR-0006 |
+| 6.7.5 | Vault RLS + access log + break-glass view-as |  | Not started | CR-0006 |
+| 6.7.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | Not started | CR-0006 |
+| 6.7.7 | Incident runbook, notification templates, tabletop |  | Not started | CR-0006 |
+| 6.7.8 | Subprocessor DPAs + public subprocessor page |  | Not started | CR-0006 |
+| 6.7.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Not started | CR-0006 |
 | 6.8 | **Mail vault compliance & security (CR-0005)** — vault stays behind `vault_enabled` until launch gate | G4/G5 | Not started | DEC-37 |
 | 6.8.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0005 |
 | 6.8.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0005 |
@@ -123,3 +139,4 @@ Added 1.0 PM and 8.0 Closing branches; added web fallback, connectors beyond Stu
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added Status and Notes/Dependency columns; reflected actual progress; added 2.2.x, 2.6–2.12, recurring landing-page updates per phase, mobile=PWA, legal gating of 3.2, privacy review as G1 entry; resourcing reality. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added 1.1 SOP library, 1.2 DoD/ADR template; R2 done (I-03 closed); 2.7.1–2.7.3 (legal, chat, admin slice); CR-0004 elements 4.8–4.10, 6.6, 6.7. |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added 6.8.x vault compliance (renumbered from 6.7.x on rebase), sorted rows, 7.5 pen test, 7.6 counsel sign-off/launch gate. |
+| 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Added 2.20–2.25 and 1.1 (CR-0006). |
