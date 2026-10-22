@@ -27,6 +27,9 @@ export default async function TodayPage() {
         <Link href="/app/family" className="mt-4 inline-block underline">
           Family &amp; helpers →
         </Link>
+        <Link href="/app/import" className="mt-4 ml-6 inline-block underline">
+          Import assignments (CSV) →
+        </Link>
       </GlassPanel>
       <GlassPanel className="p-6">
         <StateDemo />
