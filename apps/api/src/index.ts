@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
 import { students, type StudentsEnv } from "./students/route";
-import { aiStatus } from "./ai/env";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 
@@ -34,10 +33,6 @@ app.use("*", async (c, next) => {
 app.get("/health", async (c) => {
   const configured = Boolean(c.env?.SUPABASE_URL && c.env?.SUPABASE_SECRET_KEY);
   const checks: Record<string, boolean | number> = { supabaseConfigured: configured };
-  const ai = aiStatus(c.env ?? {});
-  checks.aiT1 = ai.t1;
-  checks.aiT2 = ai.t2;
-  checks.aiT3 = ai.t3;
   if (c.req.query("deep") === "1" && configured) {
     const t0 = Date.now();
     try {
