@@ -86,6 +86,20 @@ Priority uses MoSCoW (M = Must for MVP acceptance, S = Should, C = Could). Featu
 | NFR-32 | *(CR-0005)* Written Information Security Program maintained and reviewed annually (DEC-34). | Annual review |
 | NFR-33 | *(CR-0005)* Independent pen test pre-launch, Critical/High fixed; cross-tenant RLS suite in CI; ASVS 5.0 L2 for vault (DEC-35). | Pen-test report, CI |
 | NFR-34 | *(CR-0005)* Step-up re-auth (≤ 15 min) for sensitive documents (DEC-39). | E2E |
+| NFR-35 | *(CR-0007)* Capacity: **1,000,000 registered users**; **≈ 30,000 concurrent sessions** and **6,000 API RPS** at peak without SLO breach ([Scalability Plan](Scalability-Reliability-Plan.md) §2). | k6 capacity test + extrapolation |
+| NFR-36 | *(CR-0007)* Availability SLO **99.9 %** monthly (error budget 43.2 min / 30 days). | Synthetic + Workers analytics |
+| NFR-37 | *(CR-0007)* **Crash-free sessions ≥ 99.9 %** (web, PWA, desktop agent). | Crash reporter |
+| NFR-38 | *(CR-0007)* API p95 ≤ 200 ms (cached read), ≤ 400 ms (DB write); p99 ≤ 500 ms reads. | k6 thresholds in CI |
+| NFR-39 | *(CR-0007)* Error-budget policy enforced (freeze at 50 % burn in 7 days). | Monthly SLO review |
+| NFR-40 | *(CR-0007)* RPO ≤ 24 h (Free) → ≤ 5 min with PITR before public launch; RTO ≤ 4 h. | SOP-11 restore drill |
+| NFR-41 | *(CR-0007)* Every UI surface has an error boundary and degraded state; no uncaught error blanks a page. | Unit + E2E |
+| NFR-42 | *(CR-0007)* All outbound calls have timeouts and bounded retries; POSTs accept `Idempotency-Key`; public endpoints rate-limited. | Unit tests |
+| NFR-43 | *(CR-0007)* RLS policies use `(select auth.uid())`; every FK and policy column indexed; Supabase advisors show no performance warnings. | Advisor check + migration test |
+| NFR-44 | *(CR-0007)* Observability: structured logs, health checks, alerts on SLO burn and error spikes. | SOP-05 |
+| NFR-45 | *(CR-0007)* Releases are canaried (gradual deployment) with one-command rollback. | SOP-02 |
+| NFR-46 | *(CR-0007)* Repo hygiene gates: lint, typecheck, format, knip (no unused code/deps), conventional PR titles, CODEOWNERS; merged branches deleted. | CI |
+| NFR-47 | *(CR-0008)* Lighthouse mobile ≥ 90 on landing. | Lighthouse CI |
+| NFR-48 | *(CR-0008)* Motion targets 60 fps; effects degrade automatically below 30 fps, on Save-Data, low power and reduced motion. | Unit + manual |
 
 ## 3. Expert-Informed Constraints
 Progressive disclosure; one idea per message; growth-mindset language; no punishing streaks; quiet hours and daily digest; crisis protocol; coach mode only for academic work.

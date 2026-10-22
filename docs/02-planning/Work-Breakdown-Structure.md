@@ -34,6 +34,10 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.2.2 | Branch protection on `main` | | Not started | Rolan to enable once CI is green |
 | 2.3 | Feature flags + observability baseline | | Not started | Needs Sentry account (2.11) |
 | 2.4 | Design system: glass, neon, light/dark, responsive, a11y, FPS-guarded aurora | | In progress | `packages/ui` in CR-0002 |
+| 2.4.1 | Neon glass windows, cursor glow, magnetic buttons, tilt cards (CR-0008) | | Not started | DEC-52 |
+| 2.4.2 | Seamless VideoBackground (CR-0008) | | Not started | DEC-52 |
+| 2.4.3 | Applets framework (isolated, lazy, skeleton) (CR-0008) | | Not started | DEC-52 |
+| 2.4.4 | Playwright E2E + visual tests; Lighthouse CI budget (CR-0008) | | Not started | NFR-47/48 |
 | 2.5 | Sparkle character states | | In progress | **Placeholder only** (`packages/sparkle-character`, Rive integration point stubbed). Production full-body Rive character needs an illustrator/animator — who/how TBD (D-03, R-11) |
 | 2.6 | Access and tooling | | Done | Supabase token; Google auth enabled in Supabase; GCP project `sparkle-app-2566` with OAuth Web client (web + mobile via Supabase, DEC-05); Cloudflare token verified; Rolan's Windows laptop: git, node, gh, gcloud, wrangler, supabase CLI |
 | 2.6.1 | Enable Cloudflare R2 | | Done | Enabled 2026-10-21; private buckets `sparkle-scans`, `sparkle-vault` (ENAM, no public access); bound as SCANS_BUCKET / VAULT_BUCKET in `apps/api` (CR-0003) — I-03 closed |
@@ -46,6 +50,13 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.10 | Privacy & legal review — FERPA/COPPA/state law, Privacy Policy, Terms, DEC-06 | | Not started | **G1 entry criterion** (moved earlier from Phase 5). Needs counsel (none engaged) |
 | 2.11 | Sentry account + DSN | | Not started | Rolan |
 | 2.12 | Update landing page features & marketing content | | Recurring | At each gate, per [Communications & Marketing Plan](Communications-Marketing-Plan.md) |
+| 2.13 | Enterprise reliability baseline: error boundaries, crash reporter, resilience lib (CR-0007) | | Not started | DEC-51, DEC-54 |
+| 2.14 | RLS performance migration + indexes (CR-0007) | | Not started | NFR-43 |
+| 2.15 | k6 load tests in CI + capacity model (CR-0007) | | Not started | DEC-55 |
+| 2.16 | Repo hygiene gates: knip, Prettier, PR title, CODEOWNERS, branch auto-delete (CR-0007) | | Not started | DEC-53, SOP-13 |
+| 2.17 | Observability & alerting baseline (CR-0007) | | Not started | NFR-44 |
+| 2.18 | Canary / rollback via gradual deployments (CR-0007) | | Not started | NFR-45, SOP-02 |
+| 2.19 | Idempotency, rate limits, caching middleware (CR-0007) | | Not started | NFR-42 |
 | 2.20 | Trademark clearance (knock-out done; counsel full search & filing) — DEC-40 |  | Not started | CR-0006 |
 | 2.21 | Production domain purchase + DNS (after brand decision) |  | Not started | CR-0006 |
 | 2.22 | Separate dev Supabase project; staging via Branching or Workers env — DEC-41 |  | Not started | CR-0006 |

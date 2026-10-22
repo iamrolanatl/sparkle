@@ -50,6 +50,8 @@
 | R-28 | Dev/test work against the prod Supabase project until sparkle-dev exists | 3 | 4 | 12 | Mitigate | Only synthetic data in prod pre-launch; create dev (SA-12) | Eng | Open |
 | R-29 | Cloud/AI bill shock (only $10 Cloudflare budget alert active; AI provider caps not yet set) | 2 | 3 | 6 | Mitigate | DEC-43; SA-13 | Rolan | Open |
 | R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
+| R-31 | Rich effects (video, glow, tilt) regress mobile performance / battery | 3 | 3 | 9 | Mitigate | Perf budget, Lighthouse CI, auto-degrade < 30 fps, poster fallback (DEC-52) | Grok Bot | Open |
+| R-32 | Free tiers cannot actually serve 1M users (Supabase Free pauses, 60 conns, no PITR) | 4 | 4 | 16 | Mitigate | Capacity model; cache-first design; SA-15/16 before G5 | Rolan | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
