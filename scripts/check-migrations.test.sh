@@ -20,4 +20,6 @@ fail 20991231000008_int_fn.sql '-- rollback: restore previous body from git\ncre
 fail 20991231000009_int_alterpol.sql '-- rollback: restore previous policy\nalter policy p_read on public.tasks using (true);\n'
 pass 20991231000010_int_signed.sql '-- rollback: restore previous body from git\n-- integration-signoff: #60 (RLS tests in supabase/tests)\ncreate or replace function public.student_age(p uuid) returns int language sql as $$ select 1 $$;\n'
 printf -- '-- rollback: x\n' > $M/20261021000000_int_dup.sql; if run; then echo "FAIL: duplicate timestamp"; exit 1; fi; rm $M/20261021000000_int_dup.sql
-echo "check-migrations self-test ok (12 cases)"
+pass 20991231000011_int_fnbody.sql '-- rollback: drop function public.purge_x()\ncreate function public.purge_x() returns void language plpgsql as $fn$ begin delete from public.t where true; update public.t set a = 1; end $fn$;\n'
+fail 20991231000012_int_toplevel.sql '-- rollback: restore rows from backup\ncreate function public.f() returns int language sql as $$ select 1 $$;\ndelete from public.students;\n'
+echo "check-migrations self-test ok (14 cases)"

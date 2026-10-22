@@ -38,6 +38,9 @@ const RULES = [
 ];
 
 const stripComments = (sql) => sql.replace(/--[^\n]*/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
+// Function/DO bodies run at call time, not migration time: blank out dollar-quoted blocks ($$…$$, $tag$…$tag$)
+// for the destructive check only. Top-level statements are still checked.
+const stripBodies = (sql) => sql.replace(/(\$[A-Za-z_]*\$)[\s\S]*?\1/g, "$$$$");
 const errors = [];
 const files = readdirSync(DIR)
   .filter((f) => f.endsWith(".sql"))
@@ -61,7 +64,7 @@ for (const f of files) {
     errors.push(`${f}: "-- rollback:" note must describe the rollback (not blank / n/a)`);
   if (!OVERRIDE.test(raw)) {
     // Allow `drop policy if exists X on T;` when the same policy X on T is re-created in this file.
-    const full = stripComments(raw);
+    const full = stripBodies(stripComments(raw));
     const esc = (v) => v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const sql = full.replace(
       /\bdrop\s+policy\s+if\s+exists\s+("[^"]+"|\w+)\s+on\s+([\w."]+)\s*;/gi,
