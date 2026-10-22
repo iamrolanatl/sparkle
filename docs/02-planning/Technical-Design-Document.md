@@ -111,6 +111,9 @@ No admin read policies. Admin access only via `admin_request_view_as` (stub: req
 ### 8.5 Applying the migration
 Not applied to the live project in CR-0002. Procedure: local `supabase start && supabase db reset` → run `rls_test.sql` → `supabase link --project-ref nklbdyezbsugkdvaidtt` → `supabase db push --dry-run` → sponsor approval → `supabase db push`.
 
+## 8.5a Mail vault data model (FR-24, CR-0005) — Team C
+Per [Vault Plan §5](Vault-Compliance-and-Security-Plan.md): `vault_documents` (class `standard|academic|sensitive`; sensitive rows have no plaintext OCR — DB CHECK), `vault_grants` (≤ 30 days), append-only `vault_access_log`, `consents`, `household_keys` (wrapped DEK; service role only). Read rule: `can_view_vault_doc()` = `can_view_student()` with class→scope mapping (standard→`messages`, academic→`grades`) and sensitive → active guardian or valid grant (DEC-140). Writes only via SECURITY DEFINER RPCs (DEC-141). Behind `vault_enabled=false`, sample data only (DEC-37/144).
+
 ## 8.6 Public chat, legal & admin (CR-0003)
 - `apps/api` `POST /chat` (SSE) → guard (`classify`, `redact`) → Workers AI `@cf/meta/llama-3.1-8b-instruct` via AI Gateway `sparkle-gateway`; `POST /chat/handoff` → `support_tickets`. Rate limiting: Workers Rate Limiting binding `CHAT_RATE_LIMITER` (10/min/IP). Kill switch/budget: `feature_flags.sales_chat`. Storage via PostgREST with service role; `chat_sessions` expire after 30 days (`purge_expired_chats()` via pg_cron).
 - `privacy_requests`, `waitlist`: insert-only for anon/authed; trigger rate-limits per `ip_hash`.
