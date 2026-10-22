@@ -80,6 +80,9 @@
 | DEC-61 | 2026-10-21 | Today document cached in Workers KV 5 min, invalidated on import; 'today' = America/New_York school day | Cache-first for 1M users (NFR-35); free tier | Durable Objects (later) | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-62 | 2026-10-21 | Outbound confirmation enforced twice: DB check constraint (sent requires confirmed_by/at) + API sendConfirmed() | Handoff §9 / ADR-04 defense in depth | App-only check | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-63 | 2026-10-21 | Phase 1 is built and run on dev with no real student data; **G1 formal pass is held** until 2.10 privacy/legal review and 3.2 portal-ToS review (counsel, sponsor-gated) | Hard limits: legal sign-off, school-portal terms | Proceed with real data | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-146 | 2026-10-21 | All vault downloads (every class) stream through the authenticated Worker proxy; no presigned URLs yet | Stricter than DEC-25 floor; avoids R2 S3 credentials in Worker; revisit for perf at scale | Presigned 5-min GET for standard/academic | Grok Bot (Team C) under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-147 | 2026-10-21 | Vault kill switch fails CLOSED (404 when flag off, store unreachable or unconfigured) | DEC-36/37 | Fail-open like sales chat | Grok Bot (Team C) under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-148 | 2026-10-21 | OcrResult contract {engine,text,confidence} owned by vault; sensitive requires engine=on_device; server re-redacts OCR text; image redaction client-side (Team B) | DEC-22/31; issue #54 | Server-side image redaction (needs image libs in Worker) | Grok Bot (Team C) under Rolan's standing delegation (2026-10-21) | Decided |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
