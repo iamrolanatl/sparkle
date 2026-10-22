@@ -51,3 +51,17 @@ export async function listTasksAction(studentId: string) {
   if (!UUID.test(studentId)) return { status: 400, body: { error: "bad_request" } };
   return call(`/students/${studentId}/tasks`);
 }
+
+export async function dueSoonAction(studentId: string) {
+  if (!UUID.test(studentId)) return { status: 400, body: { error: "bad_request" } };
+  return call(`/students/${studentId}/tasks/due-soon`);
+}
+
+export async function studyStatusAction() {
+  return call(`/study-helper/status`);
+}
+
+export async function askStudyHelperAction(studentId: string, text: string) {
+  if (!UUID.test(studentId)) return { status: 400, body: { error: "bad_request" } };
+  return call(`/study-helper/${studentId}`, { method: "POST", body: JSON.stringify({ text: text.slice(0, 1000) }) });
+}
