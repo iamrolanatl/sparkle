@@ -1,4 +1,8 @@
+# RustSec gate for the desktop shell. Vulnerabilities always fail.
+# `unmaintained` is enforced for our own crates only: Tauri's Linux GTK stack pulls proc-macro-error
+# (RUSTSEC-2024-0370, unmaintained, no vulnerability) transitively and has no upstream replacement yet.
 [advisories]
 version = 2
 yanked = "deny"
+unmaintained = "workspace"
 ignore = []
