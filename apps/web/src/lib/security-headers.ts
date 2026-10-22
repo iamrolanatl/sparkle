@@ -12,7 +12,15 @@ export function sentryOrigin(dsn?: string): string {
   }
 }
 
-export function contentSecurityPolicy(supabaseUrl: string, apiOrigins: string[] = [], sentryDsn?: string): string {
+/** Routes that are always dynamic (signed-in) and therefore get a per-request nonce CSP (DEC-186). */
+export const NONCE_ROUTES = /^\/(app|admin|invite)(\/|$)/;
+
+export function contentSecurityPolicy(
+  supabaseUrl: string,
+  apiOrigins: string[] = [],
+  sentryDsn?: string,
+  nonce?: string,
+): string {
   const connect = [
     "'self'",
     supabaseUrl,
@@ -24,7 +32,9 @@ export function contentSecurityPolicy(supabaseUrl: string, apiOrigins: string[] 
   const formAction = ["'self'", supabaseUrl, "https://accounts.google.com"].filter(Boolean);
   return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'", // wasm: on-device OCR (/app/scan, DEC-77)
+    nonce
+      ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval'`
+      : "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'", // wasm: on-device OCR (/app/scan, DEC-77)
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",

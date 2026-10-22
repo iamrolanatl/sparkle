@@ -41,3 +41,18 @@ describe("CSP integration fixes (#27 review)", () => {
     expect(csp).not.toMatch(/jsdelivr|unpkg|cdnjs/);
   });
 });
+
+describe("nonce CSP (DEC-186)", () => {
+  it("uses nonce + strict-dynamic, keeps wasm for /app/scan, drops unsafe-inline for scripts", () => {
+    const csp = contentSecurityPolicy("https://x.supabase.co", [], undefined, "abc");
+    expect(csp).toContain("script-src 'self' 'nonce-abc' 'strict-dynamic' 'wasm-unsafe-eval'");
+    expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
+    expect(csp).toContain("worker-src 'self';");
+    expect(csp).not.toMatch(/worker-src[^;]*blob:/);
+  });
+  it("matches only signed-in routes", async () => {
+    const { NONCE_ROUTES } = await import("./security-headers");
+    expect(["/app", "/app/scan", "/admin", "/invite/x"].every((p) => NONCE_ROUTES.test(p))).toBe(true);
+    expect(["/", "/apply", "/privacy", "/login"].some((p) => NONCE_ROUTES.test(p))).toBe(false);
+  });
+});
