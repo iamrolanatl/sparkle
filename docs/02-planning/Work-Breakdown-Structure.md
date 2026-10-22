@@ -32,7 +32,7 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.2 | Repo, CI/CD, environments, secrets | | In progress | Dev deployed 2026-10-21 via `scripts/deploy-dev.sh` (DEC-46, DEC-48); GitHub Actions secrets/vars set; Supabase prod project `nklbdyezbsugkdvaidtt` exists; CI + manual API deploy workflow in CR-0002 |
 | 2.2.1 | Separate dev/staging Supabase projects | | Not started | Needs Rolan to create projects (free tier limits) |
 | 2.2.2 | Branch protection on `main` | | Not started | Rolan to enable once CI is green |
-| 2.3 | Feature flags + observability baseline | | Not started | Needs Sentry account (2.11) |
+| 2.3 | Feature flags + observability baseline | | In progress | Structured logs + crash reporter shipped (PR #10/#11, 2.13); reporter is a no-op until a Sentry DSN exists (2.11); feature flags pending |
 | 2.4 | Design system: glass, neon, light/dark, responsive, a11y, FPS-guarded aurora | | In progress | `packages/ui` in CR-0002 |
 | 2.4.1 | Neon glass windows, cursor glow, magnetic buttons, tilt cards (CR-0008) | | Done | PR #10 |
 | 2.4.2 | Seamless VideoBackground (CR-0008) | | Done | PR #10 |
@@ -65,26 +65,26 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.25 | Privacy-respecting analytics + KPI instrumentation — DEC-42 |  | Not started | CR-0006 |
 | 3.0 | **Phase 1 — Core Data & Identity** | G1 | Not started | Entry: 2.10 complete |
 | 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema + RLS (CR-0002) + UI PR #12 |
-| 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | | Blocked | **Gated** by legal/ToS review of automated access to StudentVue/Cobb portals (R-05); needs Apple + Windows code-signing certificates (D-05) |
-| 3.3 | Web fallback: manual upload | | In progress | CSV import API PR #13; upload UI next |
-| 3.4 | Normalized data model + Today doc precompute | | In progress | Today doc API + KV PR #13 |
+| 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | | In progress (skeleton: #30, #47, #61) | Agent skeleton + ingest provenance in #61 (migration 20261022030000_d_ingest_provenance); first live connector still **gated** by legal/ToS review of automated access to StudentVue/Cobb portals (R-05); needs Apple + Windows code-signing certificates (D-05) |
+| 3.3 | Web fallback: manual upload | | In progress | CSV import API #13 merged; upload UI #22 in review |
+| 3.4 | Normalized data model + Today doc precompute | | Done | Today doc API + KV cache (#13) |
 | 3.5 | Admin basic sync health | | In progress | PR #14 |
 | 3.6 | Explicit-confirmation framework for outbound comms | | In progress | PR #15 |
 | 3.7 | Update landing page features & marketing content | | Recurring | At G1 |
 | 4.0 | **Phase 2 — Student Experience** | G2 | Not started | |
-| 4.1 | Today view + statuses + "What changed" + focus mode | | Not started | |
+| 4.1 | Today view + statuses + "What changed" + focus mode | | In progress | Today view #23 in review; "What changed" + focus mode next |
 | 4.2 | Classes + unit workspace | | Not started | |
-| 4.3 | GPA engine + simulator | | Not started | |
+| 4.3 | GPA engine + simulator | | Done | #17 (DEC-64) |
 | 4.4 | Student daily input | | Not started | `daily_notes` table in CR-0002 |
 | 4.5 | Additional connectors | | Not started | Same gating as 3.2 |
-| 4.6 | Mobile delivery: responsive web / PWA | | In progress | MVP = responsive web/PWA; native apps out of MVP unless a CR adds them |
+| 4.6 | Mobile delivery: responsive web / PWA | | In progress | MVP = responsive web/PWA (#25 in review); native apps out of MVP unless a CR adds them |
 | 4.7 | Update landing page features & marketing content | | Recurring | At G2 |
 | 4.8 | Natural-language tasks (FR-21) | | Not started | CR-0004 |
-| 4.9 | School-day weather (FR-22) | | Not started | Weather provider TBD (cost/terms) |
+| 4.9 | School-day weather (FR-22) | | In progress | NWS, free, no key (DEC-66); API #19 in review; applet next |
 | 4.10 | OCR scanning (FR-23) | | Not started | R2 `sparkle-scans` ready |
 | 5.0 | **Phase 3 — Sparkle & AI** | G3 | Not started | |
 | 5.1 | Rive integration + personality states | | Not started | Depends on animator (2.5) |
-| 5.2 | AI router, budgets, circuit breakers, citations | | Not started | Needs xAI + Anthropic API keys (D-02) |
+| 5.2 | AI router, budgets, circuit breakers, citations | | In progress | Router #20 in review (DEC-68); T1 Workers AI live; T2/T3 need xAI + Anthropic keys (D-02) |
 | 5.2.1 | Tier 1 model selection (Workers AI vs Ollama-class) | | Not started | |
 | 5.3 | Voice pipeline with text fallback | | Not started | |
 | 5.4 | Crisis protocol, hide/mute, coach-mode guardrails | | Not started | Crisis content needs counsel/expert |
@@ -97,15 +97,6 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 6.5 | Update landing page features & marketing content | | Recurring | At G4 |
 | 6.6 | School mail vault (FR-24) incl. OCR acceptance | | Not started | Gated: legal + security review (R-16); flag `vault_enabled=false`; R2 `sparkle-vault` ready |
 | 6.7 | OCR for calendar / bell schedules (FR-23 → FR-13) | | Not started | |
-| 6.7.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0006 |
-| 6.7.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0006 |
-| 6.7.3 | Minimization detectors, auto-redaction, sensitivity classifier |  | Not started | CR-0006 |
-| 6.7.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | Not started | CR-0006 |
-| 6.7.5 | Vault RLS + access log + break-glass view-as |  | Not started | CR-0006 |
-| 6.7.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | Not started | CR-0006 |
-| 6.7.7 | Incident runbook, notification templates, tabletop |  | Not started | CR-0006 |
-| 6.7.8 | Subprocessor DPAs + public subprocessor page |  | Not started | CR-0006 |
-| 6.7.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Not started | CR-0006 |
 | 6.8 | **Mail vault compliance & security (CR-0005)** — vault stays behind `vault_enabled` until launch gate | G4/G5 | Not started | DEC-37 |
 | 6.8.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0005 |
 | 6.8.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0005 |
