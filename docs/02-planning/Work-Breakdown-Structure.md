@@ -108,11 +108,11 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 6.7.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Not started | CR-0006 |
 | 6.8 | **Mail vault compliance & security (CR-0005)** — vault stays behind `vault_enabled` until launch gate | G4/G5 | Not started | DEC-37 |
 | 6.8.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0005 |
-| 6.8.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0005 |
+| 6.8.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | In progress | Team C: ConsentVerifier adapter + dev stub (#53); vendor waits on SA-C1 (CR-0005) |
 | 6.8.3 | Minimization detectors, auto-redaction, sensitivity classifier |  | In progress | Team C: OCR-text redaction + classifier PR #53; image redaction via Team B (#54) (CR-0005) |
-| 6.8.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | In progress | Team C: envelope encryption + Worker proxy PR #53; KEK rotation pending (CR-0005) |
-| 6.8.5 | Vault RLS + access log + break-glass view-as |  | In progress | Team C: RLS + access log PR #38; break-glass view-as not started (CR-0005) |
-| 6.8.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | In progress | Team C: 7-day undo + ≤30d purge PR #38/#53; inactivity & age-18 jobs not started (CR-0005) |
+| 6.8.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | In progress | Team C: envelope encryption + Worker proxy PR #53; annual KEK re-wrap done (CR-0005) |
+| 6.8.5 | Vault RLS + access log + break-glass view-as |  | In progress | Team C: RLS + access log PR #38; break-glass dual-control done (#38/#53) (CR-0005) |
+| 6.8.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | In progress | Team C: 7-day undo + ≤30d purge PR #38/#53; inactivity & age-18 jobs done (#38/#53) (CR-0005) |
 | 6.8.7 | Incident runbook, notification templates, tabletop |  | Not started | CR-0005 |
 | 6.8.8 | Subprocessor DPAs + public subprocessor page |  | Not started | CR-0005 |
 | 6.8.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Not started | CR-0005 |
