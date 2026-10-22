@@ -176,3 +176,38 @@ export function dontMiss(
       return rest;
     });
 }
+
+export const FROM_POST = "From teacher post";
+const words = (s: string) =>
+  new Set(
+    (s.toLowerCase().match(/[a-z0-9]{3,}/g) ?? []).filter((w) => !/^(due|the|and|at|on|for|oct|nov|dec|sep)$/.test(w)),
+  );
+/** Open, dated, not-yet-past teacher-post items as Upcoming rows; skipped when a portal assignment already covers it. */
+export function postUpcoming(
+  actions: PostAction[],
+  assignments: { title: string; due_at: string | null }[],
+  now = Date.now(),
+): { id: string; title: string; due_at: string; status: string; category: string }[] {
+  const seen = new Set<string>();
+  return actions
+    .filter((a) => a.due_at && !a.done_at && Date.parse(a.due_at) >= now - 12 * 3_600_000 && a.kind !== "announcement")
+    .filter((a) => {
+      const w = words(a.text);
+      const dup = assignments.some((x) => {
+        const xw = words(x.title);
+        const hit = [...w].filter((k) => xw.has(k)).length;
+        return hit >= Math.min(2, xw.size) && hit > 0;
+      });
+      const key = `${a.text.toLowerCase()}|${a.due_at}`;
+      if (dup || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map((a) => ({
+      id: `pa-${a.id}`,
+      title: a.text,
+      due_at: a.due_at!,
+      status: "assigned",
+      category: a.kind === "assessment" ? "Test/quiz · from teacher post" : FROM_POST,
+    }));
+}

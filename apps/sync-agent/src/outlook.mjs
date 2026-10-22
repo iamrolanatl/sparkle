@@ -27,9 +27,7 @@ export async function pullOutlook(ctx, classes, teachers) {
         rest.find((l) => /^(\d{1,2}\/\d{1,2}\/\d{4}|Mon|Tue|Wed|Thu|Fri|Sat|Sun|\d{1,2}:\d\d)/.test(l)) ?? null;
       const snippet = clean(rest.filter((l) => l !== when).join(" ")).slice(0, 300) || null;
       const sec = /^(\d{3,4}) - /.exec(subject)?.[1];
-      const cls =
-        (sec && classes.find((c) => c.sectionNo === String(Number(sec)))) ||
-        classes.find((c) => lastName(c.teacher) && sender.toLowerCase().includes(lastName(c.teacher)));
+      const cls = matchMail(subject, sender, classes);
       const isTeacher = !!sec || names.some((n) => sender.toLowerCase() === n) || / - .+ - /.test(subject);
       out.messages.push({
         externalId: `ol:${(r.id || sha([sender, subject, when])).slice(0, 120)}`.replace(/[^\w.:@/-]/g, "_"),
@@ -61,4 +59,31 @@ function parseWhen(w) {
   }
   if (/^\d{1,2}:\d\d/.test(w)) return now.toISOString();
   return null;
+}
+
+/** Base course name without the term marker: "Language Arts 7 Q1" → "language arts 7", "Soc Stdy 7Q2" → "soc stdy 7". */
+export const courseBase = (n) =>
+  clean(n)
+    .toLowerCase()
+    .replace(/\s*q[1-4]\b/g, "")
+    .replace(/(\d)q[1-4]\b/g, "$1")
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+/**
+ * Mail → class. Synergy mail-relay subjects look like "1084 - Language Arts 7 Q1 - Gimkit late work": the section
+ * number changes each quarter, so match (1) current section, (2) same course name in any quarter, (3) sender =
+ * current teacher.
+ */
+export function matchMail(subject, sender, classes) {
+  const m = /^(\d{3,4}) - (.+?) - /.exec(subject);
+  if (m) {
+    const bySec = classes.find((c) => c.sectionNo === String(Number(m[1])));
+    if (bySec) return bySec;
+    const base = courseBase(m[2]);
+    const byName = classes.find((c) => courseBase(c.name) === base);
+    if (byName) return byName;
+  }
+  const s = sender.toLowerCase();
+  return classes.find((c) => lastName(c.teacher ?? "") && s.includes(lastName(c.teacher))) ?? null;
 }

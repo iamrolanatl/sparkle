@@ -5,7 +5,7 @@ const BASE = "https://ctlsparent.cobbk12.org";
 /** CTLS Parent (ParentSquare) adapter: section feeds + school feed posts, class/school calendar JSON. Read-only (no opens of chats). */
 export async function pullParent(ctx, classes, { schoolId = "4193" } = {}) {
   const p = await ctx.newPage();
-  const out = { posts: [], events: [], aliases: [] };
+  const out = { posts: [], events: [], aliases: [], messages: [] };
   try {
     await p.goto(`${BASE}/schools/${schoolId}/feeds`, { waitUntil: "domcontentloaded", timeout: 45000 });
     await p.waitForTimeout(3000);
@@ -103,8 +103,63 @@ export async function pullParent(ctx, classes, { schoolId = "4193" } = {}) {
         });
       }
     }
+    // 1:1 teacher messages: fetch the chat LIST html (no thread is opened, so nothing is marked read).
+    try {
+      const chatsHref = await p.evaluate(
+        () => document.querySelector("a[href$='/chats'], a[href*='/chats?']")?.getAttribute("href") ?? null,
+      );
+      if (chatsHref) {
+        await pause();
+        const threads = await p.evaluate(async (href) => {
+          const res = await fetch(href.split("?")[0], { credentials: "include" });
+          if (!res.ok) return [];
+          const d = new DOMParser().parseFromString(await res.text(), "text/html");
+          return [...d.querySelectorAll("a.a-chat-thread")].map((a) => ({
+            id: /chats\/(\d+)/.exec(a.getAttribute("href") ?? "")?.[1] ?? "",
+            t: a.textContent.replace(/\s+/g, " ").trim(),
+            unread: /unread/i.test(a.className),
+          }));
+        }, chatsHref);
+        for (const th of threads) {
+          const m = parseChat(th.t);
+          if (!th.id || !m) continue;
+          const ln = m.sender.split(" ").slice(-1)[0].toLowerCase();
+          const cls = classes.find(
+            (c) =>
+              String(c.teacher ?? "")
+                .toLowerCase()
+                .split(" ")
+                .slice(-1)[0] === ln,
+          );
+          out.messages.push({
+            externalId: `ps:chat:${th.id}`,
+            classKey: cls?.key ?? null,
+            source: "ctls-parent",
+            sender: m.sender.slice(0, 120),
+            isTeacher: true,
+            subject: `Message from ${m.sender}`.slice(0, 300),
+            snippet: m.snippet.slice(0, 300) || null,
+            receivedAt: m.at,
+          });
+        }
+      }
+    } catch {
+      /* chats are best-effort */
+    }
     return { status: "ok", ...out };
   } finally {
     await p.close().catch(() => {});
   }
+}
+
+/** "Kimberly Tuttle 2 Messages Thu 12/18/25, 10:23 am I wanted to…" → sender, ISO time, snippet. */
+export function parseChat(t) {
+  const m =
+    /^(.+?) (\d+) Messages? (?:\w{3} )?(\d{1,2})\/(\d{1,2})\/(\d{2,4}),? (\d{1,2}):(\d\d) ?([ap]m) ?(.*)$/i.exec(t);
+  if (!m) return null;
+  const y = m[5].length === 2 ? 2000 + Number(m[5]) : Number(m[5]);
+  let h = Number(m[6]) % 12;
+  if (/pm/i.test(m[8])) h += 12;
+  const iso = `${y}-${m[3].padStart(2, "0")}-${m[4].padStart(2, "0")}T${String(h).padStart(2, "0")}:${m[7]}:00-05:00`;
+  return { sender: m[1].trim(), at: new Date(iso).toISOString(), snippet: m[9].trim() };
 }

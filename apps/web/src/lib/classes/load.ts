@@ -2,7 +2,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { computeGpa, letterFor } from "@/lib/gpa";
 import { CLASS_COLORS } from "./resources";
-import { classGuidance, classItems, type BoardPost, type Guidance, type PostAction } from "./guidance";
+import { classGuidance, classItems, postUpcoming, type BoardPost, type Guidance, type PostAction } from "./guidance";
 
 export type Category = { name: string; weight: number; score: number | null };
 export type Assignment = {
@@ -102,7 +102,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
       .limit(30),
     sb
       .from("units")
-      .select("id, class_id, title, topics, week_label, is_current, created_at")
+      .select("id, class_id, title, topics, week_label, is_current, created_at, source")
       .eq("student_id", studentId)
       .order("created_at", { ascending: false })
       .limit(200),
@@ -178,7 +178,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
   return ((cls.data ?? []) as Record<string, unknown>[]).map((c, i) => {
     const id = c.id as string;
     const u = (units.data ?? []).filter((x) => x.class_id === id);
-    const unit = u.find((x) => x.is_current) ?? u[0] ?? null;
+    const unit = u.find((x) => x.is_current && x.source !== "inferred") ?? u.find((x) => x.is_current) ?? u[0] ?? null;
     const categories = (cats.data ?? [])
       .filter((x) => x.class_id === id)
       .map((x) => ({ name: x.name, weight: Number(x.weight), score: x.score == null ? null : Number(x.score) }));
@@ -228,6 +228,13 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
     const unreadPostIds = myBoard.filter((b) => !b.read).map((b) => b.id);
     const missingList = ((missing.data ?? []) as Assignment[]).filter((a) => a.class_id === id);
     const unitView = unit ? { title: unit.title as string } : null;
+    // Dated items from teacher class-board posts join Upcoming (and so Today due-soon + Tasks), unless the
+    // portal already lists the same work.
+    const realUpcoming = ((asg.data ?? []) as Assignment[]).filter((a) => a.class_id === id);
+    const fromPosts: Assignment[] = postUpcoming(
+      ((acts.data ?? []) as PostAction[]).filter((a) => a.class_id === id),
+      realUpcoming,
+    ).map((a) => ({ ...a, class_id: id }));
     return {
       guidance: classGuidance({ pct, missing: missingList, unit: unitView }, items, unreadPostIds.length),
       unreadPostIds,
@@ -243,7 +250,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
         ? { id: unit.id, title: unit.title, topics: unit.topics ?? [], week_label: unit.week_label ?? null }
         : null,
       categories,
-      upcoming: ((asg.data ?? []) as Assignment[]).filter((a) => a.class_id === id),
+      upcoming: [...realUpcoming, ...fromPosts].sort((a, b) => Date.parse(a.due_at!) - Date.parse(b.due_at!)),
       pct,
       letter: pct == null ? null : letterFor(Math.min(pct, 110)).letter,
       materials: ((mats.data ?? []) as (Material & { class_id: string })[]).filter((m) => m.class_id === id),

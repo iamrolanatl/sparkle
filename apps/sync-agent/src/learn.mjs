@@ -25,13 +25,11 @@ export async function pullLearn(ctx, classes) {
       name: clean(m[1]),
       teacher: clean(m[2]),
     }));
+    const used = new Set();
     for (const room of rooms) {
-      const cls = classes.find(
-        (c) =>
-          lastName(c.teacher.split(" ").slice(-1)[0]) === lastName(room.teacher.split(" ").slice(-1)[0]) &&
-          !/homeroom|counsel|library|club|team/i.test(room.name),
-      );
+      const cls = matchRoom(room, classes, used);
       if (!cls) continue;
+      used.add(cls.key);
       try {
         await p.getByText(room.name, { exact: true }).first().click();
         await p.waitForTimeout(6000);
@@ -193,4 +191,43 @@ export function pickWeek(lines, now = new Date()) {
     }
   });
   return best >= 0 ? best : lines.some((l) => WEEK.test(l) && /\d/.test(l.replace(/^Week\s+\d+/i, ""))) ? -1 : first;
+}
+
+const SUBJECTS = [
+  [/math/i, /math/i],
+  [/scien/i, /scien/i],
+  [/reading/i, /reading/i],
+  [/\bela\b|language arts|english/i, /language arts|\bela\b|english/i],
+  [/social|\bss\d|\bss\b|soc stdy/i, /soc|social/i],
+  [/chorus|choir/i, /chorus|choir/i],
+  [/physical|\bp\.?e\b|phys ed/i, /phys|\bpe\b/i],
+];
+/**
+ * Pick the class for a CTLS Learn room. Rooms list only the first instructor (co-taught rooms like
+ * "7th Grade Reading - Mrs. Howes & Mr. Long" show "Long"), so score on teacher names anywhere in the room
+ * name/instructor plus the subject keyword. Each class is used once.
+ */
+export function matchRoom(room, classes, used = new Set()) {
+  if (/homeroom|counsel|library|club|team|leadership/i.test(room.name)) return null;
+  const hay = `${room.name} ${room.teacher}`.toLowerCase();
+  let best = null,
+    bestScore = 0;
+  for (const c of classes) {
+    if (used.has(c.key)) continue;
+    const ln = lastName(
+      String(c.teacher ?? "")
+        .split(" ")
+        .slice(-1)[0],
+    );
+    let score = 0;
+    if (ln && hay.includes(ln)) score += 2;
+    const subj = SUBJECTS.find(([r]) => r.test(room.name));
+    if (subj && subj[1].test(c.name)) score += 2;
+    else if (subj) score -= 2;
+    if (score > bestScore) {
+      best = c;
+      bestScore = score;
+    }
+  }
+  return bestScore >= 2 ? best : null;
 }

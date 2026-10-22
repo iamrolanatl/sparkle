@@ -8,6 +8,7 @@
  */
 import fs from "node:fs";
 import { spawnSync } from "node:child_process";
+import { inferUnit } from "./infer.mjs";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import { pullSynergy } from "./synergy.mjs";
@@ -171,6 +172,19 @@ async function main() {
       if (l?.status === "ok")
         for (const [k, v] of Object.entries(l.classPatch)) Object.assign(classes.find((c) => c.key === k) ?? {}, v);
     }
+    // Classes with no CTLS Learn weekly topics get an inferred current unit from assignment names.
+    if (rec.assignments.length) {
+      const learnKeys = new Set([
+        ...(state.learnUnitKeys ?? []),
+        ...rec.units.filter((u) => u.source === "ctls-learn").map((u) => u.classKey),
+      ]);
+      state.learnUnitKeys = [...learnKeys];
+      for (const c of classes) {
+        if (learnKeys.has(c.key)) continue;
+        const u = inferUnit(c, rec.assignments);
+        if (u) rec.units.push(u);
+      }
+    }
     if (classes.length && jobs.has("parent")) await run("ctls-parent", () => pullParent(ctx, classes));
     if (classes.length && jobs.has("mail")) await run("outlook", () => pullOutlook(ctx, classes, teachers));
     if (!rec.classes.length && classes.length)
@@ -218,7 +232,16 @@ async function main() {
       if (batch.posts?.length) await analyze(auth);
     }
     if (!dry)
-      fs.writeFileSync(statePath, JSON.stringify({ hashes: newHashes, classes, teachers, at: batch.capturedAt }));
+      fs.writeFileSync(
+        statePath,
+        JSON.stringify({
+          hashes: newHashes,
+          classes,
+          teachers,
+          learnUnitKeys: state.learnUnitKeys ?? [],
+          at: batch.capturedAt,
+        }),
+      );
   } catch (e) {
     log({ msg: "fatal", err: String(e.message).slice(0, 300), code: e.code ?? null });
     process.exitCode = 1;

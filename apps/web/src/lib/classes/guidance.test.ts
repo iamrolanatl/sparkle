@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classGuidance, classItems, dontMiss, type BoardPost, type PostAction } from "./guidance";
+import { classGuidance, classItems, dontMiss, postUpcoming, type BoardPost, type PostAction } from "./guidance";
 
 const now = Date.parse("2026-10-22T16:00:00Z");
 const posts: BoardPost[] = [
@@ -36,5 +36,18 @@ describe("guidance", () => {
     const dm = dontMiss([{ id: "c1", name: "Math", color: "#fff", missing: [{ title: "HW 3" }], guidance: g }], now);
     expect(dm[0]!.kind).toBe("missing");
     expect(dm.map((d) => d.key)).toContain("1");
+  });
+  it("merges dated post items into upcoming, skipping portal duplicates", () => {
+    const up = postUpcoming(
+      [
+        a("1", "due", "Delta Math due Oct 25", "2026-10-26T03:59:00Z"),
+        a("2", "due", "Weekly Questions due Oct 25", "2026-10-26T03:59:00Z"),
+        a("3", "due", "Old due", "2026-10-01T03:59:00Z"),
+      ],
+      [{ title: "Delta Math Week 11", due_at: "2026-10-26T03:59:00Z" }],
+      now,
+    );
+    expect(up.map((u) => u.id)).toEqual(["pa-2"]);
+    expect(up[0]!.category).toBe("From teacher post");
   });
 });
