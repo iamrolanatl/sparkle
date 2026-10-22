@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-004 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.2 |
+| Version | 1.3 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -59,11 +59,11 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 4.3 | GPA engine + simulator | | Not started | |
 | 4.4 | Student daily input | | Not started | `daily_notes` table in CR-0002 |
 | 4.5 | Additional connectors | | Not started | Same gating as 3.2 |
+| 4.6 | Mobile delivery: responsive web / PWA | | In progress | MVP = responsive web/PWA; native apps out of MVP unless a CR adds them |
+| 4.7 | Update landing page features & marketing content | | Recurring | At G2 |
 | 4.8 | Natural-language tasks (FR-21) | | Not started | CR-0004 |
 | 4.9 | School-day weather (FR-22) | | Not started | Weather provider TBD (cost/terms) |
 | 4.10 | OCR scanning (FR-23) | | Not started | R2 `sparkle-scans` ready |
-| 4.6 | Mobile delivery: responsive web / PWA | | In progress | MVP = responsive web/PWA; native apps out of MVP unless a CR adds them |
-| 4.7 | Update landing page features & marketing content | | Recurring | At G2 |
 | 5.0 | **Phase 3 — Sparkle & AI** | G3 | Not started | |
 | 5.1 | Rive integration + personality states | | Not started | Depends on animator (2.5) |
 | 5.2 | AI router, budgets, circuit breakers, citations | | Not started | Needs xAI + Anthropic API keys (D-02) |
@@ -76,14 +76,26 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 6.2 | Communication hub + AI drafts | | Not started | |
 | 6.3 | Calendar / bell schedule digitization | | Not started | |
 | 6.4 | Full admin console | | Not started | view-as stubbed (audited); chat-monitoring + privacy-queue slice delivered early as 2.7.3 |
+| 6.5 | Update landing page features & marketing content | | Recurring | At G4 |
 | 6.6 | School mail vault (FR-24) incl. OCR acceptance | | Not started | Gated: legal + security review (R-16); flag `vault_enabled=false`; R2 `sparkle-vault` ready |
 | 6.7 | OCR for calendar / bell schedules (FR-23 → FR-13) | | Not started | |
-| 6.5 | Update landing page features & marketing content | | Recurring | At G4 |
+| 6.8 | **Mail vault compliance & security (CR-0005)** — vault stays behind `vault_enabled` until launch gate | G4/G5 | Not started | DEC-37 |
+| 6.8.1 | Write & approve WISP (NIST CSF 2.0 + Privacy Framework); first risk assessment |  | Not started | CR-0005 |
+| 6.8.2 | VPC consent flow (card verification + ID/face fallback) + consent receipts |  | Not started | CR-0005 |
+| 6.8.3 | Minimization detectors, auto-redaction, sensitivity classifier |  | Not started | CR-0005 |
+| 6.8.4 | Envelope encryption, key rotation, crypto-shred; Worker download proxy |  | Not started | CR-0005 |
+| 6.8.5 | Vault RLS + access log + break-glass view-as |  | Not started | CR-0005 |
+| 6.8.6 | Retention/purge jobs (30/60-day, inactivity, age-18 transfer) |  | Not started | CR-0005 |
+| 6.8.7 | Incident runbook, notification templates, tabletop |  | Not started | CR-0005 |
+| 6.8.8 | Subprocessor DPAs + public subprocessor page |  | Not started | CR-0005 |
+| 6.8.9 | Privacy Policy vault section + retention schedule (Plan §9) |  | Not started | CR-0005 |
 | 7.0 | **Phase 5 — Hardening & Go-Live** | G5 | Not started | |
 | 7.1 | Performance & resilience testing | | Not started | |
 | 7.2 | UAT, security & privacy re-review | | Not started | |
 | 7.3 | Runbooks, training, staged rollout | | Not started | |
 | 7.4 | Update landing page for launch | | Recurring | Needs 2.8, 2.9, 2.10 |
+| 7.5 | Third-party penetration test (vault, RLS, auth, R2, view-as) + remediation/retest |  | Not started | CR-0005 |
+| 7.6 | Privacy counsel sign-off (LG-01) and vault launch-gate review (LG-01..14) |  | Not started | CR-0005 |
 | 8.0 | **Closing** | | Not started | |
 
 ## WBS Dictionary
@@ -110,3 +122,4 @@ Added 1.0 PM and 8.0 Closing branches; added web fallback, connectors beyond Stu
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added Status and Notes/Dependency columns; reflected actual progress; added 2.2.x, 2.6–2.12, recurring landing-page updates per phase, mobile=PWA, legal gating of 3.2, privacy review as G1 entry; resourcing reality. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added 1.1 SOP library, 1.2 DoD/ADR template; R2 done (I-03 closed); 2.7.1–2.7.3 (legal, chat, admin slice); CR-0004 elements 4.8–4.10, 6.6, 6.7. |
+| 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added 6.8.x vault compliance (renumbered from 6.7.x on rebase), sorted rows, 7.5 pen test, 7.6 counsel sign-off/launch gate. |

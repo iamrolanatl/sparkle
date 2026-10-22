@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-002 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.2 |
+| Version | 1.3 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -49,6 +49,10 @@
 | NFR-06, 12 | — | E4, all | Resilience patterns | Resilience suite | Not started |
 | NFR-07 | — | E1 | ADR-05, ADR-07 | Architecture review | Not started |
 | NFR-11, 13 | — | E2 | Design system | A11y + device matrix | Not started |
+| NFR-20..22, 27 | F (FR-24 Mail vault) | Vault | DEC-21..23, 28; Vault Plan §5–6 | E2E consent, detector corpus, RLS/privacy, purge | Not started |
+| NFR-23..26, 34 | FR-24 | Vault, E7 | DEC-24..27, 39 | Crypto, integration, audit, admin, E2E | Not started |
+| NFR-28, 32, 33 | FR-24 | All | DEC-29, 34..36 | Tabletop, WISP review, pen test, CI RLS | Not started |
+| NFR-29..31 | FR-23, FR-24 | Vault, E4 | DEC-30..33 | Contract index, router tests, config audit | Not started |
 
 **Corrections vs. original:** original summary left FR-07, FR-08, FR-09 untraced and listed FR-02 in two groups; it also pointed to an external "tracking tool" that doesn't exist yet — the matrix now lives here.
 
@@ -70,3 +74,4 @@
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added FR-16/17; statuses for FR-03/04. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Traced FR-18..FR-24, plus a dependency row FR-24 → FR-23. |
+| 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Traced NFR-20..34 to FR-23/FR-24 and DEC-20..39. |
