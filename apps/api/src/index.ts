@@ -64,6 +64,7 @@ app.use("/chat/handoff", idempotency());
 app.route("/chat", chat);
 app.use("/students/:id/import", idempotency());
 app.route("/students", students);
+app.use("/students/:id/tasks", idempotency());
 app.route("/students", tasks);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
