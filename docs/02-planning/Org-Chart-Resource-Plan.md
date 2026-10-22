@@ -52,8 +52,8 @@ Connector engineers and support added as districts onboard; no per-district team
 |---|---|---|
 | GitHub repo | `iamrolanatl/sparkle` | Active |
 | Supabase | project `nklbdyezbsugkdvaidtt` | Tokens pending |
-| Cloudflare | account (iamrolan@gmail.com) | API token pending |
-| Google Cloud | iamrolan@gmail.com | OAuth client pending |
+| Cloudflare | account (sponsor@example.com) | API token pending |
+| Google Cloud | sponsor@example.com | OAuth client pending |
 | AI providers | xAI (Grok), Anthropic (Claude) | Keys pending (Phase 3) |
 
 ---
