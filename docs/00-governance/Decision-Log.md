@@ -80,6 +80,13 @@
 | DEC-61 | 2026-10-21 | Today document cached in Workers KV 5 min, invalidated on import; 'today' = America/New_York school day | Cache-first for 1M users (NFR-35); free tier | Durable Objects (later) | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-62 | 2026-10-21 | Outbound confirmation enforced twice: DB check constraint (sent requires confirmed_by/at) + API sendConfirmed() | Handoff §9 / ADR-04 defense in depth | App-only check | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-63 | 2026-10-21 | Phase 1 is built and run on dev with no real student data; **G1 formal pass is held** until 2.10 privacy/legal review and 3.2 portal-ToS review (counsel, sponsor-gated) | Hard limits: legal sign-off, school-portal terms | Proceed with real data | Grok Bot under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-120 | 2026-10-21 | FR-23 review gate: OCR output stays `review` until the uploader confirms/edits fields; confirmed fields are sanitized and redacted again | FR-23 "always human review"; DEC-31 | Auto-save | Team B Tech Lead | Accepted |
+| DEC-121 | 2026-10-21 | Idempotency: one scan per (student, SHA-256 of bytes); R2 key `scans/{student}/{sha}`; pipeline uses conditional status transitions, ≤ 3 attempts, then `failed` | CR-0007 NFRs (no duplicates under retries) | Random keys | Team B Tech Lead | Accepted |
+| DEC-122 | 2026-10-21 | Redaction before storage: SSNs, Luhn-valid card numbers and keyword-anchored bank/routing numbers become `[REDACTED-…•••last4]`; unredacted text never persisted | DEC-22 | Reject whole doc | Team B Tech Lead | Accepted |
+| DEC-123 | 2026-10-21 | `scans` readable only by active guardians and the student; helpers excluded until a per-doc share design; writes service-role only | DEC-23 least privilege | can_view_student scope | Team B Tech Lead | Accepted |
+| DEC-124 | 2026-10-21 | Sensitive docs (IEP, 504, health) are rejected by scans and routed to the vault (FR-24) | DEC-31 on-device-only rule | Classify after server OCR | Team B Tech Lead | Accepted |
+| DEC-125 | 2026-10-21 | Server OCR fallback (Workers AI `@cf/llava-hf/llava-1.5-7b-hf`) is off by default (`SCANS_OCR_SERVER=on` to enable); on-device text preferred | R-23 residency; free tier | Third-party OCR (barred by DEC-31) | Team B Tech Lead | Accepted |
+| DEC-126 | 2026-10-21 | Proposed: purge unsaved/discarded scans and their R2 originals after 30 days (discard deletes immediately) | COPPA 312.10 retention | Keep indefinitely | Team B Tech Lead | Proposed — needs Integration to add to retention schedule |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 

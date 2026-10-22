@@ -43,6 +43,7 @@
 | R-21 | Georgia SDPATA / HBNR read differently by counsel or regulators (e.g., broader duties) | 2 | 4 | 8 | Mitigate | Already complying conservatively; LG-01 | Rolan | Open |
 | R-22 | Single-person security program (Rolan = coordinator; no independent reviewer) | 4 | 4 | 16 | Mitigate | Third-party pen test, counsel, plan to staff security lead by 100k users | Rolan | Open |
 | R-23 | R2 location is a hint, not a guarantee; Workers AI may process outside US | 2 | 3 | 6 | Accept/Mitigate | Sensitive OCR on-device; re-evaluate jurisdiction options | Eng | Open |
+| R-B1 | Regex redaction misses unusual SSN/bank formats or passwords (DEC-22) | 2 | 4 | 8 | Mitigate | Human review gate (DEC-120); expand patterns from sample-doc tests; vault adds classification | Team B | Open |
 | R-24 | Key compromise of KEK held as Workers secret | 2 | 5 | 10 | Mitigate | Least-privilege tokens, rotation, KMS migration at 100k users | Eng | Open |
 | R-25 | VPC friction lowers vault adoption | 3 | 2 | 6 | Accept | Card check is quick; fallback method; vault optional | PM | Open |
 | R-26 | Trademark conflict forces rename of 'Sparkle' after launch (Viacom SPARKLER, pending SPARKLE in 9/41/42, AI 'SPARKLE ASSISTANT') | 4 | 4 | 16 | Accept (time-boxed) | Rolan kept plain 'Sparkle' (DEC-40); keep brand assets swappable; counsel full clearance before domain purchase (SA-07) and public launch (Runbook item 12) | Rolan | Open — accepted |
