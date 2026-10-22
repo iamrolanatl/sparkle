@@ -4,8 +4,12 @@ export const metadata = { title: "GPA simulator", robots: { index: false } };
 
 export default function GpaPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
+    <div className="page stack">
+      <div>
+        <h1>GPA simulator</h1>
+        <div className="sub">Try “what if” grades · fixed rules, never AI · nothing is saved</div>
+      </div>
       <GpaSimulator />
-    </main>
+    </div>
   );
 }

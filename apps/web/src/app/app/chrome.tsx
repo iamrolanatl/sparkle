@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect } from "react";
 
 /** Seamless star-sparkle background (loop is crossfaded in genbg.py so the rewind is invisible). */
 export function SparkleBg() {
@@ -23,21 +23,45 @@ export function SparkleBg() {
   );
 }
 
-/** Light is the default; the choice is saved in localStorage and a cookie (so the server renders it with no flash). */
-export function ThemeToggle({ initial }: { initial: "light" | "dark" }) {
-  const [t, setT] = useState(initial);
-  const apply = (n: "light" | "dark") => {
-    setT(n);
-    document.querySelector(".sa")?.setAttribute("data-theme", n);
+const KEY = "sparkle-theme";
+type Theme = "light" | "dark";
+function save(n: Theme) {
+  document.querySelector(".sa")?.setAttribute("data-theme", n);
+  try {
+    localStorage.setItem(KEY, n);
+  } catch {}
+  document.cookie = `${KEY}=${n}; path=/; max-age=31536000; samesite=lax; secure`;
+}
+
+/**
+ * Light is the default. The choice lives in a cookie (server renders it, no flash) and localStorage.
+ * On load they are reconciled: a saved cookie wins and is mirrored to localStorage; if the cookie was
+ * cleared but localStorage still has a choice, that choice is restored and the cookie is rewritten.
+ * The label is driven by CSS from [data-theme], so no React state can drift from the DOM.
+ */
+export function ThemeToggle({ initial, hasCookie }: { initial: Theme; hasCookie: boolean }) {
+  useEffect(() => {
+    let ls: string | null = null;
     try {
-      localStorage.setItem("sparkle-theme", n);
+      ls = localStorage.getItem(KEY);
     } catch {}
-    document.cookie = `sparkle-theme=${n}; path=/; max-age=31536000; samesite=lax`;
+    if (hasCookie) {
+      if (ls !== initial) save(initial);
+    } else if (ls === "light" || ls === "dark") save(ls);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === KEY && (e.newValue === "light" || e.newValue === "dark")) save(e.newValue);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [initial, hasCookie]);
+  const flip = () => {
+    const cur = document.querySelector(".sa")?.getAttribute("data-theme");
+    save(cur === "dark" ? "light" : "dark");
   };
-  const flip = () => apply(t === "dark" ? "light" : "dark");
   return (
-    <button type="button" className="ghost tgl" onClick={flip} aria-pressed={t === "dark"} data-testid="theme-toggle">
-      {t === "dark" ? "☀ Light" : "◐ Dark"}
+    <button type="button" className="ghost tgl" onClick={flip} data-testid="theme-toggle" aria-label="Toggle dark mode">
+      <span className="tl-dark">◐ Dark</span>
+      <span className="tl-light">☀ Light</span>
     </button>
   );
 }

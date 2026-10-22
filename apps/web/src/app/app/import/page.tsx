@@ -14,8 +14,12 @@ export default async function ImportPage() {
   const { data } = await supabase.from("students").select("id, display_name").order("created_at").limit(50);
   const students = (data ?? []).map((s) => ({ id: s.id as string, name: s.display_name as string }));
   return (
-    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 py-8">
-      <NeonWindow title="Import assignments (CSV)">
+    <div className="page stack" style={{ maxWidth: 820 }}>
+      <div>
+        <h1>Import assignments</h1>
+        <div className="sub">Paste in a spreadsheet export (CSV)</div>
+      </div>
+      <NeonWindow title="Upload a CSV">
         <p className="text-muted mb-4 text-sm">
           Until school sync is available, you can paste in a spreadsheet export. Re-importing the same file updates rows
           instead of duplicating them.
@@ -32,6 +36,6 @@ export default async function ImportPage() {
           </p>
         )}
       </NeonWindow>
-    </main>
+    </div>
   );
 }

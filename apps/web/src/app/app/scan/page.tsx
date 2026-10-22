@@ -18,8 +18,12 @@ export default async function ScanPage() {
   if (!user) redirect("/login?next=/app/scan");
   const { data: students } = await supabase.from("students").select("id, display_name").order("created_at").limit(50);
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <NeonWindow title="Scan a school document" className="p-5">
+    <div className="page stack" style={{ maxWidth: 900 }}>
+      <div>
+        <h1>Scan homework</h1>
+        <div className="sub">Snap or upload a school handout · read on your device</div>
+      </div>
+      <NeonWindow title="Your document">
         <p className="mb-4 text-sm opacity-80">
           Take a photo or upload one. Sparkle reads the text right here on your device, hides Social Security and bank
           numbers, and shows you what it found. Nothing is saved until you confirm.
@@ -30,6 +34,6 @@ export default async function ScanPage() {
           supabaseKey={env.key}
         />
       </NeonWindow>
-    </main>
+    </div>
   );
 }

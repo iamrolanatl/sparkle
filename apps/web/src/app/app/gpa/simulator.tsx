@@ -22,7 +22,7 @@ export function GpaSimulator() {
   const set = (i: number, patch: Partial<Course>) =>
     setRows((rs) => rs.map((r, j) => (j === i ? { ...r, ...patch } : r)));
   return (
-    <NeonWindow title="GPA simulator">
+    <NeonWindow title="What-if grades">
       <p className="text-muted text-sm">Try “what if” grades. Sparkle calculates GPA with fixed rules — never AI.</p>
       <table className="mt-4 w-full text-sm">
         <thead>

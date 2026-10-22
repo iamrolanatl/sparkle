@@ -23,7 +23,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     : { count: null };
   const name = me && me.profile_id === user.id ? me.display_name : ((user.user_metadata?.full_name as string) ?? "You");
   const sub = me ? (me.profile_id === user.id ? "Student" : `Following ${me.display_name}`) : "No student yet";
-  const theme = (await cookies()).get("sparkle-theme")?.value === "dark" ? "dark" : "light";
+  const saved = (await cookies()).get("sparkle-theme")?.value;
+  const theme = saved === "dark" ? "dark" : "light";
   return (
     <div className="sa" data-theme={theme}>
       <SparkleBg />
@@ -36,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="sa-main">
         <div className="top">
           <Crumb who={me?.display_name ?? name} />
-          <ThemeToggle initial={theme} />
+          <ThemeToggle initial={theme} hasCookie={saved === "light" || saved === "dark"} />
           <form action={signOut}>
             <button className="out" style={{ background: "none", border: 0, cursor: "pointer" }}>
               Sign out

@@ -62,13 +62,16 @@ export default async function FamilyPage() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-4xl flex-col gap-6 px-4 py-8">
-      <header className="flex items-center justify-between">
-        <span className="text-muted text-sm">Family &amp; helpers</span>
-        <Link href="/invite" className="text-sm underline">
+    <div className="page stack">
+      <div className="phead">
+        <div>
+          <h1>Family &amp; helpers</h1>
+          <div className="sub">Students, the people who can see them, and invitations</div>
+        </div>
+        <Link href="/invite" className="ghost">
           Have a code?
         </Link>
-      </header>
+      </div>
       <NeonWindow title="Add a student">
         <AddStudentForm />
       </NeonWindow>
@@ -127,6 +130,6 @@ export default async function FamilyPage() {
           </NeonWindow>
         );
       })}
-    </main>
+    </div>
   );
 }
