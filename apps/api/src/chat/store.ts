@@ -1,3 +1,4 @@
+import { resilientFetch } from "../lib/resilience";
 /** Minimal PostgREST client using the service-role secret (server-side only). No-ops when unconfigured. */
 export interface StoreEnv {
   SUPABASE_URL?: string;
@@ -7,7 +8,7 @@ export interface StoreEnv {
 export class Store {
   constructor(
     private env: StoreEnv,
-    private fetcher: typeof fetch = fetch,
+    private fetcher: typeof fetch = resilientFetch(fetch, { timeoutMs: 3000, retries: 2 }),
   ) {}
   get enabled() {
     return Boolean(this.env.SUPABASE_URL && this.env.SUPABASE_SECRET_KEY);

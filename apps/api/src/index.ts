@@ -2,6 +2,8 @@ import { VERSION } from "./version";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
+import { idempotency, observe } from "./lib/middleware";
+import { resilientFetch } from "./lib/resilience";
 
 export interface Env extends ChatEnv {
   APP_ENV?: string;
@@ -14,23 +16,44 @@ export interface Env extends ChatEnv {
 
 const app = new Hono<{ Bindings: Env }>();
 
+app.use("*", observe);
+
 app.use("*", async (c, next) => {
   const allowed = (c.env?.ALLOWED_ORIGINS ?? "http://localhost:3000").split(",").map((s) => s.trim());
   return cors({ origin: (o) => (allowed.includes(o) ? o : null), allowMethods: ["GET", "POST", "OPTIONS"] })(c, next);
 });
 
-/** Liveness/health: never exposes secret values, only whether config is present. */
-app.get("/health", (c) =>
-  c.json({
-    status: "ok",
-    service: "sparkle-api",
-    version: VERSION,
-    env: c.env?.APP_ENV ?? "unknown",
-    checks: { supabaseConfigured: Boolean(c.env?.SUPABASE_URL && c.env?.SUPABASE_SECRET_KEY) },
-    time: new Date().toISOString(),
-  }),
-);
+/** Liveness/health: never exposes secret values. `?deep=1` also probes Supabase (2 s timeout) for synthetics. */
+app.get("/health", async (c) => {
+  const configured = Boolean(c.env?.SUPABASE_URL && c.env?.SUPABASE_SECRET_KEY);
+  const checks: Record<string, boolean | number> = { supabaseConfigured: configured };
+  if (c.req.query("deep") === "1" && configured) {
+    const t0 = Date.now();
+    try {
+      const f = resilientFetch(fetch, { timeoutMs: 2000, retries: 0 });
+      const r = await f(`${c.env.SUPABASE_URL}/auth/v1/health`, { headers: { apikey: c.env.SUPABASE_SECRET_KEY! } });
+      checks.supabaseReachable = r.ok;
+    } catch {
+      checks.supabaseReachable = false;
+    }
+    checks.supabaseMs = Date.now() - t0;
+  }
+  const ok = checks.supabaseReachable !== false;
+  c.header("Cache-Control", "no-store");
+  return c.json(
+    {
+      status: ok ? "ok" : "degraded",
+      service: "sparkle-api",
+      version: VERSION,
+      env: c.env?.APP_ENV ?? "unknown",
+      checks,
+      time: new Date().toISOString(),
+    },
+    ok ? 200 : 503,
+  );
+});
 
+app.use("/chat/handoff", idempotency());
 app.route("/chat", chat);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
