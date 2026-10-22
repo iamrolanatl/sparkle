@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
 import { students, type StudentsEnv } from "./students/route";
 import { tasks } from "./tasks/route";
+import { study } from "./study/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 
@@ -66,6 +67,7 @@ app.use("/students/:id/import", idempotency());
 app.route("/students", students);
 app.use("/students/:id/tasks", idempotency());
 app.route("/students", tasks);
+app.route("/study-helper", study);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {

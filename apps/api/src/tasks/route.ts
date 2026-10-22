@@ -5,6 +5,7 @@ import { resilientFetch } from "../lib/resilience";
 import { parseTask, type ClassRef } from "./parse";
 import { ageBand, screenTaskInput } from "./safety";
 import { CRISIS_REPLY } from "../chat/guard";
+import { dueSoon, type TaskLite } from "./due";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PRIORITIES = new Set(["low", "normal", "high"]);
@@ -124,4 +125,20 @@ tasks.get("/:id/tasks", async (c) => {
   if (!r.ok) return c.json({ error: "load_failed" }, 502);
   c.header("Cache-Control", "private, no-store");
   return c.json({ tasks: r.data });
+});
+
+/** Due-soon + reminders for the Today view (DEC-107). Read-only; anyone who can view assignments. */
+tasks.get("/:id/tasks/due-soon", async (c) => {
+  const a = await authorize(c);
+  if ("error" in a) return c.json({ error: ERR[a.error!] }, a.error!);
+  const until = new Date(Date.now() + 3 * 86_400_000).toISOString();
+  const r = await userRest(
+    c.env,
+    a.user.token,
+  )<TaskLite[]>(
+    `tasks?student_id=eq.${a.id}&done_at=is.null&due_at=lte.${encodeURIComponent(until)}&select=id,title,due_at,priority&order=due_at.asc&limit=200`,
+  );
+  if (!r.ok) return c.json({ error: "load_failed" }, 502);
+  c.header("Cache-Control", "private, max-age=60");
+  return c.json(dueSoon(r.data, new Date()));
 });
