@@ -1,6 +1,6 @@
 import { ErrorBoundary, NeonWindow } from "@sparkle/ui";
 import { dueSoonAction } from "./actions";
-import { reminderText, type DueSoonBody } from "./reminders";
+import { backlogText, reminderText, type DueSoonBody } from "./reminders";
 
 /** Embeddable in the Today view (interface-change #66). Never throws: degrades to a quiet message. */
 export async function DueSoonTasks({ studentId }: { studentId: string }) {
@@ -30,6 +30,16 @@ export async function DueSoonTasks({ studentId }: { studentId: string }) {
                   {t.title}
                 </li>
               ))}
+            {(() => {
+              const more = backlogText(d.overdueCount ?? 0, d.reminders.filter((x) => x.kind === "overdue").length);
+              return more ? (
+                <li className="text-muted px-3 text-sm">
+                  <a className="hover:text-neon" href="/app/tasks">
+                    {more}
+                  </a>
+                </li>
+              ) : null;
+            })()}
           </ul>
         )}
       </NeonWindow>

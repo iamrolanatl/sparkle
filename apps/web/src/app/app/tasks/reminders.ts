@@ -4,7 +4,7 @@ export type Reminder = {
   kind: "overdue" | "due_today" | "evening_before" | "high_priority_soon";
 };
 type T = { id: string; title: string; due_at: string | null; priority: string };
-export type DueSoonBody = { overdue: T[]; dueToday: T[]; dueSoon: T[]; reminders: Reminder[] };
+export type DueSoonBody = { overdue: T[]; overdueCount: number; dueToday: T[]; dueSoon: T[]; reminders: Reminder[] };
 
 /** Friendly, age-neutral reminder copy (DEC-107). */
 export function reminderText(r: Reminder): string {
@@ -18,4 +18,10 @@ export function reminderText(r: Reminder): string {
     default:
       return `⚡ Important and coming up: ${r.title}`;
   }
+}
+
+/** Collapsed backlog line, so old overdue items never bury today. */
+export function backlogText(overdueCount: number, shown: number): string | null {
+  const rest = overdueCount - shown;
+  return rest > 0 ? `+${rest} older overdue task${rest > 1 ? "s" : ""}` : null;
 }
