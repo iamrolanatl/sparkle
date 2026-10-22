@@ -10,7 +10,8 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-// Visual regression (CR-0008). Baselines live in e2e/visual.spec.ts-snapshots/; update with `pnpm e2e --update-snapshots`.
+// Visual regression (CR-0008, DEC-56). Baselines are taken from the CI (ubuntu-latest) run artifacts, not local machines,
+// so font rasterization matches. To update: download the e2e-artifacts *-actual.png files and replace the snapshots.
 test("design showcase", async ({ page }) => {
   await page.goto("/design");
   await page.getByText("25:00").waitFor();
