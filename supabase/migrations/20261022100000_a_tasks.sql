@@ -1,4 +1,5 @@
 -- Team A, FR-21 natural-language tasks (DEC-101, DEC-104). Additive only.
+-- integration-signoff: 39 (can_write_tasks: search_path pinned, anon revoked, RLS tests in tasks_a_test.sql)
 -- rollback: drop table if exists public.tasks;  (no other objects touched)
 -- Raw natural-language input is NOT persisted (DEC-104): only the reviewed title.
 create table if not exists public.tasks (
