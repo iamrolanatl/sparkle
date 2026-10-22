@@ -5,6 +5,7 @@ import { resilientFetch } from "../lib/resilience";
 import { parseTask, type ClassRef } from "./parse";
 import { ageBand, screenTaskInput } from "./safety";
 import { CRISIS_REPLY } from "../chat/guard";
+import { dueSoon, type TaskLite } from "./due";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PRIORITIES = new Set(["low", "normal", "high"]);
@@ -123,4 +124,25 @@ tasks.get("/:id/tasks", async (c) => {
   if (!r.ok) return c.json({ error: "load_failed" }, 502);
   c.header("Cache-Control", "private, no-store");
   return c.json({ tasks: r.data });
+});
+
+/** Due-soon + reminders for the Today view (DEC-107). Read-only; anyone who can view assignments. */
+tasks.get("/:id/tasks/due-soon", async (c) => {
+  const a = await authorize(c);
+  if ("error" in a) return c.json({ error: ERR[a.error!] }, a.error!);
+  // Two bounded queries so stale overdue rows can never crowd out today/soon (Team E #65).
+  const nowIso = new Date().toISOString();
+  const until = new Date(Date.now() + 3 * 86_400_000).toISOString();
+  const rest = userRest(c.env, a.user.token);
+  const base = `tasks?student_id=eq.${a.id}&done_at=is.null&select=id,title,due_at,priority`;
+  const [past, upcoming] = await Promise.all([
+    rest<TaskLite[]>(`${base}&due_at=lt.${encodeURIComponent(nowIso)}&order=due_at.desc&limit=50`),
+    rest<TaskLite[]>(
+      `${base}&due_at=gte.${encodeURIComponent(nowIso)}&due_at=lte.${encodeURIComponent(until)}&order=due_at.asc&limit=100`,
+    ),
+  ]);
+  const r = { ok: past.ok && upcoming.ok, data: [...(past.data ?? []), ...(upcoming.data ?? [])] };
+  if (!r.ok) return c.json({ error: "load_failed" }, 502);
+  c.header("Cache-Control", "private, max-age=60");
+  return c.json(dueSoon(r.data, new Date()));
 });
