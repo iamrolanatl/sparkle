@@ -29,6 +29,7 @@ Statuses: Submitted · Under Assessment · Approved · Rejected · Deferred · I
 ## 2. Register
 | CR | Date | Title | Requester | Type | Impact (scope/sched/cost/quality/risk) | Affected docs | Decision by | Status |
 |---|---|---|---|---|---|---|---|---|
+| CR-0002 | 2026-10-21 | Phase 0 foundation: monorepo code baseline, multi-tenant data model & RLS, Google sign-in, CI; new sponsor requirements FR-16 (helpers) and FR-17 (landing page); DEC-05/06/07; WBS re-baselined to actual status | Rolan Chowdhury | Scope addition + baseline update | Scope +FR-16, +FR-17; schedule: privacy review now G1 entry; risk: R-10..R-13; no budget baseline | Requirements, RTM, TDD, WBS, Feature Register, Decision Log, RAID, RACI, Comms plan | Rolan Chowdhury | Submitted — approved on PR merge |
 | CR-0001 | 2026-10-21 | Establish initial PMP documentation baseline (v1.0) reconciled with Implementation Handoff v1.0 | Rolan Chowdhury | Baseline | Establishes scope, requirements (FR-01..15, NFR-01..13), WBS, RAID; no budget/schedule baseline yet (TBD) | All | Rolan Chowdhury | Submitted — approved on PR merge |
 
 ---

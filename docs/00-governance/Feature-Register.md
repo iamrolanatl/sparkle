@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-GOV-004 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -21,18 +21,20 @@
 |---|---|---|---|---|---|---|---|
 | F-01 | Data aggregation & normalization (Cobb sources → per-class/unit) | 3.1 | FR-01 | E1 | 1–2 | Must | Planned |
 | F-02 | AI prioritization, reasons, item statuses, "What changed", quiet hours/digest | 3.1, 2 | FR-02, FR-15 | E2 | 2 | Must | Planned |
-| F-03 | Family setup, Google sign-in, invitations, sharing & access list | 3.2 | FR-03, FR-04 | E5 | 1 | Must | Planned |
+| F-03 | Family setup, Google sign-in, invitations, sharing & access list | 3.2 | FR-03, FR-04 | E5 | 1 | Must | In Progress (Google sign-in page + schema/RLS, CR-0002) |
 | F-04 | Desktop sync agent + web fallback | 3.3 | FR-11 | E1 | 1 | Must | Planned |
 | F-05 | Calendar & bell schedule digitization | 3.4 | FR-13 | E6 | 4 | Should | Planned |
 | F-06 | Deterministic GPA & simulator | 3.4 | FR-06 | E5 | 2 | Must | Planned |
 | F-07 | Per-class success workspace | 3.5 | FR-05 | E3 | 2 | Must | Planned |
-| F-08 | Student daily input | 3.6 | FR-07 | E2 | 2 | Should | Planned |
+| F-08 | Student daily input | 3.6 | FR-07 | E2 | 2 | Should | Planned (table + visibility RLS exist) |
 | F-09 | Shared shopping list | 3.7 | FR-08 | E6 | 4 | Should | Planned |
 | F-10 | Communication hub | 3.8 | FR-09 | E6 | 4 | Should | Planned |
 | F-11 | AI-assisted communication (safeguarded, confirm-before-send) | 3.9 | FR-09 | E6 | 1 (gate) / 4 | Must | Planned |
-| F-12 | Interactive Sparkle robot (3-tier AI, voice, crisis protocol) | 3.10 | FR-10, FR-14 | E4 | 0 / 3 | Must | Planned |
+| F-12 | Interactive Sparkle robot (3-tier AI, voice, crisis protocol) | 3.10 | FR-10, FR-14 | E4 | 0 / 3 | Must | In Progress (placeholder character + states, CR-0002) |
 | F-13 | Admin backend & operations console | 3.11 | FR-12 | E7 | 1 / 4 | Must | Planned |
-| F-00 | Design system (glass, neon, light/dark, animated background) | 2 | NFR-02, 11, 13 | E2 | 0 | Must | Planned |
+| F-00 | Design system (glass, neon, light/dark, animated background) | 2 | NFR-02, 11, 13 | E2 | 0 | Must | In Progress (CR-0002) |
+| F-14 | Helper access (invite, redeem, scoped shares, multi-student) | Sponsor | FR-16 | E5 | 1 | Must | In Progress (schema/RLS/RPC + tests, CR-0002; UI not started) |
+| F-15 | Marketing landing page + sign-up + waitlist | Sponsor | FR-17 | — | 0 | Must | In Progress (draft, CR-0002) |
 
 ---
 
@@ -49,3 +51,4 @@
 | Version | Date | Author | CR | Description |
 |---|---|---|---|---|
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Statuses updated for Phase 0; added F-14, F-15. |

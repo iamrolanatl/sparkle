@@ -19,6 +19,7 @@
 
 | Date | CR | Documents affected | Summary | Author |
 |---|---|---|---|---|
+| 2026-10-21 | CR-0002 | Requirements v1.1, RTM v1.1, TDD v1.1, WBS v1.1, Feature Register v1.1, Decision Log v1.1, RAID v1.1, RACI v1.1, Comms plan v1.1 | Phase 0 code baseline (pnpm monorepo: web/api/ui/character, Supabase migration + RLS tests, CI, manual API deploy). Added FR-16 helper access, FR-17 landing page + waitlist; DEC-05 (one Google Web OAuth client), DEC-06 (guardian limits, pending confirmation), DEC-07 (helpers). WBS: Status/Notes columns, 2.6 Access & tooling Done, R2 blocked, new elements (dev/staging Supabase, branch protection, domain/DNS, OAuth verification, code-signing, portal ToS review gating 3.2, FERPA/COPPA as G1 entry, PWA, AI keys, Tier-1 selection, Sentry, 2.7 landing, recurring landing updates). Resourcing reality recorded in WBS/RACI/RAID; I-01 closed, I-03 opened | Grok Bot (for Rolan Chowdhury) |
 | 2026-10-21 | CR-0001 | All docs under `docs/` | Initial PMP documentation baseline created from Implementation Handoff v1.0 + 20-document library; gaps reconciled; TBDs flagged for sponsor | Grok Bot (for Rolan Chowdhury) |
 
 ---

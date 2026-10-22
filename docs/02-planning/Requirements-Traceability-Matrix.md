@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-002 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -21,8 +21,8 @@
 |---|---|---|---|---|---|
 | FR-01 | F-01 | E1 | ADR-05, Data Mapping | Integration, contract (connector) | Not started |
 | FR-02 | F-02 | E2 | ADR-02 | Unit (rules), E2E, UAT | Not started |
-| FR-03 | F-03 | E5 | Supabase Auth + Google | Integration, E2E | Not started |
-| FR-04 | F-03 | E5 | RLS | Privacy tests, UAT | Not started |
+| FR-03 | F-03 | E5 | Supabase Auth + Google | Integration, E2E; RLS isolation tests | In progress |
+| FR-04 | F-03 | E5 | RLS, TDD §8.2 | RLS tests (guardian limits, shares) | In progress |
 | FR-05 | F-07 | E3 | — | E2E, UAT | Not started |
 | FR-06 | F-06 | E5 | ADR-03 | Unit (deterministic engine) | Not started |
 | FR-07 | F-08 | E2 | — | Unit, E2E | Not started |
@@ -34,6 +34,8 @@
 | FR-13 | F-05 | E6 | — | Integration, UAT | Not started |
 | FR-14 | F-12 | E4 | — | Safety scenario tests | Not started |
 | FR-15 | F-02 | E2 | — | Unit, UAT | Not started |
+| FR-16 | F-14 | E5 | TDD §8.3, DEC-07 | RLS tests (multi-student helper, revoke, tutor scopes, approval, rate limit) | In progress |
+| FR-17 | F-15 | — | Landing, waitlist RLS | Waitlist RLS tests; build | In progress |
 | NFR-01..04, 09, 10 | — | All | ADR-02 | Performance suite | Not started |
 | NFR-05, 08 | — | E1, E5, E7 | ADR-01, RLS | Security & privacy suite | Not started |
 | NFR-06, 12 | — | E4, all | Resilience patterns | Resilience suite | Not started |
@@ -58,3 +60,4 @@
 |---|---|---|---|---|
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Requirements Traceability Matrix (01M5GCZRRWHGCGR3HNV2MT26PW.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added FR-16/17; statuses for FR-03/04. |

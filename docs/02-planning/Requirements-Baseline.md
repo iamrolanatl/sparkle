@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -37,6 +37,8 @@ Priority uses MoSCoW (M = Must for MVP acceptance, S = Should, C = Could). Featu
 | FR-13 | *(new)* Upload or link school calendar and bell schedule → digitization with human review. | S | F-05 | 3.4 |
 | FR-14 | *(new)* Robot crisis protocol: detect crisis language and route to defined safe responses/resources. Protocol content **TBD (Rolan / counsel)**. | M | F-12 | 3.10, 7 |
 | FR-15 | *(new)* Quiet hours and daily digest options for notifications. | S | F-02 | 2 |
+| FR-16 | *(CR-0002)* Helper access: a guardian (always) or the student (at/over the age threshold; below it a guardian must approve) can invite helpers — parent, guardian, sibling, cousin, aunt, uncle, grandparent, babysitter/caregiver, tutor, teacher, other (+ free-text label) — via email link or short code (hashed, single use, 72 h expiry, rate-limited, email-bound when set). Helper signs in with own Google account and redeems via `redeem_invitation`; creates a read-only share (or a guardian link for parent/guardian invited by a guardian). Helpers may hold access to many students (student switcher). Teachers/tutors default to academic scopes only. Shares revocable by inviter, any guardian, or the student (at/over threshold); all grants/revokes audit-logged and shown on the student's access list. | M | F-14 | Sponsor 2026-10-21 |
+| FR-17 | *(CR-0002)* Public marketing landing page at `/` (responsive, glass/neon) with hero, features, how it works, FAQ, Privacy/Terms links; primary CTA "Sign up with Google"; secondary waitlist email capture (insert-only, rate-limited, honeypot); SEO metadata, OG image, sitemap, robots; signed-in app at `/app`. Copy is draft, grade-8, no unverifiable claims. | M | F-15 | Sponsor 2026-10-21 |
 
 ## 2. Non-Functional Requirements
 | ID | Requirement | Verification |
@@ -80,3 +82,4 @@ Progressive disclosure; one idea per message; growth-mindset language; no punish
 |---|---|---|---|---|
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (Requirements Baseline (01M5GCZT4HQPAJHSN86DM3E1N4.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added FR-16 (helper access) and FR-17 (landing page + waitlist). |

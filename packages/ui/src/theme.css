@@ -1,0 +1,30 @@
+/* Sparkle theme: CSS variables from tokens.ts. Dark default; [data-theme] or OS preference. */
+:root, [data-theme="dark"] {
+  --spk-bg: #05080f; --spk-surface: rgba(15, 23, 42, 0.55); --spk-border: rgba(34, 211, 238, 0.35);
+  --spk-text: #f8fafc; --spk-text-muted: #cbd5e1; --spk-neon: #22d3ee; --spk-neon-2: #2dd4bf;
+  --spk-glow: rgba(34, 211, 238, 0.45); --spk-blur: 16px; color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --spk-bg: #f1f7fb; --spk-surface: rgba(255, 255, 255, 0.7); --spk-border: rgba(13, 148, 136, 0.45);
+    --spk-text: #0b1220; --spk-text-muted: #334155; --spk-neon: #0e7490; --spk-neon-2: #0f766e;
+    --spk-glow: rgba(13, 148, 136, 0.3); color-scheme: light;
+  }
+}
+[data-theme="light"] {
+  --spk-bg: #f1f7fb; --spk-surface: rgba(255, 255, 255, 0.7); --spk-border: rgba(13, 148, 136, 0.45);
+  --spk-text: #0b1220; --spk-text-muted: #334155; --spk-neon: #0e7490; --spk-neon-2: #0f766e;
+  --spk-glow: rgba(13, 148, 136, 0.3); color-scheme: light;
+}
+.spk-glass {
+  background: var(--spk-surface); border: 1px solid var(--spk-border); border-radius: 1rem;
+  backdrop-filter: blur(var(--spk-blur)); -webkit-backdrop-filter: blur(var(--spk-blur));
+}
+.spk-glow { box-shadow: 0 0 0 1px var(--spk-border), 0 0 24px -6px var(--spk-glow); }
+.spk-aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  background: radial-gradient(60% 50% at 20% 10%, var(--spk-glow), transparent 70%), var(--spk-bg); }
+.spk-aurora-blob { position: absolute; width: 60vmax; height: 60vmax; border-radius: 9999px; filter: blur(80px); will-change: transform, opacity; }
+.spk-aurora-blob-0 { top: -20vmax; left: -10vmax; background: var(--spk-neon); }
+.spk-aurora-blob-1 { bottom: -25vmax; right: -15vmax; background: var(--spk-neon-2); }
+.spk-aurora-blob-2 { top: 30%; left: 40%; width: 35vmax; height: 35vmax; background: var(--spk-neon); opacity: .25; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

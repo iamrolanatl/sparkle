@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-006 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -36,6 +36,8 @@ Roles: **SP** Sponsor/PM (Rolan Chowdhury) · **PO** Product Owner (TBD) · **EN
 | Weekly status & RAID | A | R | C | I | C | I |
 | Documentation control | A | C | R | I | I | I |
 
+**Current staffing (2026-10-21):** Rolan Chowdhury holds SP, PO, DES, OPS and CMP; ENG work is performed by Grok Bot (R) under Rolan's approval at each gate (A). No human engineering, design, or legal staff yet; privacy/legal "A" items cannot be closed without engaging counsel (R-10, R-12).
+
 **Corrections vs. original:** original had no Sponsor/PM column, "Ops/Compliance" merged, Phase-gate A on Product (PMBOK: sponsor approves gates), and privacy A held by ops. Split roles; one A per row. Until roles are staffed, Rolan holds every unassigned role — **TBD (Rolan)**.
 
 ---
@@ -54,3 +56,4 @@ Roles: **SP** Sponsor/PM (Rolan Chowdhury) · **PO** Product Owner (TBD) · **EN
 |---|---|---|---|---|
 | 0.1 | Oct 2026 | Original library author | — | Original Word version (RACI Matrix (01M5GCZRQR7WW434E8J0B92Y4B.docx)). |
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
+| 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Recorded actual staffing: Rolan holds all roles; Grok Bot responsible for build. |
