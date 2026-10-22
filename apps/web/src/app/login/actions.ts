@@ -12,7 +12,10 @@ export async function signInWithGoogle(formData?: FormData) {
   const origin = h.get("origin") ?? `https://${h.get("host")}`;
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`, queryParams: { prompt: "select_account" } },
+    options: {
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      queryParams: { prompt: "select_account" },
+    },
   });
   if (error || !data.url) redirect("/login?error=oauth");
   redirect(data.url);

@@ -33,7 +33,11 @@ export function contrastRatio(hexA: string, hexB: string): number {
   const lum = (hex: string) => {
     const n = hex.replace("#", "");
     const ch = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16) / 255);
-    const [r, g, b] = ch.map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)) as [number, number, number];
+    const [r, g, b] = ch.map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)) as [
+      number,
+      number,
+      number,
+    ];
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
   const [hi, lo] = [lum(hexA), lum(hexB)].sort((a, b) => b - a) as [number, number];

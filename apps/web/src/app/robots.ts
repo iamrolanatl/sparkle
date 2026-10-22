@@ -6,5 +6,8 @@ export const INDEXING_ENABLED = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true
 
 export default function robots(): MetadataRoute.Robots {
   if (!INDEXING_ENABLED) return { rules: [{ userAgent: "*", disallow: "/" }] };
-  return { rules: [{ userAgent: "*", allow: "/", disallow: ["/app", "/auth", "/login", "/admin"] }], sitemap: `${SITE_URL}/sitemap.xml` };
+  return {
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/app", "/auth", "/login", "/admin"] }],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+  };
 }

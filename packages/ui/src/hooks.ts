@@ -34,8 +34,15 @@ export function useEffectsGuard(sampleMs = 2000): boolean {
     const tick = (t: number) => {
       frames.push(t);
       if (t - windowStart >= sampleMs) {
-        const ok = effectsAllowed({ prefersReducedMotion: false, saveData: saveDataEnabled(), measuredFps: averageFps(frames) });
-        if (!ok) { setFpsOk(false); return; }
+        const ok = effectsAllowed({
+          prefersReducedMotion: false,
+          saveData: saveDataEnabled(),
+          measuredFps: averageFps(frames),
+        });
+        if (!ok) {
+          setFpsOk(false);
+          return;
+        }
         frames = [t];
         windowStart = t;
       }

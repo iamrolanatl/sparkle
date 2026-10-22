@@ -4,7 +4,8 @@ import { SITE_URL } from "@/lib/site";
 import { CookieConsent } from "@/components/CookieConsent";
 import "./globals.css";
 
-const description = "Sparkle brings grades, assignments, and class updates into one calm place and shows students what matters next.";
+const description =
+  "Sparkle brings grades, assignments, and class updates into one calm place and shows students what matters next.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

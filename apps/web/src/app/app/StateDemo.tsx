@@ -10,8 +10,15 @@ export function StateDemo() {
       <SparkleCharacter state={state} size={120} />
       <div role="radiogroup" aria-label="Sparkle state" className="flex flex-wrap justify-center gap-2">
         {SPARKLE_STATES.map((s) => (
-          <button key={s} role="radio" aria-checked={s === state} onClick={() => setState(s)}
-            className={`spk-glass px-3 py-1.5 text-sm capitalize ${s === state ? "spk-glow" : ""}`}>{s}</button>
+          <button
+            key={s}
+            role="radio"
+            aria-checked={s === state}
+            onClick={() => setState(s)}
+            className={`spk-glass px-3 py-1.5 text-sm capitalize ${s === state ? "spk-glow" : ""}`}
+          >
+            {s}
+          </button>
         ))}
       </div>
     </div>

@@ -2,7 +2,7 @@
  * Product knowledge for the sales/support chat (FR-19). Keep in sync with the landing page
  * and docs/02-planning/Communications-Marketing-Plan.md. DRAFT — pending sponsor review.
  */
-export const KNOWLEDGE = `
+const KNOWLEDGE = `
 SPARKLE PRODUCT FACTS (only use these; if something is not here, say you don't know and offer a human):
 - Sparkle is a student-success web app for students and the families who support them. It works on phones and desktops in a web browser.
 - Status: early development / free preview. People can join the waitlist or sign up with Google. Pricing has not been set.
