@@ -28,6 +28,15 @@ function userRest(env: AuthEnv, token: string) {
   };
 }
 
+async function authorizeWrite(c: Parameters<typeof authorize>[0]) {
+  const a = await authorize(c);
+  if ("error" in a) return a;
+  const can = await userRpc<boolean>(c.env, a.user.token, "can_write_tasks", { p_student: a.id });
+  return can ? a : { error: 403 as const };
+}
+const MIN_DUE = -86_400_000; // now - 1 day
+const MAX_DUE = 2 * 366 * 86_400_000; // now + ~2 years
+
 async function authorize(c: {
   env: AuthEnv;
   req: { param: (k: string) => string; header: (k: string) => string | undefined };
@@ -55,7 +64,10 @@ tasks.post("/:id/tasks/parse", async (c) => {
     rest<ClassRef[]>(`classes?student_id=eq.${a.id}&select=id,name&limit=50`),
   ]);
   const v = screenTaskInput(text, ageBand(age));
-  if (v.kind === "crisis") return c.json({ safety: "crisis", message: CRISIS_REPLY }, 200);
+  if (v.kind === "crisis") {
+    console.warn(JSON.stringify({ level: "warn", msg: "safety_flag", kind: "crisis", route: "tasks.parse" }));
+    return c.json({ safety: "crisis", message: CRISIS_REPLY }, 200);
+  }
   if (v.kind === "blocked") return c.json({ safety: "blocked", reason: v.reason }, 422);
   const parsed = parseTask(v.text, new Date(), cls.ok ? cls.data : []);
   // Tier-1 AI fallback (via router, PR #20) is only offered when confidence < 0.6; UI still requires confirm.
@@ -64,21 +76,27 @@ tasks.post("/:id/tasks/parse", async (c) => {
 
 /** Save a reviewed task. Requires confirmed=true from the review UI. */
 tasks.post("/:id/tasks", async (c) => {
-  const a = await authorize(c);
+  const a = await authorizeWrite(c);
   if ("error" in a) return c.json({ error: ERR[a.error!] }, a.error!);
   const b = (await c.req.json().catch(() => ({}))) as Record<string, unknown>;
   const title = typeof b.title === "string" ? b.title.trim() : "";
   if (b.confirmed !== true) return c.json({ error: "review_required" }, 422);
   if (!title || title.length > 120) return c.json({ error: "bad_request" }, 400);
+  const dueMs = typeof b.dueAt === "string" ? Date.parse(b.dueAt) : NaN;
+  const delta = dueMs - Date.now();
   const dueAt =
-    b.dueAt == null ? null : typeof b.dueAt === "string" && !isNaN(Date.parse(b.dueAt)) ? b.dueAt : undefined;
+    b.dueAt == null ? null : delta >= MIN_DUE && delta <= MAX_DUE ? new Date(dueMs).toISOString() : undefined;
   const priority = typeof b.priority === "string" && PRIORITIES.has(b.priority) ? b.priority : "normal";
   const classId =
     b.classId == null ? null : typeof b.classId === "string" && UUID.test(b.classId) ? b.classId : undefined;
   if (dueAt === undefined || classId === undefined) return c.json({ error: "bad_request" }, 400);
   const age = await userRpc<number>(c.env, a.user.token, "student_age", { p_student: a.id });
   const v = screenTaskInput(title, ageBand(age));
-  if (v.kind !== "ok") return c.json({ safety: v.kind }, 422);
+  if (v.kind === "crisis") {
+    console.warn(JSON.stringify({ level: "warn", msg: "safety_flag", kind: "crisis", route: "tasks.save" })); // no content logged
+    return c.json({ safety: "crisis", message: CRISIS_REPLY }, 200);
+  }
+  if (v.kind === "blocked") return c.json({ safety: "blocked", reason: v.reason }, 422);
   const r = await userRest(c.env, a.user.token)<unknown[]>("tasks", {
     method: "POST",
     body: JSON.stringify({

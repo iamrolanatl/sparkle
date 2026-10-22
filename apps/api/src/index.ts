@@ -81,6 +81,7 @@ app.route("/weather", weather);
 app.use("/students/:id/scans", idempotency());
 app.route("/", scans);
 app.route("/ingest", ingest);
+app.use("/students/:id/tasks", idempotency());
 app.route("/students", tasks);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
