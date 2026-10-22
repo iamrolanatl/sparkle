@@ -57,3 +57,9 @@ test("PWA manifest and offline page", async ({ page, request }) => {
   await page.goto("/offline");
   await expect(page.getByRole("heading", { name: "You're offline" })).toBeVisible();
 });
+
+test("service worker never caches partial video responses", async ({ request }) => {
+  const sw = await (await request.get("/sw.js")).text();
+  expect(sw).toContain('req.headers.has("range")');
+  expect(sw).toContain("res.status === 200");
+});
