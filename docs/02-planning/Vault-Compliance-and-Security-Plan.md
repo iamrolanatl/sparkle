@@ -92,6 +92,8 @@ The vault stores, per student (and per household), scanned/uploaded school mail 
 | Access log | Security/accountability | 24 months | rolling |
 | ID-verification images (fallback VPC) | Verify parent | Not retained by Sparkle; vendor deletes promptly after match | immediately after verification |
 | Breach/incident records | Legal | 5 years | then deleted |
+| Scan originals + unsaved scans (FR-23 OCR, `sparkle-scans` R2 + `scans` rows) | Turn a photo into tasks/events | 30 days, or sooner once the family confirms/discards | daily purge job (DEC-126) |
+| Saved scan results (tasks/events created on confirm) | Student's plan | Like other student data (until deleted / account closes) | per account deletion |
 
 ## 7. Incident runbook (summary)
 1. **Detect & declare** (≤ 24 h): any suspected unauthorized access to vault data is Sev-1. Incident lead = Rolan (until staffed); Grok Bot assists with evidence collection.
