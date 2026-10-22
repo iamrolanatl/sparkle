@@ -53,8 +53,15 @@ export function AskSparkle(props: {
   const [note, setNote] = useState<string | null>(null);
   const stopRef = useRef<{ stop: () => void } | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  useEffect(() => endRef.current?.scrollIntoView({ block: "nearest" }), [log]);
-  useEffect(() => () => stopSpeaking(), []);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ block: "nearest" });
+  }, [log]);
+  useEffect(
+    () => () => {
+      stopSpeaking();
+    },
+    [],
+  );
 
   async function send(q: string, voice = false) {
     q = q.trim();
