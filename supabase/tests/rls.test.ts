@@ -18,7 +18,7 @@ describe("supabase migration + RLS (PGlite)", () => {
     });
     const oks = notices.filter((n) => n.startsWith("ok - "));
     console.log(oks.join("\n"));
-    expect(oks.length).toBe(45);
+    expect(oks.length).toBe(49);
     await db.close();
   }, 60_000);
 
