@@ -40,8 +40,21 @@ const readJson = (f, d) => {
 
 /** Scoped device ingest token (sit_…) from Windows Credential Manager. Never logged, never written to disk. */
 function deviceToken(cfg) {
-  const r = spawnSync("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "cred.ps1"), "read", cfg.credentialTarget], { encoding: "utf8", windowsHide: true });
-  if (r.status !== 0 || !r.stdout.startsWith("sit_")) throw Object.assign(new Error("ingest_token_missing"), { code: "no_credentials" });
+  const r = spawnSync(
+    "powershell.exe",
+    [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "cred.ps1"),
+      "read",
+      cfg.credentialTarget,
+    ],
+    { encoding: "utf8", windowsHide: true },
+  );
+  if (r.status !== 0 || !r.stdout.startsWith("sit_"))
+    throw Object.assign(new Error("ingest_token_missing"), { code: "no_credentials" });
   return r.stdout.trim();
 }
 
@@ -60,6 +73,22 @@ async function upload(auth, batch) {
   throw new Error("upload_retries_exhausted");
 }
 
+/** Ask the API to analyze new class-board posts (teacher post summaries) in ~20 s slices. Best-effort. */
+async function analyze(auth) {
+  const token = deviceToken(auth);
+  for (let i = 0; i < 20; i++) {
+    const r = await fetch(`${auth.apiBase}/ingest/${auth.studentId}/portal/analyze`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => null);
+    if (!r?.ok)
+      return log({ msg: "analyze_skipped", status: r?.status ?? 0, detail: r ? (await r.text()).slice(0, 240) : null });
+    const j = await r.json();
+    log({ msg: "analyzed", analyzed: j.analyzed, ai: j.ai, remaining: j.remaining });
+    if (!j.remaining) return;
+  }
+}
+
 async function main() {
   const lockFile = path.join(HOME, "sync.lock");
   try {
@@ -76,6 +105,7 @@ async function main() {
     }
     const auth = readJson(path.join(HOME, "config.json"), null);
     if (!auth) return log({ msg: "no_config" });
+    if (process.argv.includes("--analyze-only")) return await analyze(auth);
     const statePath = path.join(HOME, "state.json");
     const state = full
       ? { hashes: {}, classes: [], teachers: [] }
@@ -185,6 +215,7 @@ async function main() {
     if (!dry && (changed || sessions.length || batch.attendanceKeys)) {
       const res = await upload(auth, batch);
       log({ msg: "uploaded", ...res });
+      if (batch.posts?.length) await analyze(auth);
     }
     if (!dry)
       fs.writeFileSync(statePath, JSON.stringify({ hashes: newHashes, classes, teachers, at: batch.capturedAt }));

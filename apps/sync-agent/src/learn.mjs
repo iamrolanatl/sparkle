@@ -1,4 +1,4 @@
-import { clean, isLogin, lastName, pause, provider } from "./util.mjs";
+import { clean, isLogin, lastName, pause, provider, sha } from "./util.mjs";
 
 const HOME = "https://studentportal.educationincites.com/#/Home";
 const WEEK = /^Week\s+\d+\b.*$/i;
@@ -66,7 +66,6 @@ export async function pullLearn(ctx, classes) {
             ),
           ),
         ].slice(0, 8);
-        const hw = block.filter((l) => /\bdue\b/i.test(l)).slice(0, 3);
         const title = topics.find((t) => !/quiz|test|corrections|review|practice/i.test(t)) ?? topics[0] ?? week;
         out.units.push({
           externalId: `learn:${cls.key}:${week}`.slice(0, 200).replace(/[^\w.:@/-]/g, "_"),
@@ -77,16 +76,62 @@ export async function pullLearn(ctx, classes) {
           isCurrent: true,
           source: "ctls-learn",
         });
-        if (hw.length)
-          out.posts.push({
-            externalId: `learn:hw:${cls.key}:${week}`.slice(0, 200).replace(/[^\w.:@/-]/g, "_"),
-            classKey: cls.key,
-            source: "ctls-learn",
-            author: cls.teacher,
-            title: `${week}: homework`,
-            body: hw.join("\n"),
-            postedAt: new Date().toISOString(),
-          });
+      }
+      // Class Board posts: read from the rendered AngularJS scope (read-only; the API payloads are encrypted).
+      const boardPosts = await p
+        .evaluate(() => {
+          const ng = window.angular;
+          if (!ng) return [];
+          return [...document.querySelectorAll(".edin-card-rtl")]
+            .map((el) => ng.element(el).scope()?.topic)
+            .filter((t) => t && t._id && t.type === "board" && !t.isDeleted)
+            .map((t) => {
+              const div = document.createElement("div");
+              div.innerHTML = String(t.content ?? "").replace(/<(br|\/p|\/div|\/li|\/tr)[^>]*>/gi, "\n$&");
+              div.querySelectorAll("script,style,iframe").forEach((n) => n.remove());
+              const links = [...div.querySelectorAll("a[href]")]
+                .map((a) => ({ title: a.textContent.trim().slice(0, 200), url: a.getAttribute("href") }))
+                .filter((l) => /^https?:/i.test(l.url ?? ""));
+              const files = [...div.querySelectorAll("img[src],video[src],source[src]")]
+                .map((m) => ({
+                  title: m.getAttribute("alt") || "Attachment",
+                  url: (m.getAttribute("src") || "").split("?")[0],
+                }))
+                .filter((l) => /^https?:/i.test(l.url));
+              const text = div.textContent
+                .replace(/\u00a0/g, " ")
+                .replace(/[ \t]+/g, " ")
+                .replace(/\n\s*\n+/g, "\n")
+                .trim();
+              return {
+                id: t._id,
+                name: String(t.name ?? "").trim(),
+                text,
+                links: [...links, ...files],
+                author: [t.author?.firstName, t.author?.lastName].filter(Boolean).join(" "),
+                added: t.dateAdded,
+                start: t.startDate,
+                pinned: !!t.pinned,
+              };
+            });
+        })
+        .catch(() => []);
+      for (const b of boardPosts) {
+        const body = b.text.split("\n").map(clean).filter(Boolean).join("\n").slice(0, 3900);
+        out.posts.push({
+          externalId: `ei:board:${b.id}`.slice(0, 200),
+          classKey: cls.key,
+          source: "ctls-learn",
+          author: b.author || cls.teacher,
+          title: (b.name || body.split("\n")[0] || "Class board post").slice(0, 300),
+          body,
+          url: "https://studentportal.educationincites.com/#/Home",
+          postedAt: b.start && new Date(b.start) > new Date(b.added) ? b.start : b.added,
+          startsAt: b.start,
+          pinned: b.pinned,
+          links: b.links.slice(0, 40),
+          contentHash: sha(`${b.name}\n${body}\n${b.links.map((l) => l.url).join(" ")}`),
+        });
       }
       const links = await p.evaluate(() =>
         [...document.querySelectorAll("a[href^='http']")].map((a) => ({

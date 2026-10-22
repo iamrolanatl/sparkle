@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { daysUntil, dueText } from "@/lib/classes/due";
+import { dontMiss } from "@/lib/classes/guidance";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Today", robots: { index: false } };
@@ -82,6 +83,8 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   ]
     .filter((r) => r.due && daysUntil(r.due, now) >= 0 && daysUntil(r.due, now) <= 7)
     .sort((a, b) => Date.parse(a.due!) - Date.parse(b.due!));
+  const miss = dontMiss(classes);
+  const newPosts = classes.reduce((a, c) => a + c.guidance.unread, 0);
   const tomorrow = rows.filter((r) => daysUntil(r.due!, now) === 1).length;
   const gpa = gpaOf(classes);
   const summative = rows.filter((r) => /summative|test|quiz|project/i.test(r.chip)).length;
@@ -133,6 +136,61 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
             )}
           </div>
         </div>
+      </div>
+      <div className="panel dm" style={{ marginTop: 14 }}>
+        <div className="ph">
+          Don’t miss
+          <span>{newPosts ? <b className="nb">{newPosts} new posts</b> : null} From your teachers’ class boards</span>
+        </div>
+        {miss.length ? (
+          miss.map((d) => (
+            <div className="row" key={d.key}>
+              <span className="dot" style={{ background: d.color }} />
+              <div style={{ minWidth: 0 }}>
+                <div>
+                  {d.text}
+                  {d.flagged && d.kind !== "missing" ? <b className="flag">Not done yet</b> : null}
+                </div>
+                <small>
+                  <Link href={`/app/classes?open=${d.classId}`} style={{ textDecoration: "underline" }}>
+                    {d.className}
+                  </Link>
+                  {d.postTitle ? (
+                    <>
+                      {" · from "}
+                      {d.url ? (
+                        <a
+                          href={d.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          “{d.postTitle}”
+                        </a>
+                      ) : (
+                        <>“{d.postTitle}”</>
+                      )}
+                    </>
+                  ) : null}
+                </small>
+              </div>
+              <span className="chip">
+                {d.kind === "missing"
+                  ? "Missing"
+                  : d.kind === "assessment"
+                    ? "Test/quiz"
+                    : d.kind === "bring"
+                      ? "Bring"
+                      : d.kind === "due"
+                        ? "Due"
+                        : "To do"}
+              </span>
+              <span className={`due ${d.flagged ? "h" : ""}`}>{d.when ?? ""}</span>
+            </div>
+          ))
+        ) : (
+          <div className="empty">You’re all caught up on class-board posts.</div>
+        )}
       </div>
       <div className="grid s2" style={{ gridTemplateColumns: "1.3fr 1fr", marginTop: 14 }}>
         <div className="panel">

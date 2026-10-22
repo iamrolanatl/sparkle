@@ -2,6 +2,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { computeGpa, letterFor } from "@/lib/gpa";
 import { CLASS_COLORS } from "./resources";
+import { classGuidance, classItems, type BoardPost, type Guidance, type PostAction } from "./guidance";
 
 export type Category = { name: string; weight: number; score: number | null };
 export type Assignment = {
@@ -28,6 +29,7 @@ export type Feed = {
   at: string | null;
   url: string | null;
   body: string | null;
+  unread?: boolean;
 };
 export type Resource = { id: string; kind: string; provider: string | null; title: string; url: string };
 export type ClassView = {
@@ -50,6 +52,9 @@ export type ClassView = {
   resources: Resource[];
   section: string | null;
   synced_at: string | null;
+  guidance: Guidance;
+  /** recent class-board posts not yet opened by this user (ids, for the read receipt) */
+  unreadPostIds: string[];
 };
 
 /** Weighted category average when categories have scores; else mean of recorded grades. */
@@ -86,7 +91,8 @@ export async function loadStudents(sb: SupabaseClient) {
 
 export async function loadClasses(sb: SupabaseClient, studentId: string): Promise<ClassView[]> {
   const nowIso = new Date().toISOString();
-  const [cls, units, cats, asg, grades, mats, missing, posts, msgs, res] = await Promise.all([
+  const since = new Date(Date.now() - 60 * 86_400_000).toISOString();
+  const [cls, units, cats, asg, grades, mats, missing, posts, msgs, res, acts, reads, me] = await Promise.all([
     sb
       .from("classes")
       .select("id, name, teacher, room, period, syllabus_url, ebook_url, created_at, pct, section_no, synced_at")
@@ -129,7 +135,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
       .limit(100),
     sb
       .from("posts")
-      .select("id, class_id, title, author, posted_at, url, body")
+      .select("id, class_id, title, author, posted_at, url, body, source")
       .eq("student_id", studentId)
       .not("class_id", "is", null)
       .order("posted_at", { ascending: false, nullsFirst: false })
@@ -147,7 +153,28 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
       .eq("student_id", studentId)
       .order("created_at")
       .limit(500),
+    sb
+      .from("post_actions")
+      .select("id, post_id, class_id, kind, text, due_at, done_at, method")
+      .eq("student_id", studentId)
+      .gte("created_at", since)
+      .limit(600),
+    sb.from("post_reads").select("post_id").eq("student_id", studentId).limit(2000),
+    sb.auth.getUser(),
   ]);
+  const readSet = new Set(((reads.data ?? []) as { post_id: string }[]).map((r) => r.post_id));
+  const canRead = !!me.data.user;
+  const fresh = Date.now() - 14 * 86_400_000;
+  const board: BoardPost[] = ((posts.data ?? []) as Record<string, string | null>[])
+    .filter((p) => p.source === "ctls-learn")
+    .map((p) => ({
+      id: p.id!,
+      class_id: p.class_id ?? null,
+      title: p.title ?? "Post",
+      url: p.url ?? null,
+      posted_at: p.posted_at ?? null,
+      read: !canRead || readSet.has(p.id!) || Date.parse(p.posted_at ?? "0") < fresh,
+    }));
   return ((cls.data ?? []) as Record<string, unknown>[]).map((c, i) => {
     const id = c.id as string;
     const u = (units.data ?? []).filter((x) => x.class_id === id);
@@ -177,6 +204,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
           at: x.posted_at,
           url: x.url,
           body: x.body,
+          unread: board.some((b) => b.id === x.id && !b.read),
         })),
       ...(msgs.data ?? [])
         .filter((x) => x.class_id === id)
@@ -192,7 +220,17 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
     ]
       .sort((a, b) => Date.parse(b.at ?? "0") - Date.parse(a.at ?? "0"))
       .slice(0, 6);
+    const myBoard = board.filter((b) => b.class_id === id);
+    const items = classItems(
+      ((acts.data ?? []) as PostAction[]).filter((a) => a.class_id === id),
+      myBoard,
+    );
+    const unreadPostIds = myBoard.filter((b) => !b.read).map((b) => b.id);
+    const missingList = ((missing.data ?? []) as Assignment[]).filter((a) => a.class_id === id);
+    const unitView = unit ? { title: unit.title as string } : null;
     return {
+      guidance: classGuidance({ pct, missing: missingList, unit: unitView }, items, unreadPostIds.length),
+      unreadPostIds,
       id,
       name: c.name as string,
       teacher: (c.teacher as string) ?? null,

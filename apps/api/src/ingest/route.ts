@@ -5,6 +5,7 @@ import { validateBatch } from "./schema";
 import { writeBatch, type IngestJob } from "./writer";
 import { validatePortalBatch, writePortalBatch } from "./portal";
 import { serviceRest } from "../lib/supa";
+import { analyzePosts } from "./post-insights";
 
 export interface IngestEnv extends AuthEnv {
   TODAY_CACHE?: KVNamespace;
@@ -140,6 +141,36 @@ export async function ingestQueue(mb: MessageBatch<IngestJob>, env: IngestEnv): 
 }
 
 /** School-portal delta batch from the laptop agent (apps/sync-agent). Same auth as /batch. */
+/** Teacher post summaries: analyze new/changed class-board posts in ~20 s slices; the agent calls until remaining = 0. */
+ingest.post("/:id/portal/analyze", async (c) => {
+  const id = c.req.param("id");
+  if (!(await portalAuth(c.env, c.req.header("Authorization") ?? "", id))) return c.json({ error: "forbidden" }, 403);
+  try {
+    return c.json({ ok: true, ...(await analyzePosts(c.env, id, { budgetMs: 20_000 })) });
+  } catch (e) {
+    const err = String(e)
+      .replace(/[A-Za-z0-9_-]{40,}/g, "…")
+      .slice(0, 200);
+    console.error(JSON.stringify({ level: "error", msg: "post_insights_failed", err }));
+    return c.json({ error: "analyze_failed", detail: err }, 500);
+  }
+});
+
+async function portalAuth(
+  env: IngestEnv,
+  authz: string,
+  id: string,
+): Promise<"device" | "guardian" | "student" | null> {
+  if (authz.startsWith("Bearer sit_")) return (await deviceTokenOk(env, authz.slice(7), id)) ? "device" : null;
+  const user = await getUser(env, authz);
+  if (!user) return null;
+  const [guardian, self] = await Promise.all([
+    userRpc<boolean>(env, user.token, "is_active_guardian", { p_student: id }),
+    userRpc<boolean>(env, user.token, "is_student_self", { p_student: id }),
+  ]);
+  return self ? "student" : guardian ? "guardian" : null;
+}
+
 ingest.post("/:id/portal", async (c) => {
   if (Number(c.req.header("Content-Length") ?? "0") > MAX_BODY_BYTES) return c.json({ error: "too_large" }, 413);
   const id = c.req.param("id");
@@ -169,6 +200,7 @@ ingest.post("/:id/portal", async (c) => {
   const { batch, error } = validatePortalBatch(body, id);
   if (!batch) return c.json({ error: "invalid_batch", details: [error] }, 422);
   const res = await writePortalBatch(c.env, batch, self ? "student" : "guardian");
+
   return c.json({ ok: true, ...res });
 });
 

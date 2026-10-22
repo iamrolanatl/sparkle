@@ -91,3 +91,35 @@ export async function deleteMaterial(form: FormData) {
   if (p) await supabase.storage.from("materials").remove([p]);
   revalidatePath("/app/classes");
 }
+
+/** Read receipts for class-board posts (unread badge). RLS: own rows only, and only for students you can see. */
+export async function markPostsRead(studentId: string, postIds: string[]): Promise<MatResult> {
+  const supabase = await createClient();
+  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const ids = [...new Set(postIds)].filter((x) => UUID.test(x)).slice(0, 200);
+  if (!supabase || !user || !UUID.test(studentId)) return { ok: false, error: "Please sign in again." };
+  if (!ids.length) return { ok: true };
+  const { error } = await supabase.from("post_reads").upsert(
+    ids.map((post_id) => ({ post_id, student_id: studentId, user_id: user.id })),
+    { onConflict: "post_id,user_id", ignoreDuplicates: true },
+  );
+  if (error) return { ok: false, error: "Couldn't save that." };
+  revalidatePath("/app/classes");
+  revalidatePath("/app/today");
+  return { ok: true };
+}
+
+/** Tick a teacher-post action item done (or undo). Only done_at is writable (column grant + RLS). */
+export async function setActionDone(actionId: string, done: boolean): Promise<MatResult> {
+  const supabase = await createClient();
+  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  if (!supabase || !user || !UUID.test(actionId)) return { ok: false, error: "Please sign in again." };
+  const { error } = await supabase
+    .from("post_actions")
+    .update({ done_at: done ? new Date().toISOString() : null })
+    .eq("id", actionId);
+  if (error) return { ok: false, error: "Couldn't save that." };
+  revalidatePath("/app/classes");
+  revalidatePath("/app/today");
+  return { ok: true };
+}

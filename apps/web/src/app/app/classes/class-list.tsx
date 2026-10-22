@@ -1,9 +1,102 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import type { ClassView } from "@/lib/classes/load";
 import { COBB_LINKS, practiceLinks } from "@/lib/classes/resources";
 import { shortDate } from "@/lib/classes/due";
-import { addMaterialLink, deleteMaterial, uploadMaterial, type MatResult } from "./actions";
+import {
+  addMaterialLink,
+  deleteMaterial,
+  markPostsRead,
+  setActionDone,
+  uploadMaterial,
+  type MatResult,
+} from "./actions";
+
+const KIND_LABEL: Record<string, string> = {
+  assessment: "Test/quiz",
+  due: "Due",
+  bring: "Bring",
+  todo: "To do",
+  change: "Change",
+  reminder: "Reminder",
+  announcement: "News",
+};
+
+function TeacherWants({ studentId, c }: { studentId: string; c: ClassView }) {
+  const [pending, start] = useTransition();
+  const g = c.guidance;
+  return (
+    <div className="blk tw">
+      <h4>
+        What your teacher wants you to do
+        <span>
+          {g.unread ? <b className="nb">{g.unread} new</b> : null}
+          <i className="pend" title="Teacher post summaries: extract-only feature, pending SA-A1 review">
+            AI summary · beta
+          </i>
+        </span>
+      </h4>
+      {g.lines.length ? (
+        <ul className="twl">
+          {g.lines.map((l) => (
+            <li key={l}>{l}</li>
+          ))}
+        </ul>
+      ) : (
+        <div style={{ color: "var(--mut)", fontSize: 13 }}>Nothing from the class board right now.</div>
+      )}
+      {g.items.map((i) => (
+        <div className={`li twi ${i.done ? "done" : ""}`} key={i.id}>
+          <input
+            type="checkbox"
+            aria-label={`Mark “${i.text}” done`}
+            checked={i.done}
+            disabled={pending}
+            onChange={(e) => {
+              const v = e.currentTarget.checked;
+              start(async () => {
+                await setActionDone(i.id, v);
+              });
+            }}
+          />
+          <span className={`chip k-${i.kind}`}>{KIND_LABEL[i.kind] ?? i.kind}</span>
+          <span style={{ minWidth: 0 }}>
+            {i.text}
+            {i.flagged ? <b className="flag">Not done yet</b> : null}
+            <small>
+              from{" "}
+              {i.post.url ? (
+                <a
+                  href={i.post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => start(async () => void (await markPostsRead(studentId, [i.post.id])))}
+                >
+                  “{i.post.title}”
+                </a>
+              ) : (
+                <>“{i.post.title}”</>
+              )}
+              {!i.post.read ? <b className="nb sm">New</b> : null}
+            </small>
+          </span>
+          <span className="when">{shortDate(i.dueAt)}</span>
+        </div>
+      ))}
+      {c.unreadPostIds.length ? (
+        <button
+          type="button"
+          className="up ghost"
+          style={{ marginTop: 8 }}
+          disabled={pending}
+          onClick={() => start(async () => void (await markPostsRead(studentId, c.unreadPostIds)))}
+        >
+          {pending ? "Saving…" : "Mark board posts read"}
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 const ini = (s: string) =>
   s
@@ -159,7 +252,14 @@ export function ClassList({
             <button className="ch" onClick={() => flip(c.id)} aria-expanded={isOpen}>
               <span className="c" style={{ background: c.color }} />
               <div>
-                <div className="n">{c.name}</div>
+                <div className="n">
+                  {c.name}
+                  {c.guidance.unread ? (
+                    <b className="nb" aria-label={`${c.guidance.unread} new class-board posts`}>
+                      {c.guidance.unread} new
+                    </b>
+                  ) : null}
+                </div>
                 <div className="t">{meta}</div>
               </div>
               <div className="bw">
@@ -176,6 +276,7 @@ export function ClassList({
             {isOpen && (
               <div className="body">
                 <div style={{ display: "grid", gap: 14, alignContent: "start" }}>
+                  <TeacherWants studentId={studentId} c={c} />
                   <div className="blk">
                     <h4>
                       Current unit<span>{c.unit?.week_label ?? ""}</span>
@@ -289,6 +390,7 @@ export function ClassList({
                       c.feed.map((f) => (
                         <div className="li" key={f.id} style={{ alignItems: "flex-start" }}>
                           <span className="chip">{f.kind === "email" ? "Email" : "Post"}</span>
+                          {f.unread ? <b className="nb sm">New</b> : null}
                           <span style={{ minWidth: 0 }}>
                             {f.url ? (
                               <a

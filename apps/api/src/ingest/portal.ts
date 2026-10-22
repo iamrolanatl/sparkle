@@ -332,6 +332,13 @@ export async function writePortalBatch(
         body: s(x.body, 4000),
         url: url(x.url),
         posted_at: iso(x.postedAt),
+        starts_at: iso(x.startsAt),
+        pinned: x.pinned === true,
+        links: (Array.isArray(x.links) ? (x.links as R[]) : [])
+          .map((l) => ({ title: s(l?.title, 200), url: url(l?.url) }))
+          .filter((l) => l.url)
+          .slice(0, 40),
+        content_hash: s(x.contentHash, 64),
       })),
     );
     await up(
