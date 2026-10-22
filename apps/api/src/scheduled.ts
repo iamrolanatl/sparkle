@@ -15,5 +15,8 @@ export function makeScheduler<E>(handlers: Record<string, CronHandler<E>[]>) {
   };
 }
 
-/** Registry. "30 3 * * *": Team C vaultDaily (vault flag OFF — job must no-op when disabled). */
+/**
+ * Registry. "30 3 * * *" (daily, UTC): Team C `vaultDaily` (vault flag OFF — must no-op when disabled) and
+ * Team B `purgeScans` (DEC-126: delete scan originals/unsaved scans older than 30 days). Each team adds one line.
+ */
 export const cronHandlers: Record<string, CronHandler<never>[]> = { "30 3 * * *": [] };
