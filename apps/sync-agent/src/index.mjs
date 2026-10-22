@@ -4,9 +4,10 @@
  * - Attaches to the dedicated, already-signed-in Chrome over CDP (127.0.0.1:9333); exits quietly if Chrome isn't running.
  * - Read-only: page loads + the portals' own read calls. Never submits forms, never opens mail.
  * - Hashes every normalized record; uploads only changed records (delta) to POST {api}/ingest/:student/portal.
- * - Portal credentials/cookies never leave the laptop. The Sparkle refresh token lives in auth.json (user-only ACL).
+ * - Portal credentials/cookies never leave the laptop. Uploads use a per-student device token kept in Windows Credential Manager.
  */
 import fs from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import { pullSynergy } from "./synergy.mjs";
@@ -37,21 +38,15 @@ const readJson = (f, d) => {
   }
 };
 
-async function accessToken(auth) {
-  const r = await fetch(`${auth.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
-    method: "POST",
-    headers: { apikey: auth.publishableKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: auth.refreshToken }),
-  });
-  if (!r.ok) throw Object.assign(new Error(`sparkle_auth_${r.status}`), { code: "sparkle_session_expired" });
-  const j = await r.json();
-  auth.refreshToken = j.refresh_token; // rotates every use; persist immediately
-  fs.writeFileSync(path.join(HOME, "auth.json"), JSON.stringify(auth));
-  return j.access_token;
+/** Scoped device ingest token (sit_…) from Windows Credential Manager. Never logged, never written to disk. */
+function deviceToken(cfg) {
+  const r = spawnSync("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "cred.ps1"), "read", cfg.credentialTarget], { encoding: "utf8", windowsHide: true });
+  if (r.status !== 0 || !r.stdout.startsWith("sit_")) throw Object.assign(new Error("ingest_token_missing"), { code: "no_credentials" });
+  return r.stdout.trim();
 }
 
 async function upload(auth, batch) {
-  const token = await accessToken(auth);
+  const token = deviceToken(auth);
   for (let attempt = 0; attempt < 4; attempt++) {
     const r = await fetch(`${auth.apiBase}/ingest/${auth.studentId}/portal`, {
       method: "POST",
@@ -79,8 +74,8 @@ async function main() {
     } catch {
       return log({ msg: "skip_no_chrome" });
     }
-    const auth = readJson(path.join(HOME, "auth.json"), null);
-    if (!auth) return log({ msg: "no_auth" });
+    const auth = readJson(path.join(HOME, "config.json"), null);
+    if (!auth) return log({ msg: "no_config" });
     const statePath = path.join(HOME, "state.json");
     const state = full
       ? { hashes: {}, classes: [], teachers: [] }

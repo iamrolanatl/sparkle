@@ -4,6 +4,7 @@ import type { Admit, CoordOp } from "./coordinator";
 import { validateBatch } from "./schema";
 import { writeBatch, type IngestJob } from "./writer";
 import { validatePortalBatch, writePortalBatch } from "./portal";
+import { serviceRest } from "../lib/supa";
 
 export interface IngestEnv extends AuthEnv {
   TODAY_CACHE?: KVNamespace;
@@ -142,13 +143,21 @@ export async function ingestQueue(mb: MessageBatch<IngestJob>, env: IngestEnv): 
 ingest.post("/:id/portal", async (c) => {
   if (Number(c.req.header("Content-Length") ?? "0") > MAX_BODY_BYTES) return c.json({ error: "too_large" }, 413);
   const id = c.req.param("id");
-  const user = await getUser(c.env, c.req.header("Authorization"));
-  if (!user) return c.json({ error: "unauthorized" }, 401);
-  const [guardian, self] = await Promise.all([
-    userRpc<boolean>(c.env, user.token, "is_active_guardian", { p_student: id }),
-    userRpc<boolean>(c.env, user.token, "is_student_self", { p_student: id }),
-  ]);
-  if (!guardian && !self) return c.json({ error: "forbidden" }, 403);
+  const authz = c.req.header("Authorization") ?? "";
+  let self = false;
+  if (authz.startsWith("Bearer sit_")) {
+    // scoped device token: valid for exactly one student, never a user session
+    if (!(await deviceTokenOk(c.env, authz.slice(7), id))) return c.json({ error: "forbidden" }, 403);
+  } else {
+    const user = await getUser(c.env, authz);
+    if (!user) return c.json({ error: "unauthorized" }, 401);
+    const [guardian, isSelf] = await Promise.all([
+      userRpc<boolean>(c.env, user.token, "is_active_guardian", { p_student: id }),
+      userRpc<boolean>(c.env, user.token, "is_student_self", { p_student: id }),
+    ]);
+    if (!guardian && !isSelf) return c.json({ error: "forbidden" }, 403);
+    self = !!isSelf;
+  }
   const raw = await readCapped(c.req.raw, MAX_BODY_BYTES);
   if (raw === null) return c.json({ error: "too_large" }, 413);
   let body: unknown;
@@ -162,3 +171,20 @@ ingest.post("/:id/portal", async (c) => {
   const res = await writePortalBatch(c.env, batch, self ? "student" : "guardian");
   return c.json({ ok: true, ...res });
 });
+
+async function deviceTokenOk(env: IngestEnv, token: string, studentId: string): Promise<boolean> {
+  if (!/^sit_[A-Za-z0-9_-]{32,128}$/.test(token) || !/^[0-9a-f-]{36}$/i.test(studentId)) return false;
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  const hash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const rest = serviceRest(env);
+  const rows = await rest<{ id: string }[]>(
+    `ingest_tokens?token_hash=eq.${hash}&student_id=eq.${studentId}&revoked_at=is.null&select=id`,
+  );
+  if (!rows?.length) return false;
+  await rest(`ingest_tokens?id=eq.${rows[0]!.id}`, {
+    method: "PATCH",
+    prefer: "return=minimal",
+    body: JSON.stringify({ last_used_at: new Date().toISOString() }),
+  }).catch(() => {});
+  return true;
+}

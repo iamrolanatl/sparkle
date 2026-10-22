@@ -4,7 +4,10 @@ $home2 = Join-Path $env:LOCALAPPDATA "SparkleSync"
 New-Item -ItemType Directory -Force $home2 | Out-Null
 Copy-Item -Recurse -Force (Join-Path $PSScriptRoot "src"), (Join-Path $PSScriptRoot "package.json") $home2
 Push-Location $home2; & "C:\Program Files\nodejs\npm.cmd" i --omit=dev --silent 2>&1 | Out-Null; Pop-Location
-if (Test-Path (Join-Path $home2 "auth.json")) { icacls (Join-Path $home2 "auth.json") /inheritance:r /grant:r "$($env:USERNAME):(R,W)" | Out-Null }
+# one-time: move a delivered token file into Credential Manager (file is deleted by cred.ps1)
+$tf = Join-Path $home2 "sit.txt"
+if (Test-Path $tf) { powershell -NoProfile -ExecutionPolicy Bypass -File "$home2\src\cred.ps1" write "SparkleSync/ingest" $tf | Out-Null }
+Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $home2 "auth.json")
 $node = "C:\Program Files\nodejs\node.exe"
 function Reg($name, $jobs, $trigger) {
   $a = New-ScheduledTaskAction -Execute $node -Argument "`"$home2\src\index.mjs`" --jobs $jobs" -WorkingDirectory $home2
