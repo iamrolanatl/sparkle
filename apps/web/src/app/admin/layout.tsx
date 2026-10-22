@@ -18,6 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin">Overview</Link>
           <Link href="/admin/chat">Sales &amp; Support Chat</Link>
           <Link href="/admin/privacy">Privacy requests</Link>
+          <Link href="/admin/sync">Sync health</Link>
         </nav>
         <span className="text-muted ml-auto text-xs">{user.email}</span>
       </header>
