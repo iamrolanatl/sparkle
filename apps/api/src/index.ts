@@ -6,6 +6,7 @@ import { chat, type ChatEnv } from "./chat/route";
 import { students, type StudentsEnv } from "./students/route";
 import { weather } from "./weather/route";
 import { ingest, type IngestEnv } from "./ingest/route";
+import { tasks } from "./tasks/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 import { makeDispatcher, queueHandlers } from "./queues";
@@ -80,6 +81,7 @@ app.route("/weather", weather);
 app.use("/students/:id/scans", idempotency());
 app.route("/", scans);
 app.route("/ingest", ingest);
+app.route("/students", tasks);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {
