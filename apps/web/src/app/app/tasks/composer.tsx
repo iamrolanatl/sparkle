@@ -303,8 +303,13 @@ function TaskComposerInner({
                 >
                   ✓
                 </button>
+                <span className="cav" style={{ background: "var(--pill)", color: "var(--pillt)" }} aria-hidden="true">
+                  Me
+                </span>
                 <div style={{ minWidth: 0 }}>
-                  <div style={r.t.done_at ? { textDecoration: "line-through", color: "var(--mut)" } : undefined}>
+                  <div
+                    style={r.t.done_at ? { textDecoration: "line-through", color: "var(--mut)" } : { fontWeight: 600 }}
+                  >
                     {r.t.title}
                   </div>
                   <div style={{ fontSize: 12, color: "var(--dim)" }}>Personal · added by you</div>
