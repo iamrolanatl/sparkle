@@ -11,7 +11,7 @@ export interface StudyEnv extends AuthEnv {
 }
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export async function studyHelperEnabled(env: AuthEnv): Promise<boolean> {
+async function studyHelperEnabled(env: AuthEnv): Promise<boolean> {
   try {
     const rows = await serviceRest(env)<{ enabled: boolean }[]>("feature_flags?key=eq.study_helper&select=enabled");
     return rows?.[0]?.enabled === true;
