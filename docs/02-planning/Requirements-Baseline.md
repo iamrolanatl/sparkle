@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-PLN-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.2 |
+| Version | 1.3 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Product Owner — TBD (Rolan) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -71,6 +71,21 @@ Priority uses MoSCoW (M = Must for MVP acceptance, S = Should, C = Could). Featu
 | NFR-11 | *(new)* Accessibility: high-contrast light/dark, readable text, reduced-motion respected, grade-8 reading level. WCAG level **TBD (Rolan)** (recommend 2.2 AA). | A11y tests |
 | NFR-12 | *(new)* Per-user AI budgets and kill switches; feature flags for all new animation/live features. | Router tests |
 | NFR-13 | *(new)* Responsive: desktop- and mobile-friendly web (per sponsor direction). | Device matrix |
+| NFR-20 | *(CR-0005)* Verifiable parental consent recorded before any vault is created for a student (DEC-21). | E2E consent tests |
+| NFR-21 | *(CR-0005)* Pre-save detectors auto-redact SSN/card/bank numbers; warn-and-confirm on medical/legal docs; 0 SSNs persisted in test corpus (DEC-22). | Detector test corpus |
+| NFR-22 | *(CR-0005)* Vault classes standard/academic/sensitive with default visibility per DEC-23 enforced by RLS. | RLS/privacy suite |
+| NFR-23 | *(CR-0005)* TLS 1.2+; at-rest encryption; mandatory envelope encryption + crypto-shred for sensitive class (DEC-24). | Crypto tests, key-rotation drill |
+| NFR-24 | *(CR-0005)* Presigned URL TTL ≤ 5 min, single object; sensitive via authenticated proxy with step-up (DEC-25). | Integration tests |
+| NFR-25 | *(CR-0005)* Append-only vault access log for all actions; visible to guardians; 24-month retention (DEC-26). | Audit tests |
+| NFR-26 | *(CR-0005)* No standing admin access to vault; break-glass view-as ≤ 30 min, MFA, audited, family notified (DEC-27). | Admin tests |
+| NFR-27 | *(CR-0005)* Deletion: primary ≤ 30 days, all copies ≤ 60 days; inactivity and age-18 rules (DEC-28). | Purge job tests |
+| NFR-28 | *(CR-0005)* Breach notice: declare ≤ 24 h; families ≤ 30 days target, ≤ 60 days max; regulators per DEC-29. | Tabletop exercise |
+| NFR-29 | *(CR-0005)* Every subprocessor under DPA (no training, ≤ 24 h breach notice, US processing); no vault content to Tier 2/3 AI without opt-in, never sensitive (DEC-30). | Contract index, router tests |
+| NFR-30 | *(CR-0005)* OCR on-device for sensitive; no third-party OCR APIs; no model training on vault content (DEC-31/32). | Architecture review, network tests |
+| NFR-31 | *(CR-0005)* Vault data stored/processed in the US (DEC-33). | Config audit |
+| NFR-32 | *(CR-0005)* Written Information Security Program maintained and reviewed annually (DEC-34). | Annual review |
+| NFR-33 | *(CR-0005)* Independent pen test pre-launch, Critical/High fixed; cross-tenant RLS suite in CI; ASVS 5.0 L2 for vault (DEC-35). | Pen-test report, CI |
+| NFR-34 | *(CR-0005)* Step-up re-auth (≤ 15 min) for sensitive documents (DEC-39). | E2E |
 
 ## 3. Expert-Informed Constraints
 Progressive disclosure; one idea per message; growth-mindset language; no punishing streaks; quiet hours and daily digest; crisis protocol; coach mode only for academic work.
@@ -99,3 +114,4 @@ Progressive disclosure; one idea per message; growth-mindset language; no punish
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Added FR-16 (helper access) and FR-17 (landing page + waitlist). |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | CR-0003: FR-18 legal/compliance + GPC, FR-19 sales/support chat, FR-20 admin chat monitoring. CR-0004: FR-21 NL tasks, FR-22 weather, FR-23 OCR, FR-24 mail vault (OCR acceptance explicit). |
+| 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added NFR-20..34 (vault controls) per CR-0005. |

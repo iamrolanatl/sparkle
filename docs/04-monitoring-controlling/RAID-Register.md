@@ -4,7 +4,7 @@
 |---|---|
 | Document ID | SPK-MC-001 |
 | Project | Sparkle — Student Success Platform |
-| Version | 1.2 |
+| Version | 1.4 |
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
@@ -25,7 +25,7 @@
 | R-03 | Credential handling incident | 2 | 5 | 10 | Avoid/Mitigate | Device-default storage, minimal central secrets, audit, counsel review | Eng Lead | Open |
 | R-04 | Performance regression from glass/robot effects | 3 | 3 | 9 | Mitigate | FPS budgets, auto-disable, flags, synthetics | Design/Eng | Open |
 | R-05 *(new)* | Automated access to school portals may conflict with district/vendor terms of use | 3 | 5 | 15 | Mitigate | Legal review; prefer official integrations; obtain agreements (A-01) | Sponsor/Counsel | Open |
-| R-06 *(new)* | Student-privacy regulatory non-compliance (minors' data; FERPA/COPPA/state law applicability unassessed) | 3 | 5 | 15 | Mitigate | Counsel assessment before Phase 1 handles real data | Counsel | Open |
+| R-06 *(new)* | Student-privacy regulatory non-compliance (minors' data; FERPA/COPPA/state law applicability unassessed) | 2 | 5 | 10 | Mitigate | Counsel assessment before Phase 1 handles real data | Counsel | Open |
 | R-07 *(new)* | Unsafe robot response to a student in crisis | 2 | 5 | 10 | Mitigate | Crisis protocol FR-14, safety eval set, Sev-1 classification | AI/Platform | Open |
 | R-08 *(new)* | Key-person / staffing gap (most roles TBD) | 4 | 4 | 16 | Mitigate | Staff roles; document everything in repo; Grok Bot assists | Sponsor | Open |
 | R-09 *(new)* | Unsigned/blocked desktop agent installers (cert cost/lead time) | 3 | 3 | 9 | Mitigate | Procure Apple + Windows code-signing certs early; web fallback | Rolan | Open |
@@ -38,6 +38,18 @@
 | R-17 | Workers AI / chat cost overrun or abuse | 3 | 3 | 9 | Mitigate | Per-IP rate limits, daily token budget, kill switch, AI Gateway analytics | Rolan | Open |
 | R-18 | Scope creep from CR-0004 (amends handoff §1) dilutes student focus and adds privacy surface | 3 | 3 | 9 | Mitigate | Features framed as student-success only; phased (2/4); weather provider and OCR vendor terms reviewed | Rolan | Open |
 | R-13 | Landing page/waitlist live before Privacy Policy/Terms are reviewed | 3 | 4 | 12 | Avoid | Keep site non-public / unindexed until 2.8–2.10 done | Rolan | Open |
+| R-06 update (CR-0005) | Applicability assessed for vault (Vault Plan §2); downgraded 15→10. Residual: **privacy counsel sign-off before vault launch** (LG-01) | | | | Mitigate | Counsel engagement | Rolan | Open — downgraded |
+| R-20 | Families upload SSNs / full medical records despite detectors (false negatives) | 3 | 4 | 12 | Mitigate | Detectors + redaction, warnings, minimization copy, periodic corpus tests | Eng | Open |
+| R-21 | Georgia SDPATA / HBNR read differently by counsel or regulators (e.g., broader duties) | 2 | 4 | 8 | Mitigate | Already complying conservatively; LG-01 | Rolan | Open |
+| R-22 | Single-person security program (Rolan = coordinator; no independent reviewer) | 4 | 4 | 16 | Mitigate | Third-party pen test, counsel, plan to staff security lead by 100k users | Rolan | Open |
+| R-23 | R2 location is a hint, not a guarantee; Workers AI may process outside US | 2 | 3 | 6 | Accept/Mitigate | Sensitive OCR on-device; re-evaluate jurisdiction options | Eng | Open |
+| R-24 | Key compromise of KEK held as Workers secret | 2 | 5 | 10 | Mitigate | Least-privilege tokens, rotation, KMS migration at 100k users | Eng | Open |
+| R-25 | VPC friction lowers vault adoption | 3 | 2 | 6 | Accept | Card check is quick; fallback method; vault optional | PM | Open |
+| R-26 | Trademark conflict forces rename of 'Sparkle' after launch (Viacom SPARKLER, pending SPARKLE in 9/41/42, AI 'SPARKLE ASSISTANT') | 4 | 4 | 16 | Accept (time-boxed) | Rolan kept plain 'Sparkle' (DEC-40); keep brand assets swappable; counsel full clearance before domain purchase (SA-07) and public launch (Runbook item 12) | Rolan | Open — accepted |
+| R-27 | No branch protection / push protection on Free private repo → accidental secret or unreviewed merge | 3 | 3 | 9 | Mitigate | Dependabot on; gitleaks CI; GitHub Pro (SA-10) | Rolan | Open |
+| R-28 | Dev/test work against the prod Supabase project until sparkle-dev exists | 3 | 4 | 12 | Mitigate | Only synthetic data in prod pre-launch; create dev (SA-12) | Eng | Open |
+| R-29 | Cloud/AI bill shock (only $10 Cloudflare budget alert active; AI provider caps not yet set) | 2 | 3 | 6 | Mitigate | DEC-43; SA-13 | Rolan | Open |
+| R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
@@ -70,6 +82,10 @@
 | D-12 | Cloudflare AI Gateway `sparkle-gateway` + Workers AI enabled | Chat go-live | Open |
 | D-13 | Weather data provider (cost/terms) | FR-22 | Open |
 | D-14 | Legal + security review of mail vault | FR-24 enablement | Open — owner Rolan |
+| D-20 | Privacy counsel (edtech/COPPA) engagement and sign-off — LG-01 | Vault launch | Open |
+| D-21 | Pen-test vendor; payment processor for VPC; ID-verification vendor; DPAs | Vault launch | Open |
+| D-22 | Supabase account-level token or dashboard action to create sparkle-dev (SA-12) | G0 | Open |
+| D-23 | Cloudflare token with Notifications: Edit, or manual usage alerts (SA-13) | G0 | Open |
 
 **Corrections vs. original:** added scoring, owners, status; added R-05..R-09, A-03, issues I-01/I-02 (original said "none open" though access was already blocking), D-04/D-05.
 
@@ -91,3 +107,5 @@
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Closed I-01; added I-03 (R2), R-10..R-13, D-06..D-11; resourcing reality. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Closed I-03 (R2); added R-14..R-18, D-12..D-14. |
+| 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | R-06 downgraded; R-20..25, D-20/21 added (CR-0005). |
+| 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | R-26..30, D-22/23 (CR-0006). |
