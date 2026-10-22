@@ -5,8 +5,10 @@ import { serviceRest } from "../lib/supa";
 import { CRISIS_REPLY } from "../chat/guard";
 import { ageBand, guardedComplete, type Completer } from "../tasks/safety";
 import { allow, type RateLimitBinding } from "../chat/ratelimit";
+import type { AiEnv } from "../ai/env";
+import { askHandler } from "./ask";
 
-export interface StudyEnv extends AuthEnv {
+export interface StudyEnv extends AuthEnv, AiEnv {
   /** Injected once the tiered router (PR #20) merges; until then the helper reports unavailable. */
   STUDY_ROUTER?: Completer;
   STUDY_RATE_LIMIT?: RateLimitBinding;
@@ -36,6 +38,8 @@ const MAX_BODY = 4096;
 export const study = new Hono<{ Bindings: StudyEnv }>();
 
 study.get("/status", async (c) => c.json({ enabled: await studyHelperEnabled(c.env) }));
+
+study.post("/:id/ask", (c) => askHandler(c, (e) => studyHelperEnabled(e)));
 
 study.post("/:id", async (c) => {
   const id = c.req.param("id");
