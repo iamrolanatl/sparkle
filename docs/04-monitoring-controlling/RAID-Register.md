@@ -56,6 +56,9 @@
 | R-32 | Free tiers cannot actually serve 1M users (Supabase Free pauses, 60 conns, no PITR) | 4 | 4 | 16 | Mitigate | Capacity model; cache-first design; SA-15/16 before G5 | Rolan | Open |
 | R-33 | Data loss from a destructive or mis-ordered migration applied by a parallel team | 3 | 5 | 15 | Mitigate | SOP-15: additive-only CI lint, Integration-only apply, backup → dry-run → sparkle-dev → main | Integration | Open |
 | R-34 | Parallel teams (CR-0009) break each other via unreviewed merges or shared-file conflicts | 4 | 3 | 12 | Mitigate | SOP-14: cross-team review, Integration-only sequential merges, lanes, DEC ranges | Integration | Open |
+| R-35 | No human on-call; incidents depend on bot automation and Rolan's availability | 3 | 4 | 12 | Accept/Mitigate | Runbooks RB-01..06, email alerts, kill switches fail closed (DEC-189) | Rolan | Open |
+| R-36 | Public pages keep script-src 'unsafe-inline' (static CSP) | 2 | 3 | 6 | Accept | No user data on public pages; nonce CSP on signed-in routes (DEC-186) | Team E | Open |
+| R-37 | Crash-free SLO (NFR-37) unmeasurable until a Sentry DSN exists | 3 | 3 | 9 | Mitigate | No-op adapters ready (DEC-184); SA-17 | Rolan | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
