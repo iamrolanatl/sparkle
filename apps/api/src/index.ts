@@ -9,8 +9,9 @@ import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 import { makeDispatcher, queueHandlers } from "./queues";
 import { cronHandlers, makeScheduler } from "./scheduled";
+import { scans, type ScansEnv } from "./scans/route";
 
-export interface Env extends ChatEnv, StudentsEnv {
+export interface Env extends ChatEnv, StudentsEnv, ScansEnv {
   APP_ENV?: string;
   ALLOWED_ORIGINS?: string;
   SCANS_BUCKET?: R2Bucket;
@@ -75,6 +76,8 @@ app.route("/chat", chat);
 app.use("/students/:id/import", idempotency());
 app.route("/students", students);
 app.route("/weather", weather);
+app.use("/students/:id/scans", idempotency());
+app.route("/", scans);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {

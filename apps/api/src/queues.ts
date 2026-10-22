@@ -3,6 +3,8 @@
  * each team registers a handler for its queue name here — one line per team, no other shared edits.
  * Unknown queues are retried (not acked) so messages are never silently dropped.
  */
+import { scanQueue } from "./scans/route";
+
 export type QueueHandler<E = unknown> = (batch: MessageBatch<unknown>, env: E, ctx: ExecutionContext) => Promise<void>;
 
 export function makeDispatcher<E>(handlers: Record<string, QueueHandler<E>>) {
@@ -18,4 +20,6 @@ export function makeDispatcher<E>(handlers: Record<string, QueueHandler<E>>) {
 }
 
 /** Registry. Team D: "sparkle-ingest". Team B: "sparkle-scans-ocr". */
-export const queueHandlers: Record<string, QueueHandler<never>> = {};
+export const queueHandlers: Record<string, QueueHandler<never>> = {
+  "sparkle-scans-ocr": scanQueue as QueueHandler<never>,
+};
