@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: { default: "Sparkle — School, made calm", template: "%s · Sparkle" },
   description,
   manifest: "/manifest.webmanifest",
+  robots: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true" ? undefined : { index: false, follow: false },
   alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: "Sparkle", title: "Sparkle — School, made calm", description, url: "/" },
   twitter: { card: "summary_large_image", title: "Sparkle — School, made calm", description },

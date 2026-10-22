@@ -5,5 +5,11 @@
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  "vars": {
+    "SUPABASE_URL": "https://nklbdyezbsugkdvaidtt.supabase.co",
+    "NEXT_PUBLIC_API_URL": "https://sparkle-api.crystal-iamrolan.workers.dev",
+    "NEXT_PUBLIC_SITE_URL": "https://sparkle-web.crystal-iamrolan.workers.dev"
+  }
+  // Secret (wrangler secret put): SUPABASE_SECRET_KEY
 }

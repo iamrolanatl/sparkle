@@ -29,7 +29,7 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 1.3 | Automated weekly status report (Fridays ~4 PM ET) — DEC-45 *(in place)* |  | In place | CR-0006 |
 | 2.0 | **Phase 0 — Foundation** | G0 | In progress | |
 | 2.1 | Architecture runway, ADRs, scale-trigger values | | In progress | Data model & access control (TDD §8) done in CR-0002; scale-trigger numbers TBD |
-| 2.2 | Repo, CI/CD, environments, secrets | | In progress | GitHub Actions secrets/vars set; Supabase prod project `nklbdyezbsugkdvaidtt` exists; CI + manual API deploy workflow in CR-0002 |
+| 2.2 | Repo, CI/CD, environments, secrets | | In progress | Dev deployed 2026-10-21 via `scripts/deploy-dev.sh` (DEC-46, DEC-48); GitHub Actions secrets/vars set; Supabase prod project `nklbdyezbsugkdvaidtt` exists; CI + manual API deploy workflow in CR-0002 |
 | 2.2.1 | Separate dev/staging Supabase projects | | Not started | Needs Rolan to create projects (free tier limits) |
 | 2.2.2 | Branch protection on `main` | | Not started | Rolan to enable once CI is green |
 | 2.3 | Feature flags + observability baseline | | Not started | Needs Sentry account (2.11) |
@@ -39,7 +39,7 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.6.1 | Enable Cloudflare R2 | | Done | Enabled 2026-10-21; private buckets `sparkle-scans`, `sparkle-vault` (ENAM, no public access); bound as SCANS_BUCKET / VAULT_BUCKET in `apps/api` (CR-0003) — I-03 closed |
 | 2.7 | Landing page and sign-up (FR-17) | | In progress | Crystal-style cockpit redesign, "coming soon" cards for FR-21..24 (CR-0003/4); depends on 2.8 domain and 2.10 legal text before public launch |
 | 2.7.1 | Legal/compliance pages + cookie consent + privacy requests/GPC (FR-18) | | In progress | Drafts; **all policy text needs legal review** (R-14) |
-| 2.7.2 | Sales & support chat (FR-19) | | In progress | Needs AI Gateway `sparkle-gateway` created, production CORS origin, deploy approval |
+| 2.7.2 | Sales & support chat (FR-19) | | In progress | Live on dev workers.dev (DEC-47, DEC-48); gateway created |
 | 2.7.3 | Admin chat monitoring + privacy queue (FR-20) — partial 6.4 pulled into Phase 0/1 | | In progress | SSO + hardware MFA TODO before launch |
 | 2.8 | Production domain + DNS (Cloudflare) | | Not started | Domain name TBD (Rolan) |
 | 2.9 | Google OAuth consent screen verification / publishing | | Not started | Required before public launch; needs domain, privacy policy URL |
