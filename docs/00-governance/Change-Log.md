@@ -19,6 +19,7 @@
 
 | Date | CR | Documents affected | Summary | Author |
 |---|---|---|---|---|
+| 2026-10-21 | Lane 1 (Phase 1 build) | Decision Log (DEC-04 decided, DEC-56..63), WBS, RAID, Sponsor-Action-Items | PRs #8–#15: RLS perf, hygiene gates, UI effects/applets, API resilience, family invitations, CSV import + Today doc, sync health, confirmation gate; migrations 20261022000000/010000/020000 applied to dev | Grok Bot |
 | 2026-10-21 | DEC-46..50 (Lane 1, go-live dev) | Decision Log, Sponsor-Action-Items, WBS 2.2/2.7.2, RAID D-12 closed | Migrations applied to Supabase; AI Gateway created; API + web deployed to workers.dev; auth redirect URLs set; purge-chats cron; chat model swapped (deprecation); site noindex | Grok Bot |
 | 2026-10-21 | CR-0007, CR-0008 | Requirements (NFR-35..48), Scalability-Reliability-Plan (new), Design-System (new), Definition-of-Done, SOP-13 (new), SOP README, Decision Log (DEC-51..55), CR Register, WBS, RAID, Sponsor-Action-Items, docs index | Enterprise standard (1M users, 99.9 %, crash-free, RPO/RTO, hygiene) and design direction baselined | Grok Bot |
 | 2026-10-21 | CR-0003 (SOP update) | New: `06-operations/sops/` README + SOP-01..SOP-12, `00-governance/Definition-of-Done.md`, `00-governance/ADR-Template.md`; WBS 1.1/1.2 | SOP library created (sponsor request): branching/PR, release/rollback, migrations, secrets (90-day rotation), incidents + breach hook, AI ops, privacy requests, support handoff, feature flags, change control lanes + G1 design freeze, quarterly backup/restore, platform profiles | Grok Bot (for Rolan Chowdhury) |

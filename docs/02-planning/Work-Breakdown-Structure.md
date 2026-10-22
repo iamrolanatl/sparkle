@@ -34,10 +34,10 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.2.2 | Branch protection on `main` | | Not started | Rolan to enable once CI is green |
 | 2.3 | Feature flags + observability baseline | | Not started | Needs Sentry account (2.11) |
 | 2.4 | Design system: glass, neon, light/dark, responsive, a11y, FPS-guarded aurora | | In progress | `packages/ui` in CR-0002 |
-| 2.4.1 | Neon glass windows, cursor glow, magnetic buttons, tilt cards (CR-0008) | | Not started | DEC-52 |
-| 2.4.2 | Seamless VideoBackground (CR-0008) | | Not started | DEC-52 |
-| 2.4.3 | Applets framework (isolated, lazy, skeleton) (CR-0008) | | Not started | DEC-52 |
-| 2.4.4 | Playwright E2E + visual tests; Lighthouse CI budget (CR-0008) | | Not started | NFR-47/48 |
+| 2.4.1 | Neon glass windows, cursor glow, magnetic buttons, tilt cards (CR-0008) | | Done | PR #10 |
+| 2.4.2 | Seamless VideoBackground (CR-0008) | | Done | PR #10 |
+| 2.4.3 | Applets framework (isolated, lazy, skeleton) (CR-0008) | | Done | PR #10; DEC-58 |
+| 2.4.4 | Playwright E2E + visual tests; Lighthouse CI budget (CR-0008) | | Done | PR #10; DEC-56, DEC-59 |
 | 2.5 | Sparkle character states | | In progress | **Placeholder only** (`packages/sparkle-character`, Rive integration point stubbed). Production full-body Rive character needs an illustrator/animator — who/how TBD (D-03, R-11) |
 | 2.6 | Access and tooling | | Done | Supabase token; Google auth enabled in Supabase; GCP project `sparkle-app-2566` with OAuth Web client (web + mobile via Supabase, DEC-05); Cloudflare token verified; Rolan's Windows laptop: git, node, gh, gcloud, wrangler, supabase CLI |
 | 2.6.1 | Enable Cloudflare R2 | | Done | Enabled 2026-10-21; private buckets `sparkle-scans`, `sparkle-vault` (ENAM, no public access); bound as SCANS_BUCKET / VAULT_BUCKET in `apps/api` (CR-0003) — I-03 closed |
@@ -50,13 +50,13 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.10 | Privacy & legal review — FERPA/COPPA/state law, Privacy Policy, Terms, DEC-06 | | Not started | **G1 entry criterion** (moved earlier from Phase 5). Needs counsel (none engaged) |
 | 2.11 | Sentry account + DSN | | Not started | Rolan |
 | 2.12 | Update landing page features & marketing content | | Recurring | At each gate, per [Communications & Marketing Plan](Communications-Marketing-Plan.md) |
-| 2.13 | Enterprise reliability baseline: error boundaries, crash reporter, resilience lib (CR-0007) | | Not started | DEC-51, DEC-54 |
-| 2.14 | RLS performance migration + indexes (CR-0007) | | Not started | NFR-43 |
-| 2.15 | k6 load tests in CI + capacity model (CR-0007) | | Not started | DEC-55 |
-| 2.16 | Repo hygiene gates: knip, Prettier, PR title, CODEOWNERS, branch auto-delete (CR-0007) | | Not started | DEC-53, SOP-13 |
-| 2.17 | Observability & alerting baseline (CR-0007) | | Not started | NFR-44 |
-| 2.18 | Canary / rollback via gradual deployments (CR-0007) | | Not started | NFR-45, SOP-02 |
-| 2.19 | Idempotency, rate limits, caching middleware (CR-0007) | | Not started | NFR-42 |
+| 2.13 | Enterprise reliability baseline: error boundaries, crash reporter, resilience lib (CR-0007) | | Done | PR #10, #11 |
+| 2.14 | RLS performance migration + indexes (CR-0007) | | Done | PR #8 |
+| 2.15 | k6 load tests in CI + capacity model (CR-0007) | | Done | PR #9; dev capacity smoke 50 VUs: p95 22 ms, 0/5,594 errors |
+| 2.16 | Repo hygiene gates: knip, Prettier, PR title, CODEOWNERS, branch auto-delete (CR-0007) | | Done | PR #9; branch auto-delete on |
+| 2.17 | Observability & alerting baseline (CR-0007) | | In progress | Request-id logs, deep health (PR #11); alerts need SA-13 |
+| 2.18 | Canary / rollback via gradual deployments (CR-0007) | | In progress | SOP-02 update pending |
+| 2.19 | Idempotency, rate limits, caching middleware (CR-0007) | | Done | PR #11, #13 |
 | 2.20 | Trademark clearance (knock-out done; counsel full search & filing) — DEC-40 |  | Not started | CR-0006 |
 | 2.21 | Production domain purchase + DNS (after brand decision) |  | Not started | CR-0006 |
 | 2.22 | Separate dev Supabase project; staging via Branching or Workers env — DEC-41 |  | Not started | CR-0006 |
@@ -64,12 +64,12 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.24 | Cost alerts & budgets: Cloudflare, Supabase, xAI, Anthropic — DEC-43 |  | Not started | CR-0006 |
 | 2.25 | Privacy-respecting analytics + KPI instrumentation — DEC-42 |  | Not started | CR-0006 |
 | 3.0 | **Phase 1 — Core Data & Identity** | G1 | Not started | Entry: 2.10 complete |
-| 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema, RLS, `redeem_invitation` + tests in CR-0002; UI not started |
+| 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema + RLS (CR-0002) + UI PR #12 |
 | 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | | Blocked | **Gated** by legal/ToS review of automated access to StudentVue/Cobb portals (R-05); needs Apple + Windows code-signing certificates (D-05) |
-| 3.3 | Web fallback: manual upload | | Not started | |
-| 3.4 | Normalized data model + Today doc precompute | | Not started | Academic tables stubbed in migration |
-| 3.5 | Admin basic sync health | | Not started | |
-| 3.6 | Explicit-confirmation framework for outbound comms | | Not started | `ai_drafts.confirmed_at` in schema |
+| 3.3 | Web fallback: manual upload | | In progress | CSV import API PR #13; upload UI next |
+| 3.4 | Normalized data model + Today doc precompute | | In progress | Today doc API + KV PR #13 |
+| 3.5 | Admin basic sync health | | In progress | PR #14 |
+| 3.6 | Explicit-confirmation framework for outbound comms | | In progress | PR #15 |
 | 3.7 | Update landing page features & marketing content | | Recurring | At G1 |
 | 4.0 | **Phase 2 — Student Experience** | G2 | Not started | |
 | 4.1 | Today view + statuses + "What changed" + focus mode | | Not started | |
