@@ -49,7 +49,7 @@ jobs:
         run: |
           pnpm exec wrangler dev -c wrangler.ci.toml --port 8788 > /tmp/wrangler.log 2>&1 &
           for i in $(seq 1 30); do curl -fs localhost:8788/health >/dev/null && break; sleep 2; done
-          k6 run --quiet ../../tests/load/smoke.js || (cat /tmp/wrangler.log; exit 1)
+          k6 run --quiet -e P95=1000 -e P99=2000 -e VUS=10 ../../tests/load/smoke.js || (cat /tmp/wrangler.log; exit 1)
   e2e:
     # CR-0008: Playwright E2E + visual regression, Lighthouse mobile budget (NFR-47).
     runs-on: ubuntu-latest
