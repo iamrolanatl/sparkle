@@ -85,8 +85,9 @@
 | DEC-122 | 2026-10-21 | Redaction before storage: SSNs, Luhn-valid card numbers and keyword-anchored bank/routing numbers become `[REDACTED-…•••last4]`; unredacted text never persisted | DEC-22 | Reject whole doc | Team B Tech Lead | Accepted |
 | DEC-123 | 2026-10-21 | `scans` readable only by active guardians and the student; helpers excluded until a per-doc share design; writes service-role only | DEC-23 least privilege | can_view_student scope | Team B Tech Lead | Accepted |
 | DEC-124 | 2026-10-21 | Sensitive docs (IEP, 504, health) are rejected by scans and routed to the vault (FR-24) | DEC-31 on-device-only rule | Classify after server OCR | Team B Tech Lead | Accepted |
-| DEC-125 | 2026-10-21 | Server OCR fallback (Workers AI `@cf/llava-hf/llava-1.5-7b-hf`) is off by default (`SCANS_OCR_SERVER=on` to enable); on-device text preferred | R-23 residency; free tier | Third-party OCR (barred by DEC-31) | Team B Tech Lead | Accepted |
-| DEC-126 | 2026-10-21 | Proposed: purge unsaved/discarded scans and their R2 originals after 30 days (discard deletes immediately) | COPPA 312.10 retention | Keep indefinitely | Team B Tech Lead | Proposed — needs Integration to add to retention schedule |
+| DEC-125 | 2026-10-21 | Server OCR fallback (Workers AI `@cf/llava-hf/llava-1.5-7b-hf`) is off by default (`SCANS_OCR_SERVER=on` to enable); on-device text preferred | R-23 residency; free tier | Third-party OCR (barred by DEC-31) | Team B Tech Lead | Superseded by DEC-127 |
+| DEC-126 | 2026-10-21 | Purge non-saved scans and their R2 originals 30 days after last update via `scans_due_for_purge()` + daily `purgeScans()`; discard deletes immediately | COPPA 312.10 retention | Keep indefinitely | Team B Tech Lead | Proposed — needs Integration to add to retention schedule |
+| DEC-127 | 2026-10-21 | FR-23 OCR is on-device only (tesseract.js in the browser); the server never OCRs images and only accepts `OcrResult{engine:"on_device"}` (#54). Sensitive matches discard the scan and route to the vault | DEC-31; R-23 residency; llava is a captioning model; avoids Worker OOM on 10 MB images | Workers AI llava/vision fallback | Team B Tech Lead | Accepted |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 

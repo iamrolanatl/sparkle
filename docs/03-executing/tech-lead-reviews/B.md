@@ -11,3 +11,13 @@
 | 4 | TDD §8 has no `scans` entity. | Covered by the migration PR plus an interface-change issue; Integration to add a §8 row. |
 | 5 | DEC-22 also lists passwords/PINs; regex redaction can't detect those reliably. | Logged as a known limit; the review gate is the control. |
 | 6 | No Queue binding exists in wrangler.toml; Scalability Plan assumes Queues. | Code falls back to `waitUntil` when `SCAN_QUEUE` is unbound; Integration to create queue `sparkle-scans-ocr` (free tier). |
+
+## 2026-10-21 (milestone: review responses)
+**Reviewed again:** Team E reviews on #44/#45, Integration notes on SOP-15 and #55, Team C OcrResult contract (#54).
+
+| # | Gap | Action |
+|---|-----|--------|
+| 7 | Scans RLS ignored DEC-06 student limits | Policy and API now require `can_view_student(...,'resources')` for guardians (#44, #45) |
+| 8 | Server OCR (llava) unsafe: captioning model, OOM risk, sensitive bypass | DEC-127: on-device only; DEC-125 superseded |
+| 9 | Two producers of the OCR hand-off | Adopted #54 OcrResult; asked for a shared SENSITIVE regex in `shared/ocr.ts` |
+| 10 | No cron registry for purge | `purgeScans()` ready; Integration to wire daily cron (#49) |
