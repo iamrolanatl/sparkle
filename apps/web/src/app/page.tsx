@@ -3,7 +3,7 @@ import { GlassPanel } from "@sparkle/ui";
 import { SparkleCharacter } from "@sparkle/character";
 import { signInWithGoogle } from "./login/actions";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { ChatWidget } from "@/components/ChatWidget";
+import { LazyChatWidget as ChatWidget } from "@/components/LazyChatWidget";
 import { SiteFooter } from "@/components/SiteFooter";
 
 // DRAFT MARKETING COPY — pending sponsor review (FR-17, CR-0003). Structure adapted from the Crystal POC,

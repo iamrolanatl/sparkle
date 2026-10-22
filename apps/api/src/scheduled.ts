@@ -2,6 +2,8 @@
  * Single cron entrypoint (Integration). Teams register one handler per cron expression; one line each.
  * Errors are logged per handler so one failing job never blocks the others.
  */
+import { purgeScans, type ScansEnv } from "./scans/route";
+
 export type CronHandler<E = unknown> = (env: E, ctx: ExecutionContext) => Promise<unknown>;
 
 export function makeScheduler<E>(handlers: Record<string, CronHandler<E>[]>) {
@@ -19,4 +21,6 @@ export function makeScheduler<E>(handlers: Record<string, CronHandler<E>[]>) {
  * Registry. "30 3 * * *" (daily, UTC): Team C `vaultDaily` (vault flag OFF — must no-op when disabled) and
  * Team B `purgeScans` (DEC-126: delete scan originals/unsaved scans older than 30 days). Each team adds one line.
  */
-export const cronHandlers: Record<string, CronHandler<never>[]> = { "30 3 * * *": [] };
+export const cronHandlers: Record<string, CronHandler<never>[]> = {
+  "30 3 * * *": [(env) => purgeScans(env as ScansEnv)],
+};

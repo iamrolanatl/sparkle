@@ -59,8 +59,13 @@ jobs:
     # CR-0008: Playwright E2E + visual regression, Lighthouse mobile budget (NFR-47).
     runs-on: ubuntu-latest
     env:
-      SUPABASE_URL: https://nklbdyezbsugkdvaidtt.supabase.co
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'pk_ci_placeholder' }}
+      # E2E runs against sparkle-dev (never prod). Signed-in specs use the sample dev user; they skip if secrets are absent.
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL_DEV || 'https://wqfzzfggyirvgaxfqcts.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY_DEV || 'pk_ci_placeholder' }}
+      E2E_SUPABASE_URL: ${{ secrets.SUPABASE_URL_DEV }}
+      E2E_SUPABASE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY_DEV }}
+      E2E_EMAIL: ${{ secrets.E2E_EMAIL_DEV }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD_DEV }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

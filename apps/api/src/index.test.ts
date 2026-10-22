@@ -16,3 +16,12 @@ describe("api", () => {
   });
   it("404s unknown routes", async () => expect((await app.request("/nope")).status).toBe(404));
 });
+
+describe("security headers (DEC-180)", () => {
+  it("sets OWASP headers on API responses", async () => {
+    const res = await app.request("/health");
+    expect(res.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(res.headers.get("strict-transport-security")).toContain("max-age=");
+    expect(res.headers.get("content-security-policy")).toContain("default-src 'none'");
+  });
+});
