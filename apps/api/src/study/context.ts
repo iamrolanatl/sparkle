@@ -34,7 +34,9 @@ export async function loadContext(
     get(`grade_snapshots?${s}&select=class_id,pct,mark,missing_count,captured_on&order=captured_on.desc&limit=40`),
     get(`units?${s}&is_current=eq.true&select=class_id,title&limit=12`),
     get(`assignments?${s}&due_at=gte.${from}&due_at=lte.${to}&select=id,class_id,title,due_at&order=due_at&limit=15`),
-    get(`post_actions?${s}&done_at=is.null&select=id,class_id,kind,text,due_at&order=due_at.asc.nullslast&limit=10`),
+    get(
+      `post_actions?${s}&done_at=is.null&or=(due_at.is.null,due_at.gte.${new Date(now.getTime() - 2 * 864e5).toISOString()})&select=id,class_id,kind,text,due_at&order=due_at.asc.nullslast&limit=10`,
+    ),
   ]);
   const name = new Map(classes.map((c) => [String(c.id), sanitizeTitle(String(c.name ?? "Class"))]));
   const latest = new Map<string, Row>();
@@ -60,7 +62,7 @@ export async function loadContext(
   if (actions.length) lines.push("Open items from teacher posts:");
   for (const a of actions) {
     lines.push(
-      `- [${a.kind}] ${sanitizeTitle(String(a.text))} (${name.get(String(a.class_id)) ?? "class"}${a.due_at ? `, ${day(a.due_at)}` : ""})`,
+      `- [${a.kind}] ${sanitizeTitle(String(a.text))} (${name.get(String(a.class_id)) ?? "class"}${a.due_at ? `, ${new Date(String(a.due_at)) < now ? "was due " : ""}${day(a.due_at)}` : ""})`,
     );
     sources.push({ id: `post_action:${a.id}`, title: sanitizeTitle(String(a.text)) });
   }
