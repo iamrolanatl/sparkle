@@ -36,10 +36,10 @@ export async function signIn(context: BrowserContext, baseURL: string) {
 }
 
 export const test = base.extend<{ signedIn: void }>({
-  signedIn: async ({ context, baseURL }, use, testInfo) => {
+  signedIn: async ({ context, baseURL }, provide, testInfo) => {
     testInfo.skip(!hasSession, "E2E session env not set (sparkle-dev only)");
     await signIn(context, baseURL!);
-    await use();
+    await provide();
   },
 });
 export { expect };
