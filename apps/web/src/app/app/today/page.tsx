@@ -264,8 +264,8 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
               <Link className="pill" href={rows[0] ? "/app/tasks" : "/app/classes"}>
                 Start studying
               </Link>
-              <Link className="ghost" href="/app/classes">
-                See classes
+              <Link className="ghost" href="/app/study">
+                Ask Sparkle ✦
               </Link>
             </div>
           </div>

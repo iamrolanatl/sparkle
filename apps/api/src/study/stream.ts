@@ -66,4 +66,3 @@ export async function* screened(deltas: AsyncIterable<string>, maxChars = 2400):
   }
   yield* flush(true);
 }
-

@@ -12,7 +12,7 @@ import { SAFE_FALLBACK } from "../ai/router";
 import { ageBand, screenTaskInput, studyHelperMode, studyHelperSystemPrompt, wrapUserText } from "../tasks/safety";
 import { loadContext, suggestions } from "./context";
 import { screened, sseDeltas } from "./stream";
-import type { StudyEnv } from "./route";
+import { mayAsk, type StudyEnv } from "./route";
 
 const ASK_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const MAX_BODY = 8192;
@@ -39,14 +39,16 @@ async function log(env: StudyEnv, row: Record<string, unknown>) {
   );
 }
 
-export async function askHandler(c: Context<{ Bindings: StudyEnv }>, enabled: (env: StudyEnv) => Promise<boolean>) {
+export async function askHandler(
+  c: Context<{ Bindings: StudyEnv }>,
+  enabled: (env: StudyEnv, id: string) => Promise<boolean>,
+) {
   const id = c.req.param("id")!;
   if (!UUID.test(id)) return c.json({ error: "bad_request" }, 400);
-  if (!(await enabled(c.env))) return c.json({ error: "disabled" }, 404);
+  if (!(await enabled(c.env, id))) return c.json({ error: "disabled" }, 404);
   const user = await getUser(c.env, c.req.header("Authorization"));
   if (!user) return c.json({ error: "unauthorized" }, 401);
-  if (!(await userRpc<boolean>(c.env, user.token, "is_student_self", { p_student: id })))
-    return c.json({ error: "forbidden" }, 403);
+  if (!(await mayAsk(c.env, user.token, id))) return c.json({ error: "forbidden" }, 403);
   if (!(await allow(`ask:${user.id}`, c.env.STUDY_RATE_LIMIT, 30, 60 * 60_000)))
     return c.json({ error: "rate_limited" }, 429);
   if (Number(c.req.header("Content-Length") ?? 0) > MAX_BODY) return c.json({ error: "too_large" }, 413);

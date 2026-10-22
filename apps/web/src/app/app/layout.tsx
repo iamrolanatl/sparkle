@@ -37,6 +37,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="sa-main">
         <div className="top">
           <Crumb who={me?.display_name ?? name} />
+          <a className="pill askbtn" href="/app/study">
+            Ask Sparkle
+          </a>
           <ThemeToggle initial={theme} hasCookie={saved === "light" || saved === "dark"} />
           <form action={signOut}>
             <button className="out" style={{ background: "none", border: 0, cursor: "pointer" }}>

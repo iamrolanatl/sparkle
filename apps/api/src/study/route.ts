@@ -16,19 +16,39 @@ export interface StudyEnv extends AuthEnv, AiEnv {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const FLAG_TTL_MS = 60_000;
-let flagCache: { at: number; on: boolean } | null = null;
-/** Isolate-cached for 60 s (NFR-35). Fails closed. */
-async function studyHelperEnabled(env: AuthEnv, now = Date.now()): Promise<boolean> {
-  if (flagCache && now - flagCache.at < FLAG_TTL_MS) return flagCache.on;
-  let on = false;
+type Flag = { on: boolean; students: string[]; guardianPreview: boolean };
+let flagCache: { at: number; f: Flag } | null = null;
+/** Isolate-cached for 60 s (NFR-35). Fails closed. config.students = per-student allowlist (pilot while SA-A1 is
+ *  pending); config.guardian_preview lets the primary guardian of an allowlisted student test it. */
+async function loadFlag(env: AuthEnv, now = Date.now()): Promise<Flag> {
+  if (flagCache && now - flagCache.at < FLAG_TTL_MS) return flagCache.f;
+  let f: Flag = { on: false, students: [], guardianPreview: false };
   try {
-    const rows = await serviceRest(env)<{ enabled: boolean }[]>("feature_flags?key=eq.study_helper&select=enabled");
-    on = rows?.[0]?.enabled === true;
+    const rows = await serviceRest(env)<{ enabled: boolean; config?: Record<string, unknown> }[]>(
+      "feature_flags?key=eq.study_helper&select=enabled,config",
+    );
+    const cfg = rows?.[0]?.config ?? {};
+    f = {
+      on: rows?.[0]?.enabled === true,
+      students: Array.isArray(cfg.students) ? cfg.students.filter((x): x is string => typeof x === "string") : [],
+      guardianPreview: cfg.guardian_preview === true,
+    };
   } catch {
-    on = false;
+    /* fail closed */
   }
-  flagCache = { at: now, on };
-  return on;
+  flagCache = { at: now, f };
+  return f;
+}
+async function studyHelperEnabled(env: AuthEnv, student?: string): Promise<boolean> {
+  const f = await loadFlag(env);
+  return f.on || (!!student && f.students.includes(student));
+}
+/** DEC-109: the student converses. Pilot exception: primary guardian of an allowlisted student when guardian_preview. */
+export async function mayAsk(env: AuthEnv, token: string, student: string): Promise<boolean> {
+  if (await userRpc<boolean>(env, token, "is_student_self", { p_student: student })) return true;
+  const f = await loadFlag(env);
+  if (!f.guardianPreview || !f.students.includes(student)) return false;
+  return (await userRpc<boolean>(env, token, "is_primary_guardian", { p_student: student })) === true;
 }
 export function _resetStudyFlagCache() {
   flagCache = null;
@@ -37,14 +57,17 @@ const MAX_BODY = 4096;
 
 export const study = new Hono<{ Bindings: StudyEnv }>();
 
-study.get("/status", async (c) => c.json({ enabled: await studyHelperEnabled(c.env) }));
+study.get("/status", async (c) => {
+  const sid = c.req.query("student");
+  return c.json({ enabled: await studyHelperEnabled(c.env, sid && UUID.test(sid) ? sid : undefined) });
+});
 
-study.post("/:id/ask", (c) => askHandler(c, (e) => studyHelperEnabled(e)));
+study.post("/:id/ask", (c) => askHandler(c, (e, id) => studyHelperEnabled(e, id)));
 
 study.post("/:id", async (c) => {
   const id = c.req.param("id");
   if (!UUID.test(id)) return c.json({ error: "bad_request" }, 400);
-  if (!(await studyHelperEnabled(c.env))) return c.json({ error: "disabled" }, 404);
+  if (!(await studyHelperEnabled(c.env, id))) return c.json({ error: "disabled" }, 404);
   const user = await getUser(c.env, c.req.header("Authorization"));
   if (!user) return c.json({ error: "unauthorized" }, 401);
   // DEC-109: only the student converses with the study helper (helpers/guardians cannot act as the student).

@@ -57,14 +57,10 @@ export async function dueSoonAction(studentId: string) {
   return call(`/students/${studentId}/tasks/due-soon`);
 }
 
-export async function studyStatusAction() {
-  return call(`/study-helper/status`);
+export async function studyStatusAction(studentId?: string) {
+  return call(`/study-helper/status${studentId && UUID.test(studentId) ? `?student=${studentId}` : ""}`);
 }
 
-export async function askStudyHelperAction(studentId: string, text: string) {
-  if (!UUID.test(studentId)) return { status: 400, body: { error: "bad_request" } };
-  return call(`/study-helper/${studentId}`, { method: "POST", body: JSON.stringify({ text: text.slice(0, 1000) }) });
-}
 
 export async function setTaskDoneAction(studentId: string, taskId: string, done: boolean) {
   if (!UUID.test(studentId) || !UUID.test(taskId)) return { status: 400, body: { error: "bad_request" } };

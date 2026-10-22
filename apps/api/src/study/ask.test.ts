@@ -134,3 +134,42 @@ describe("stream helpers", () => {
     expect(suggestions("current unit: Cells\nOpen items from teacher posts:")).toContain("Quiz me on Cells");
   });
 });
+
+describe("per-student allowlist (pilot)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    _resetStudyFlagCache();
+    _resetMemory();
+  });
+  const stubFlag = (cfg: object, guardian: boolean) =>
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (url.includes("feature_flags")) return Response.json([{ enabled: false, config: cfg }]);
+        if (url.endsWith("/auth/v1/user")) return Response.json({ id: "u1" });
+        if (url.includes("rpc/is_student_self")) return Response.json(false);
+        if (url.includes("rpc/is_primary_guardian")) return Response.json(guardian);
+        if (url.includes("rpc/student_age")) return Response.json(12);
+        return Response.json([]);
+      }),
+    );
+  const env = mkEnv(() => sse(["Ok. "]));
+  it("off for students not on the list", async () => {
+    stubFlag({ students: ["other"], guardian_preview: true }, true);
+    expect((await ask({ text: "hi" }, env)).status).toBe(404);
+    expect(await (await app.request(`/study-helper/status?student=${SID}`, {}, env)).json()).toEqual({
+      enabled: false,
+    });
+  });
+  it("on for an allowlisted student; guardian only with guardian_preview", async () => {
+    stubFlag({ students: [SID], guardian_preview: true }, true);
+    expect(await (await app.request(`/study-helper/status?student=${SID}`, {}, env)).json()).toEqual({ enabled: true });
+    expect((await ask({ text: "hi" }, env)).status).toBe(200);
+    _resetStudyFlagCache();
+    stubFlag({ students: [SID] }, true);
+    expect((await ask({ text: "hi" }, env)).status).toBe(403);
+    _resetStudyFlagCache();
+    stubFlag({ students: [SID], guardian_preview: true }, false);
+    expect((await ask({ text: "hi" }, env)).status).toBe(403);
+  });
+});

@@ -97,6 +97,7 @@ export function MobileTabs() {
     { href: "/app/today", label: "Today", g: "◎" },
     { href: "/app/tasks", label: "Tasks", g: "✓" },
     { href: "/app/classes", label: "Classes", g: "▤" },
+    { href: "/app/study", label: "Ask", g: "✦" },
     { href: "/app/more", label: "More", g: "⋯" },
   ];
   return (
