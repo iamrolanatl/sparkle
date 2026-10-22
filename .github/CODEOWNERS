@@ -1,4 +1,19 @@
-# CODEOWNERS (CR-0007, SOP-13)
+# CODEOWNERS (CR-0007, CR-0010, SOP-14)
+# GitHub has one human owner (@iamrolanatl). Team lanes below are enforced by SOP-14 review
+# comments ("Review by Team X") + needs-review:<team> labels; Integration (I) is the only merger.
 * @iamrolanatl
-/docs/ @iamrolanatl
-/supabase/ @iamrolanatl
+
+# Shared files — Integration review required (needs-review:I)
+/supabase/                     @iamrolanatl
+/docs/                         @iamrolanatl
+/.github/                      @iamrolanatl
+/packages/ui/                  @iamrolanatl
+/scripts/                      @iamrolanatl
+
+# Lanes (reviewer: Team E for A–D; Integration for E)
+# Team A  NL tasks / AI ......... apps/api/src/ai/ apps/api/src/tasks/ apps/web/src/app/app/tasks/
+# Team B  OCR ................... apps/api/src/ocr/ apps/web/src/app/app/scan/
+# Team C  Vault ................. apps/api/src/vault/ apps/web/src/app/app/vault/
+# Team D  Desktop agent / sync .. apps/desktop/ apps/api/src/sync/
+# Team E  Quality / launch ...... tests/ apps/web/e2e/ docs/06-operations/runbooks/
+# INT     everything else (apps/web app shell, Today, PWA, weather, deploy scripts)
