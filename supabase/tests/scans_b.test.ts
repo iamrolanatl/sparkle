@@ -20,9 +20,18 @@ describe("scans (FR-23) RLS", () => {
     await db.exec(read("tests/auth_stub.sql"));
     const files = readdirSync(join(dir, "migrations")).sort();
     for (const f of files) await db.exec(read(join("migrations", f)));
-    await db.exec(read(join("migrations", files.find((f) => f.includes("_b_ocr_scans"))!))); // idempotent re-run
+    await db.exec(
+      read(
+        join(
+          "migrations",
+          files.find((f) => f.includes("_b_ocr_scans"))!,
+        ),
+      ),
+    ); // idempotent re-run
     await db.exec(`insert into auth.users (id,email) values ('${A}','a@example.com'),('${B}','b@example.com');`);
-    await db.exec(`begin; ${as(A)} insert into public.students (id,display_name,created_by) values ('${SA}','Sample A','${A}'); commit;`);
+    await db.exec(
+      `begin; ${as(A)} insert into public.students (id,display_name,created_by) values ('${SA}','Sample A','${A}'); commit;`,
+    );
     const ins = `insert into public.scans (student_id,r2_key,sha256,content_type,size_bytes) values ('${SA}','scans/x','${SHA}','image/png',10) on conflict (student_id,sha256) do nothing`;
     await db.exec(ins);
     await db.exec(ins);
