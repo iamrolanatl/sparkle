@@ -1,14 +1,5 @@
 /** Manual import (WBS 3.3): a small, strict CSV format families can export or type. Pure + testable. */
-const IMPORT_COLUMNS = [
-  "class",
-  "teacher",
-  "period",
-  "assignment",
-  "due",
-  "status",
-  "score",
-  "max_score",
-] as const;
+const IMPORT_COLUMNS = ["class", "teacher", "period", "assignment", "due", "status", "score", "max_score"] as const;
 const MAX_ROWS = 2000;
 const STATUSES = new Set(["assigned", "submitted", "missing", "late", "graded", "excused"]);
 
