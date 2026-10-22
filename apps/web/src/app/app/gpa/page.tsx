@@ -1,5 +1,6 @@
 import { GpaSimulator } from "./simulator";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "GPA simulator", robots: { index: false } };
 
 export default function GpaPage() {

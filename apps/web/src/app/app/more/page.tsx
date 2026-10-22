@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MAIN, MORE } from "../links";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "More", robots: { index: false } };
 
 const Ico = ({ d }: { d: string }) => (
