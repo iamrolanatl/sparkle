@@ -33,4 +33,11 @@ describe("CSP integration fixes (#27 review)", () => {
     const pp = securityHeaders(sb).find((h) => h.key === "Permissions-Policy")!.value;
     expect(pp).toContain("geolocation=()");
   });
+  it("allows self-hosted tesseract wasm + worker for /app/scan, no blob:/CDN (DEC-77)", () => {
+    const csp = contentSecurityPolicy("https://x.supabase.co");
+    const dir = (n: string) => csp.split("; ").find((d) => d.startsWith(n + " "))!;
+    expect(dir("script-src")).toContain("'wasm-unsafe-eval'");
+    expect(dir("worker-src")).toBe("worker-src 'self'");
+    expect(csp).not.toMatch(/jsdelivr|unpkg|cdnjs/);
+  });
 });

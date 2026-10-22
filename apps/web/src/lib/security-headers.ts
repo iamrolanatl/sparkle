@@ -24,13 +24,13 @@ export function contentSecurityPolicy(supabaseUrl: string, apiOrigins: string[] 
   const formAction = ["'self'", supabaseUrl, "https://accounts.google.com"].filter(Boolean);
   return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
+    "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'", // wasm: on-device OCR (/app/scan, DEC-77)
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     "media-src 'self' blob:",
     `connect-src ${connect.join(" ")}`,
-    "worker-src 'self' blob:",
+    "worker-src 'self'", // self-hosted /scan-assets worker; no blob:, no CDN
     "frame-ancestors 'none'",
     "base-uri 'self'",
     `form-action ${formAction.join(" ")}`,
