@@ -4,7 +4,7 @@
 -- Internal callers (can_view_student, student_at_or_over_threshold, gal_insert policy) are all self/guardian paths: unchanged.
 -- Does not call can_view_student (which calls student_age) to avoid recursion.
 -- rollback: re-create the previous body from 20261021000000_initial_tenant_model.sql (line ~217) in a new migration.
--- integration-signoff: #61 (RLS tests: supabase/tests/student_age_int_test.sql)
+-- integration-signoff: #62 (RLS tests: supabase/tests/student_age_int_test.sql)
 create or replace function public.student_age(p_student uuid)
 returns int language sql stable security definer set search_path = public as $$
   select extract(year from age(current_date, s.birth_date))::int
