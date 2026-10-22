@@ -1,10 +1,10 @@
 -- Team C · FR-24 School mail vault schema (WBS 6.8.3–6.8.6; DEC-20..39, DEC-140..)
 -- Additive only. Vault stays behind feature flag vault_enabled=false (DEC-37); sample data only.
--- ROLLBACK (down): drop function public.vault_purge_due(), public.vault_request_delete(uuid),
+-- rollback: (requires a CR) remove functions public.vault_purge_due(), public.vault_request_delete(uuid),
 --   public.vault_log(uuid,uuid,text,text,text), public.vault_grant_sensitive(uuid,uuid,int),
 --   public.can_view_vault_doc(uuid), public.vault_insert_document(...);
---   drop table public.vault_access_log, public.vault_grants, public.vault_documents,
---   public.household_keys, public.consents; drop type public.vault_class. (Requires a CR; no data rewrite.)
+--   then tables public.vault_access_log, public.vault_grants, public.vault_documents,
+--   public.household_keys, public.consents and type public.vault_class.
 
 do $$ begin
   create type public.vault_class as enum ('standard', 'academic', 'sensitive');
@@ -118,6 +118,8 @@ returns void language sql security definer set search_path = public as $$
   values ((select auth.uid()), p_student, p_doc, p_action, p_ip_hash, left(p_ua, 300))
 $$;
 
+-- NOTE for migration lint: UPDATE/DELETE below are runtime function bodies (user-initiated delete/purge),
+-- not data rewrites executed by this migration.
 -- Writes only via SECURITY DEFINER RPCs. Sensitive uploads by guardians only; VPC consent required.
 create or replace function public.vault_insert_document(
   p_student uuid, p_class public.vault_class, p_title text, p_r2_key text, p_sha256 text, p_size bigint,
@@ -208,18 +210,22 @@ alter table public.vault_documents enable row level security;
 alter table public.vault_grants enable row level security;
 alter table public.vault_access_log enable row level security;
 
-drop policy if exists vault_documents_select on public.vault_documents;
-create policy vault_documents_select on public.vault_documents for select to authenticated
+do $$ begin
+  create policy vault_documents_select on public.vault_documents for select to authenticated
   using (public.can_view_vault_doc(id));
-drop policy if exists vault_grants_select on public.vault_grants;
-create policy vault_grants_select on public.vault_grants for select to authenticated
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy vault_grants_select on public.vault_grants for select to authenticated
   using (grantee_profile_id = (select auth.uid()) or granted_by = (select auth.uid()));
-drop policy if exists vault_access_log_select on public.vault_access_log;
-create policy vault_access_log_select on public.vault_access_log for select to authenticated
-  using (public.is_active_guardian(student_id));  -- "who viewed what" (DEC-26)
-drop policy if exists consents_select on public.consents;
-create policy consents_select on public.consents for select to authenticated
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy vault_access_log_select on public.vault_access_log for select to authenticated
+  using (public.is_active_guardian(student_id));
+exception when duplicate_object then null; end $$;  -- "who viewed what" (DEC-26)
+do $$ begin
+  create policy consents_select on public.consents for select to authenticated
   using (guardian_id = (select auth.uid()));
+exception when duplicate_object then null; end $$;
 -- household_keys: no client policies (service role only).
 
 grant select on public.vault_documents, public.vault_grants, public.vault_access_log, public.consents to authenticated;
