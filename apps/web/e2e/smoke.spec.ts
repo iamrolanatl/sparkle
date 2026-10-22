@@ -36,3 +36,10 @@ test("motion enabled plays two crossfade videos", async ({ browser }) => {
   await expect(page.getByTestId("video-hero").locator("video")).toHaveCount(2);
   await ctx.close();
 });
+
+test("family page requires sign-in; invite page prefills code (FR-16)", async ({ page }) => {
+  await page.goto("/app/family");
+  await expect(page).toHaveURL(/\/login\?next=%2Fapp%2Ffamily|\/login\?next=\/app\/family/);
+  await page.goto("/invite?code=ABCD-EFGH-JKMN");
+  await expect(page.getByLabel("Invitation code")).toHaveValue("ABCD-EFGH-JKMN");
+});
