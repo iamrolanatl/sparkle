@@ -67,8 +67,13 @@ export function Scanner(props: {
         logger: (m: { status: string; progress: number }) =>
           m.status === "recognizing text" && setStep({ s: "reading", pct: Math.round(m.progress * 100) }),
       });
-      const { data } = await worker.recognize(blob);
-      await worker.terminate();
+      let data: { text: string; confidence: number };
+      try {
+        ({ data } = await worker.recognize(blob));
+      } finally {
+        // Always free the WASM worker (memory on low-end devices), even when recognize() throws.
+        await worker.terminate().catch(() => undefined);
+      }
       const ocr = toOcrResult(data.text, data.confidence);
       if (!ocr.text.trim()) return setStep({ s: "error", msg: errorMessage("on_device_ocr_required") });
       if (SENSITIVE.test(ocr.text)) return setStep({ s: "vault" }); // DEC-124: never uploaded to scans
