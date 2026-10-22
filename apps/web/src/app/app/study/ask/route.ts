@@ -24,7 +24,11 @@ export async function POST(req: Request) {
     });
     return new Response(r.body, {
       status: r.status,
-      headers: { "Content-Type": r.headers.get("Content-Type") ?? "application/json", "Cache-Control": "no-store" },
+      headers: {
+        "Content-Type": r.headers.get("Content-Type") ?? "application/json",
+        "Cache-Control": "no-store, no-transform",
+        "X-Accel-Buffering": "no",
+      },
     });
   } catch {
     return Response.json({ error: "unavailable" }, { status: 503 });

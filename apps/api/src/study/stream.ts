@@ -31,10 +31,20 @@ export async function* sseDeltas(body: ReadableStream<Uint8Array>): AsyncGenerat
   }
 }
 
-export type Chunk = { type: "delta"; text: string } | { type: "stop"; reason: "unsafe_output" };
+export type Chunk =
+  | { type: "delta"; text: string }
+  | { type: "stop"; reason: "unsafe_output" }
+  | { type: "withheld"; reason: "final_answer" };
+
+/** Optional per-sentence policy check (e.g. "don't reveal the final answer"). Return false to withhold. */
+export type SentenceCheck = (sentence: string, soFar: string) => boolean;
 
 /** Sentence-buffered, cumulatively screened stream. */
-export async function* screened(deltas: AsyncIterable<string>, maxChars = 2400): AsyncGenerator<Chunk> {
+export async function* screened(
+  deltas: AsyncIterable<string>,
+  maxChars = 2400,
+  check?: SentenceCheck,
+): AsyncGenerator<Chunk> {
   let all = "";
   let pending = "";
   const flush = function* (force: boolean): Generator<Chunk, boolean> {
@@ -45,6 +55,8 @@ export async function* screened(deltas: AsyncIterable<string>, maxChars = 2400):
           pending.lastIndexOf("? "),
           pending.lastIndexOf("! "),
           pending.lastIndexOf("\n"),
+          // First chunk only: flush at a clause break so the first words appear sooner (still screened).
+          all === "" && pending.length >= 30 ? pending.lastIndexOf(", ") : -1,
         ) + 1;
     if (m <= 0) return true;
     const piece = pending.slice(0, m);
@@ -53,9 +65,12 @@ export async function* screened(deltas: AsyncIterable<string>, maxChars = 2400):
       yield { type: "stop", reason: "unsafe_output" };
       return false;
     }
+    if (check && !check(piece, all)) {
+      yield { type: "withheld", reason: "final_answer" };
+      return false;
+    }
     all += piece;
     pending = pending.slice(m);
-    // redaction may change the text; emit the redacted tail
     yield { type: "delta", text: redact(piece) };
     return true;
   };

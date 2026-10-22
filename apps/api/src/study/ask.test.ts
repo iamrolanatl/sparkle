@@ -4,6 +4,7 @@ import { _resetStudyFlagCache } from "./route";
 import { _resetMemory } from "../chat/ratelimit";
 import { screened, sseDeltas } from "./stream";
 import { suggestions } from "./context";
+import { answerGuard, isPracticeProblem, NEXT_STEP_NUDGE } from "./ask";
 
 const SID = "10000000-0000-0000-0000-00000000000a";
 const auth = { Authorization: "Bearer t", "Content-Type": "application/json" };
@@ -171,5 +172,48 @@ describe("per-student allowlist (pilot)", () => {
     _resetStudyFlagCache();
     stubFlag({ students: [SID], guardian_preview: true }, false);
     expect((await ask({ text: "hi" }, env)).status).toBe(403);
+  });
+  it("practice detection", () => {
+    expect(isPracticeProblem("Solve 3x + 5 = 20")).toBe(true);
+    expect(isPracticeProblem("What is 12 times 7?")).toBe(true);
+    expect(isPracticeProblem("Explain what a cell membrane does.")).toBe(false);
+    expect(isPracticeProblem("is it 5?", [{ role: "user", text: "Solve 3x + 5 = 20" }])).toBe(true);
+  });
+  it("answer guard withholds final values but allows steps and confirming the student's own answer", () => {
+    const g = answerGuard("Solve 3x + 5 = 20");
+    expect(g("First, what could you do to both sides to undo the + 5? ")).toBe(true);
+    expect(g("That gives 3x = 15. ")).toBe(true);
+    expect(g("So x = 5. ")).toBe(false);
+    expect(g("The answer is 5. ")).toBe(false);
+    expect(g("x is 5. ")).toBe(false);
+    const own = answerGuard("I got x = 5, is it right?");
+    expect(own("Yes, x = 5 is correct! ")).toBe(true);
+    expect(answerGuard("I got x = 4")("No, x = 5. ")).toBe(false);
+  });
+  it("first practice turn never streams the final answer", async () => {
+    stub();
+    let sys = "";
+    const env = mkEnv((_m, i) => {
+      sys = i.messages[0]!.content;
+      return sse(["Let's start. ", "Subtract 5 from both sides to get 3x = 15. ", "Then x = 5. ", "Done!"]);
+    });
+    const r = await ask({ text: "Solve 3x + 5 = 20" }, env);
+    const out = await r.text();
+    expect(sys).toMatch(/Do NOT state or hint the final answer/);
+    expect(out).toContain("3x = 15");
+    expect(out).not.toMatch(/x = 5/);
+    expect(out).not.toContain("Done!");
+    expect(out).toContain(NEXT_STEP_NUDGE);
+    expect(r.headers.get("Cache-Control")).toMatch(/no-transform/);
+  });
+  it("non-practice questions get no practice rules", async () => {
+    stub();
+    let sys = "";
+    const env = mkEnv((_m, i) => {
+      sys = i.messages[0]!.content;
+      return sse(["A membrane controls what enters a cell. "]);
+    });
+    await (await ask({ text: "Explain what a cell membrane does." }, env)).text();
+    expect(sys).not.toMatch(/practice problem/);
   });
 });
