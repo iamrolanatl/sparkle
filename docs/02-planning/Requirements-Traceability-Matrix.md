@@ -29,7 +29,7 @@
 | FR-08 | F-09 | E6 | RLS | Integration, privacy | Not started |
 | FR-09 | F-10, F-11 | E6 | ADR-04 | E2E, UAT (confirm gate), audit | Not started |
 | FR-10 | F-12 | E4 | ADR-06, AI router | Router, voice fallback, citation | Not started |
-| FR-11 | F-04 | E1 | ADR-01 | Agent integration, staged rollout | Not started |
+| FR-11 | F-04 | E1 (WBS 3.2) | ADR-01 | Agent integration, staged rollout; schedule times in **device local time** (DEC-165) | In progress (Team D) |
 | FR-12 | F-13 | E7 | RBAC | Admin health, audit | Not started |
 | FR-13 | F-05 | E6 | — | Integration, UAT | Not started |
 | FR-14 | F-12 | E4 | — | Safety scenario tests | Not started |

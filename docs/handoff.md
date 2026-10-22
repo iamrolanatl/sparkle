@@ -37,7 +37,7 @@
 ### 3.2 Family Setup, Identity, and Sharing
 
 - Google sign-in for all users.
-- Parent adds students and credentials (device-stored by default).
+- Parent adds students and credentials (stored on-device only, never server-side — CR-0011).
 - Invitation + acceptance via email link or short code.
 - Explicit, revocable read-only sharing with age-threshold control (recommended 13/14).
 - Plain-language share preview and always-visible access list for the student.
@@ -99,7 +99,7 @@
 - Chat first token p95 ≤ 1.5 s on Tiers 1–2.
 - Voice end-of-speech to first audio p50 ≤ 1.2 s.
 - Sync for one student p95 ≤ 3 minutes.
-- Device-default credential storage. Row-level security. Age-aware sharing.
+- On-device-only portal credential storage (CR-0011). Row-level security. Age-aware sharing.
 - Circuit breakers, bulkheads, rate limits, and graceful degradation on all external dependencies.
 - Support expansion to additional districts via Platform Profiles without rewrite. Target: 1,000,000 users.
 
@@ -117,7 +117,7 @@
 
 ## 6. Key Architectural Decisions
 
-- Device-default credential storage.
+- On-device-only portal credential storage (CR-0011).
 - Precomputed Today document for performance and cacheability.
 - Deterministic GPA engine; AI only explains.
 - Explicit confirmation required for any outbound communication.

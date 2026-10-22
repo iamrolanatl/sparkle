@@ -14,7 +14,8 @@
     "test:db": "vitest run supabase",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "knip": "knip"
+    "knip": "knip",
+    "migrations:check": "node scripts/check-migrations.mjs --base origin/main"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.11",
