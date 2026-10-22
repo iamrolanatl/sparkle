@@ -2,7 +2,11 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import { minimize } from "./minimize";
 import { suggestClass, validateOcrForClass } from "./ocr";
 import { newWrappedDek, unwrapDek, seal, open, openText } from "./crypto";
-import { _test, hexToBytes, bytesToHex, purgeDue } from "./route";
+import { rotateKek } from "./rotation";
+import { DevStubVerifier } from "./consent";
+import { _test } from "./route";
+import { hexToBytes, bytesToHex } from "./rotation";
+import { purgeDue, vaultDaily } from "./jobs";
 import app from "../index";
 
 const KEK = btoa(String.fromCharCode(...new Uint8Array(32).fill(7)));
@@ -55,11 +59,12 @@ describe("envelope encryption (DEC-24)", () => {
 });
 
 describe("step-up (DEC-39)", () => {
-  const tok = (iat: number) => `h.${btoa(JSON.stringify({ iat }))}.s`;
-  it("accepts tokens issued within 15 minutes only", () => {
+  const tok = (amr: unknown) => `h.${btoa(JSON.stringify({ iat: 1_800_000_000, amr }))}.s`;
+  it("uses amr sign-in time, not iat", () => {
     const now = 1_800_000_000;
-    expect(_test.stepUpOk(tok(now - 60), now)).toBe(true);
-    expect(_test.stepUpOk(tok(now - 16 * 60), now)).toBe(false);
+    expect(_test.stepUpOk(tok([{ method: "oauth", timestamp: now - 60 }]), now)).toBe(true);
+    expect(_test.stepUpOk(tok([{ method: "oauth", timestamp: now - 16 * 60 }]), now)).toBe(false);
+    expect(_test.stepUpOk(tok(undefined), now)).toBe(false);
     expect(_test.stepUpOk("garbage", now)).toBe(false);
   });
 });
@@ -109,18 +114,160 @@ describe("vault routes behind kill switch (DEC-37)", () => {
 
 describe("purge job (DEC-28)", () => {
   afterEach(() => vi.unstubAllGlobals());
-  it("deletes R2 objects returned by vault_purge_due", async () => {
+  const env = (del: () => Promise<void>) => ({
+    SUPABASE_URL: "https://x.supabase.co",
+    SUPABASE_SECRET_KEY: "s",
+    VAULT_BUCKET: { delete: vi.fn(del) } as unknown as R2Bucket,
+  });
+  it("finalizes rows only after R2 deletes succeed", async () => {
+    const calls: string[] = [];
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response(JSON.stringify([{ r2_key: "v1/a" }, { r2_key: "v1/b" }]))),
+      vi.fn(async (u: string, init?: RequestInit) => {
+        calls.push(`${u.split("/rpc/")[1]} ${init?.body ?? ""}`);
+        return new Response(u.endsWith("claim") ? JSON.stringify([{ r2_key: "v1/a" }, { r2_key: "v1/b" }]) : "1");
+      }),
     );
-    const del = vi.fn(async () => {});
-    const n = await purgeDue({
-      SUPABASE_URL: "https://x.supabase.co",
+    expect(await purgeDue(env(async () => {}))).toEqual({ purged: 2, failed: 0 });
+    expect(calls[1]).toBe('vault_purge_finalize {"p_keys":["v1/a","v1/b"]}');
+  });
+  it("keeps rows claimed (not deleted) when R2 delete fails", async () => {
+    const calls: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (u: string) => {
+        calls.push(u);
+        return new Response(JSON.stringify([{ r2_key: "v1/a" }]));
+      }),
+    );
+    expect(await purgeDue(env(async () => Promise.reject(new Error("r2 down"))))).toEqual({ purged: 0, failed: 1 });
+    expect(calls.some((u) => u.endsWith("finalize"))).toBe(false);
+  });
+});
+
+describe("KEK rotation (DEC-24)", () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it("re-wraps DEKs so data sealed before rotation still opens", async () => {
+    const OLD = KEK;
+    const NEW = btoa(String.fromCharCode(...new Uint8Array(32).fill(9)));
+    const wrapped = await newWrappedDek(OLD);
+    const sealed = await seal(await unwrapDek(OLD, wrapped), "sample", "doc");
+    let stored = `\\x${bytesToHex(wrapped)}`;
+    let rotatedOnce = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (u: string, init?: RequestInit) => {
+        if (init?.method === "PATCH") {
+          stored = (JSON.parse(String(init.body)) as { wrapped_dek: string }).wrapped_dek;
+          return new Response("");
+        }
+        return new Response(
+          stored.startsWith("\\x") && u.includes("kek_version=lt.2") && !rotatedOnce++
+            ? JSON.stringify([{ id: "k1", wrapped_dek: stored }])
+            : "[]",
+        );
+      }),
+    );
+    const r = await rotateKek({
+      SUPABASE_URL: "https://x",
       SUPABASE_SECRET_KEY: "s",
-      VAULT_BUCKET: { delete: del } as unknown as R2Bucket,
+      VAULT_KEK: NEW,
+      VAULT_KEK_PREV: OLD,
+      VAULT_KEK_VERSION: "2",
     });
-    expect(n).toBe(2);
-    expect(del).toHaveBeenCalledWith(["v1/a", "v1/b"]);
+    expect(r).toEqual({ rewrapped: 1, failed: 0 });
+    const dek = await unwrapDek(NEW, hexToBytes(stored));
+    expect(await openText(dek, sealed, "doc")).toBe("sample");
+    await expect(unwrapDek(OLD, hexToBytes(stored))).rejects.toThrow();
+  });
+});
+
+describe("consent adapter (DEC-21)", () => {
+  it("dev stub verifies outside production and refuses production", async () => {
+    expect((await new DevStubVerifier("development").verify({ guardianId: "abcdef12-x", studentId: "s" })).ok).toBe(
+      true,
+    );
+    const prod = await new DevStubVerifier("production").verify({ guardianId: "a", studentId: "s" });
+    expect(prod).toMatchObject({ ok: false, reason: "stub_disabled_in_production" });
+  });
+});
+
+describe("upload authorization order (review #53)", () => {
+  afterEach(() => vi.unstubAllGlobals());
+  const SID = "10000000-0000-0000-0000-00000000000a";
+  const meta = (m: object) => btoa(JSON.stringify({ title: "Sample", mime: "application/pdf", sample: true, ...m }));
+  function stub(rpc: Record<string, unknown>) {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (u: string) => {
+        if (u.includes("feature_flags")) return new Response(JSON.stringify([{ enabled: true, config: {} }]));
+        if (u.includes("/auth/v1/user"))
+          return new Response(JSON.stringify({ id: "00000000-0000-0000-0000-0000000000a5" }));
+        const fn = u.split("/rpc/")[1];
+        return new Response(JSON.stringify(fn && fn in rpc ? rpc[fn] : null));
+      }),
+    );
+  }
+  const env = (put: ReturnType<typeof vi.fn>) => ({
+    SUPABASE_URL: "https://x.supabase.co",
+    SUPABASE_SECRET_KEY: "s",
+    VAULT_KEK: KEK,
+    VAULT_BUCKET: { put, delete: vi.fn(async () => {}) } as unknown as R2Bucket,
+  });
+  const req = (m: object) => ({
+    method: "POST",
+    headers: { Authorization: "Bearer t", "X-Vault-Meta": meta(m), "Content-Type": "application/octet-stream" },
+    body: new Uint8Array([1, 2, 3]),
+  });
+  it("rejects an outsider before any key or R2 work", async () => {
+    stub({ vault_can_manage: false, is_student_self: false, vault_has_consent: true });
+    const put = vi.fn();
+    const r = await app.request(`/vault/students/${SID}/documents`, req({}), env(put));
+    expect(r.status).toBe(403);
+    expect(put).not.toHaveBeenCalled();
+  });
+  it("a student cannot downgrade an IEP to standard to skip encryption", async () => {
+    stub({ vault_can_manage: false, is_student_self: true, vault_has_consent: true });
+    const put = vi.fn();
+    const r = await app.request(
+      `/vault/students/${SID}/documents`,
+      req({ class: "standard", ocr: { engine: "on_device", text: "Annual IEP meeting notice", confidence: 0.9 } }),
+      env(put),
+    );
+    expect(r.status).toBe(403);
+    expect(await r.json()).toEqual({ error: "guardian_required_for_sensitive" });
+    expect(put).not.toHaveBeenCalled();
+  });
+  it("requires consent and sample data", async () => {
+    stub({ vault_can_manage: true, is_student_self: false, vault_has_consent: false });
+    expect((await app.request(`/vault/students/${SID}/documents`, req({}), env(vi.fn()))).status).toBe(403);
+    expect((await app.request(`/vault/students/${SID}/documents`, req({ sample: false }), env(vi.fn()))).status).toBe(
+      403,
+    );
+  });
+});
+
+describe("daily vault maintenance", () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it("runs purge, lifecycle, log prune; skips rotation without a previous KEK; sends nothing", async () => {
+    const fns: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (u: string) => {
+        fns.push(u.split("/rpc/")[1] ?? u);
+        return new Response(
+          u.endsWith("lifecycle_run") ? JSON.stringify([{ event_student: "s", event_kind: "age18_60d" }]) : "[]",
+        );
+      }),
+    );
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const r = await vaultDaily({
+      SUPABASE_URL: "https://x",
+      SUPABASE_SECRET_KEY: "s",
+      VAULT_BUCKET: { delete: vi.fn() } as unknown as R2Bucket,
+    });
+    expect(fns).toEqual(["vault_purge_claim", "vault_lifecycle_run", "vault_access_log_prune"]);
+    expect(r.lifecycle).toHaveLength(1);
+    expect(r.rotation).toEqual({ rewrapped: 0, failed: 0 });
   });
 });

@@ -54,3 +54,12 @@ export async function sha256Hex(data: Uint8Array): Promise<string> {
   const h = new Uint8Array(await crypto.subtle.digest("SHA-256", data));
   return [...h].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
+/** KEK rotation: unwrap with old KEK, wrap with new (DEK bytes never leave WebCrypto as plaintext JS values). */
+export async function rewrapDek(oldKekB64: string, newKekB64: string, wrapped: Uint8Array): Promise<Uint8Array> {
+  const dek = await crypto.subtle.unwrapKey("raw", wrapped, await importKek(oldKekB64), "AES-KW", "AES-GCM", true, [
+    "encrypt",
+    "decrypt",
+  ]);
+  return new Uint8Array(await crypto.subtle.wrapKey("raw", dek, await importKek(newKekB64), "AES-KW"));
+}
