@@ -1,3 +1,4 @@
+import { vault } from "./vault/route";
 import { VERSION } from "./version";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -63,6 +64,7 @@ app.use("/chat/handoff", idempotency());
 app.route("/chat", chat);
 app.use("/students/:id/import", idempotency());
 app.route("/students", students);
+app.route("/vault", vault); // FR-24, behind vault_enabled (fail-closed)
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {
