@@ -1,13 +1,13 @@
 /** Sparkle design tokens: glass + cyan/teal neon, high-contrast light/dark. */
 export const tokens = {
   color: {
-    neon: { cyan: "#22d3ee", teal: "#2dd4bf", glow: "rgba(34, 211, 238, 0.45)" },
+    neon: { cyan: "#5ee0f0", teal: "#5ee0f0", glow: "rgba(94, 224, 240, 0.18)" },
     dark: {
-      bg: "#05080f",
-      surface: "rgba(15, 23, 42, 0.55)",
-      border: "rgba(34, 211, 238, 0.35)",
-      text: "#f8fafc",
-      textMuted: "#cbd5e1",
+      bg: "#07090d",
+      surface: "rgba(255, 255, 255, 0.025)",
+      border: "rgba(255, 255, 255, 0.07)",
+      text: "#e8edf3",
+      textMuted: "#8a94a3",
     },
     light: {
       bg: "#f1f7fb",

@@ -1,5 +1,5 @@
 import { GlassPanel } from "@sparkle/ui";
-import { SparkleCharacter } from "@sparkle/character";
+import Link from "next/link";
 import { signInWithGoogle } from "./actions";
 
 export const metadata = { title: "Sign in", robots: { index: false } };
@@ -17,7 +17,10 @@ export default async function LoginPage({
   const { error, next } = await searchParams;
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-4 py-10">
-      <SparkleCharacter state="excited" size={110} />
+      <Link href="/" className="spk-logo" aria-label="Sparkle home">
+        <i aria-hidden />
+        SPARKLE
+      </Link>
       <GlassPanel glow className="w-full p-6 sm:p-8">
         <h1 className="text-2xl font-semibold">Welcome to Sparkle</h1>
         <p className="text-muted mt-2">See what matters next. Sign in to get started.</p>
@@ -28,10 +31,7 @@ export default async function LoginPage({
         )}
         <form action={signInWithGoogle} className="mt-6">
           <input type="hidden" name="next" value={next ?? "/app"} />
-          <button
-            type="submit"
-            className="spk-glass spk-glow flex w-full items-center justify-center gap-3 px-4 py-3 font-medium transition hover:brightness-110"
-          >
+          <button type="submit" className="spk-btn spk-btn-p w-full justify-center gap-3 py-3">
             <svg aria-hidden width="18" height="18" viewBox="0 0 48 48">
               <path
                 fill="#FFC107"
