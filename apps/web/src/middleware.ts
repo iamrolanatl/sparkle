@@ -7,6 +7,8 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
   const env = supabaseEnv();
   if (!env) return response;
+  // CR-0007: anonymous visitors (no Supabase auth cookie) never trigger an Auth round-trip.
+  if (!request.cookies.getAll().some((c) => c.name.startsWith("sb-"))) return response;
   const supabase = createServerClient(env.url, env.key, {
     cookies: {
       getAll: () => request.cookies.getAll(),
@@ -22,5 +24,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|riv)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|riv|mp4|webm|webmanifest)$).*)",
+  ],
 };
