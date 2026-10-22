@@ -65,7 +65,7 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.25 | Privacy-respecting analytics + KPI instrumentation — DEC-42 |  | Not started | CR-0006 |
 | 3.0 | **Phase 1 — Core Data & Identity** | G1 | Not started | Entry: 2.10 complete |
 | 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema + RLS (CR-0002) + UI PR #12 |
-| 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | | In progress (skeleton: #30, #47, #61) | Agent skeleton + ingest provenance in #61 (migration 20261022030000_d_ingest_provenance); first live connector still **gated** by legal/ToS review of automated access to StudentVue/Cobb portals (R-05); needs Apple + Windows code-signing certificates (D-05) |
+| 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | Team D | In progress (mock only) | Ingest API + DO/Queue + provenance migration `20261022130000_d_ingest_provenance` (#30); agent core (#47); Playwright-in-CI + unsigned Tauri shell (#61). First live connector **gated** by ToS review (SOP-12 step 2, SA-D1) and signing certs (SA-D3) |
 | 3.3 | Web fallback: manual upload | | In progress | CSV import API #13 merged; upload UI #22 in review |
 | 3.4 | Normalized data model + Today doc precompute | | Done | Today doc API + KV cache (#13) |
 | 3.5 | Admin basic sync health | | In progress | PR #14 |
