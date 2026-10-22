@@ -217,6 +217,30 @@ insert into public.chat_sessions (id, expires_at) values ('40000000-0000-0000-00
 select tests.ok(public.purge_expired_chats() = 1, 'expired chat sessions are purged (retention TTL)');
 set local role authenticated;
 
+-- ===== WBS 3.6 confirmation gate =====
+reset role;
+insert into public.ai_drafts (id, student_id, kind, body, recipient) values
+  ('50000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-00000000000a', 'teacher_email', 'Hi', 'teacher@example.com');
+do $$ begin
+  update public.ai_drafts set sent_at = now() where id = '50000000-0000-0000-0000-000000000001';
+  raise exception 'FAIL: unconfirmed draft was marked sent';
+exception when check_violation then raise notice 'ok - unconfirmed draft cannot be marked sent'; end $$;
+set local role authenticated;
+select tests.as_user('00000000-0000-0000-0000-00000000000b');
+do $$ begin
+  perform public.confirm_draft('50000000-0000-0000-0000-000000000001');
+  raise exception 'FAIL: other family confirmed a draft';
+exception when raise_exception then
+  if sqlerrm like 'FAIL%' then raise; end if;
+  raise notice 'ok - another family cannot confirm a draft';
+end $$;
+select tests.as_user('00000000-0000-0000-0000-00000000000a');
+select tests.ok(public.confirm_draft('50000000-0000-0000-0000-000000000001') is not null, 'guardian confirms draft');
+reset role;
+update public.ai_drafts set sent_at = now() where id = '50000000-0000-0000-0000-000000000001';
+select tests.ok((select confirmed_by from public.ai_drafts where id = '50000000-0000-0000-0000-000000000001') = '00000000-0000-0000-0000-00000000000a', 'confirmed draft records who confirmed and can be sent');
+set local role authenticated;
+
 -- Admin: no read policy
 select tests.ok(not has_table_privilege('public.admin_audit_log', 'select'), 'clients cannot read audit log');
 
