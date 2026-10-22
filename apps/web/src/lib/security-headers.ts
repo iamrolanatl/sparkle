@@ -13,7 +13,13 @@ export function sentryOrigin(dsn?: string): string {
 }
 
 export function contentSecurityPolicy(supabaseUrl: string, apiOrigins: string[] = [], sentryDsn?: string): string {
-  const connect = ["'self'", supabaseUrl, supabaseUrl.replace(/^https:/, "wss:"), ...apiOrigins, sentryOrigin(sentryDsn)].filter(Boolean);
+  const connect = [
+    "'self'",
+    supabaseUrl,
+    supabaseUrl.replace(/^https:/, "wss:"),
+    ...apiOrigins,
+    sentryOrigin(sentryDsn),
+  ].filter(Boolean);
   // Sign-in posts to a server action that redirects to Supabase OAuth, then Google.
   const formAction = ["'self'", supabaseUrl, "https://accounts.google.com"].filter(Boolean);
   return [
