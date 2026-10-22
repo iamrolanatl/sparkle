@@ -1,5 +1,5 @@
 -- Team D (WBS 3.2, DEC-166): provenance + score persistence for desktop-agent ingest. ADDITIVE ONLY.
--- Rollback (down), if ever needed under a CR:
+-- rollback: additive only; in a new migration under a CR run the statements below (drop new index, constraints, columns):
 --   drop index if exists grades_student_external_uq;
 --   alter table public.grades drop column if exists external_key, drop column if exists source, drop column if exists entered_by;
 --   alter table public.assignments drop column if exists source, drop column if exists entered_by;
