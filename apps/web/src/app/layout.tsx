@@ -3,6 +3,7 @@ import { AuroraBackground } from "@sparkle/ui";
 import { SITE_URL } from "@/lib/site";
 import { CookieConsent } from "@/components/CookieConsent";
 import { ReporterInit } from "@/components/ReporterInit";
+import { ServiceWorker } from "@/components/ServiceWorker";
 import "./globals.css";
 
 const description =
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="font-sans antialiased">
         <ReporterInit />
+        <ServiceWorker />
         <AuroraBackground />
         {children}
         <CookieConsent />
