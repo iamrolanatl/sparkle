@@ -20,6 +20,16 @@ export type Material = {
   storage_path: string | null;
   unit_id: string | null;
 };
+export type Feed = {
+  id: string;
+  kind: "post" | "email";
+  title: string;
+  who: string | null;
+  at: string | null;
+  url: string | null;
+  body: string | null;
+};
+export type Resource = { id: string; kind: string; provider: string | null; title: string; url: string };
 export type ClassView = {
   id: string;
   name: string;
@@ -35,6 +45,11 @@ export type ClassView = {
   pct: number | null;
   letter: string | null;
   materials: Material[];
+  missing: Assignment[];
+  feed: Feed[];
+  resources: Resource[];
+  section: string | null;
+  synced_at: string | null;
 };
 
 /** Weighted category average when categories have scores; else mean of recorded grades. */
@@ -50,17 +65,31 @@ export function classPercent(
   return Math.round((g.reduce((a, x) => a + (x.score! / x.max_score!) * 100, 0) / g.length) * 10) / 10;
 }
 
+/** Students this user can act for now: their own record, or ones with an ACTIVE guardian link (revoked links hide the student). */
 export async function loadStudents(sb: SupabaseClient) {
-  const { data } = await sb.from("students").select("id, display_name, profile_id").order("created_at").limit(50);
-  return (data ?? []) as { id: string; display_name: string; profile_id: string | null }[];
+  const [{ data }, { data: links }, { data: u }] = await Promise.all([
+    sb.from("students").select("id, display_name, profile_id").order("created_at").limit(50),
+    sb.from("student_guardians").select("student_id, guardian_profile_id, status").limit(200),
+    sb.auth.getUser(),
+  ]);
+  const uid = u.user?.id;
+  const active = new Set(
+    (links ?? []).filter((l) => l.status === "active" && l.guardian_profile_id === uid).map((l) => l.student_id),
+  );
+  const revoked = new Set(
+    (links ?? []).filter((l) => l.status !== "active" && l.guardian_profile_id === uid).map((l) => l.student_id),
+  );
+  return ((data ?? []) as { id: string; display_name: string; profile_id: string | null }[]).filter(
+    (s) => s.profile_id === uid || active.has(s.id) || !revoked.has(s.id),
+  );
 }
 
 export async function loadClasses(sb: SupabaseClient, studentId: string): Promise<ClassView[]> {
   const nowIso = new Date().toISOString();
-  const [cls, units, cats, asg, grades, mats] = await Promise.all([
+  const [cls, units, cats, asg, grades, mats, missing, posts, msgs, res] = await Promise.all([
     sb
       .from("classes")
-      .select("id, name, teacher, room, period, syllabus_url, ebook_url, created_at")
+      .select("id, name, teacher, room, period, syllabus_url, ebook_url, created_at, pct, section_no, synced_at")
       .eq("student_id", studentId)
       .order("period", { nullsFirst: false })
       .order("created_at")
@@ -91,6 +120,33 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
       .eq("student_id", studentId)
       .order("created_at", { ascending: false })
       .limit(300),
+    sb
+      .from("assignments")
+      .select("id, class_id, title, due_at, status, category")
+      .eq("student_id", studentId)
+      .eq("is_missing", true)
+      .order("due_at", { ascending: false })
+      .limit(100),
+    sb
+      .from("posts")
+      .select("id, class_id, title, author, posted_at, url, body")
+      .eq("student_id", studentId)
+      .not("class_id", "is", null)
+      .order("posted_at", { ascending: false, nullsFirst: false })
+      .limit(200),
+    sb
+      .from("messages")
+      .select("id, class_id, subject, sender, received_at, snippet")
+      .eq("student_id", studentId)
+      .not("class_id", "is", null)
+      .order("received_at", { ascending: false, nullsFirst: false })
+      .limit(200),
+    sb
+      .from("resources")
+      .select("id, class_id, kind, provider, title, url")
+      .eq("student_id", studentId)
+      .order("created_at")
+      .limit(500),
   ]);
   return ((cls.data ?? []) as Record<string, unknown>[]).map((c, i) => {
     const id = c.id as string;
@@ -99,7 +155,8 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
     const categories = (cats.data ?? [])
       .filter((x) => x.class_id === id)
       .map((x) => ({ name: x.name, weight: Number(x.weight), score: x.score == null ? null : Number(x.score) }));
-    const pct = classPercent(
+    const synced = c.pct == null ? null : Number(c.pct);
+    const computed = classPercent(
       categories,
       (grades.data ?? [])
         .filter((g) => g.class_id === id)
@@ -108,6 +165,33 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
           max_score: g.max_score == null ? null : Number(g.max_score),
         })),
     );
+    const pct = synced ?? (c.synced_at ? null : computed);
+    const feed: Feed[] = [
+      ...(posts.data ?? [])
+        .filter((x) => x.class_id === id)
+        .map((x) => ({
+          id: x.id,
+          kind: "post" as const,
+          title: x.title,
+          who: x.author,
+          at: x.posted_at,
+          url: x.url,
+          body: x.body,
+        })),
+      ...(msgs.data ?? [])
+        .filter((x) => x.class_id === id)
+        .map((x) => ({
+          id: x.id,
+          kind: "email" as const,
+          title: x.subject,
+          who: x.sender,
+          at: x.received_at,
+          url: null,
+          body: x.snippet,
+        })),
+    ]
+      .sort((a, b) => Date.parse(b.at ?? "0") - Date.parse(a.at ?? "0"))
+      .slice(0, 6);
     return {
       id,
       name: c.name as string,
@@ -125,6 +209,11 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
       pct,
       letter: pct == null ? null : letterFor(Math.min(pct, 110)).letter,
       materials: ((mats.data ?? []) as (Material & { class_id: string })[]).filter((m) => m.class_id === id),
+      missing: ((missing.data ?? []) as Assignment[]).filter((a) => a.class_id === id),
+      feed,
+      resources: ((res.data ?? []) as (Resource & { class_id: string })[]).filter((r) => r.class_id === id),
+      section: (c.section_no as string) ?? null,
+      synced_at: (c.synced_at as string) ?? null,
     };
   });
 }

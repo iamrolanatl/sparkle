@@ -3,6 +3,7 @@ import { getUser, userRpc, type AuthEnv } from "../auth/user";
 import type { Admit, CoordOp } from "./coordinator";
 import { validateBatch } from "./schema";
 import { writeBatch, type IngestJob } from "./writer";
+import { validatePortalBatch, writePortalBatch } from "./portal";
 
 export interface IngestEnv extends AuthEnv {
   TODAY_CACHE?: KVNamespace;
@@ -136,3 +137,28 @@ export async function ingestQueue(mb: MessageBatch<IngestJob>, env: IngestEnv): 
     }
   }
 }
+
+/** School-portal delta batch from the laptop agent (apps/sync-agent). Same auth as /batch. */
+ingest.post("/:id/portal", async (c) => {
+  if (Number(c.req.header("Content-Length") ?? "0") > MAX_BODY_BYTES) return c.json({ error: "too_large" }, 413);
+  const id = c.req.param("id");
+  const user = await getUser(c.env, c.req.header("Authorization"));
+  if (!user) return c.json({ error: "unauthorized" }, 401);
+  const [guardian, self] = await Promise.all([
+    userRpc<boolean>(c.env, user.token, "is_active_guardian", { p_student: id }),
+    userRpc<boolean>(c.env, user.token, "is_student_self", { p_student: id }),
+  ]);
+  if (!guardian && !self) return c.json({ error: "forbidden" }, 403);
+  const raw = await readCapped(c.req.raw, MAX_BODY_BYTES);
+  if (raw === null) return c.json({ error: "too_large" }, 413);
+  let body: unknown;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return c.json({ error: "bad_json" }, 400);
+  }
+  const { batch, error } = validatePortalBatch(body, id);
+  if (!batch) return c.json({ error: "invalid_batch", details: [error] }, 422);
+  const res = await writePortalBatch(c.env, batch, self ? "student" : "guardian");
+  return c.json({ ok: true, ...res });
+});

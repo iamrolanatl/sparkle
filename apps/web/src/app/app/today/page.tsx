@@ -34,7 +34,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         </div>
       </div>
     );
-  const [classes, tasksRes] = await Promise.all([
+  const [classes, tasksRes, attRes] = await Promise.all([
     loadClasses(supabase, me.id),
     supabase
       .from("tasks")
@@ -43,7 +43,22 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
       .is("done_at", null)
       .order("due_at", { nullsFirst: false })
       .limit(100),
+    supabase
+      .from("attendance_events")
+      .select("day, code, excused, course_name")
+      .eq("student_id", me.id)
+      .order("day", { ascending: false })
+      .limit(500),
   ]);
+  const att = (attRes.data ?? []) as {
+    day: string;
+    code: string;
+    excused: boolean | null;
+    course_name: string | null;
+  }[];
+  const absentDays = new Set(att.filter((a) => /absent/i.test(a.code)).map((a) => a.day)).size;
+  const tardies = att.filter((a) => /tardy/i.test(a.code)).length;
+  const unexcused = new Set(att.filter((a) => a.excused === false).map((a) => a.day)).size;
   type Row = { id: string; title: string; due: string | null; cls: string; color: string; chip: string };
   const rows: Row[] = [
     ...classes.flatMap((c) =>
@@ -107,9 +122,15 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         </div>
         <div className="panel stat">
           <div className="l">Attendance</div>
-          <div className="v">—</div>
-          <div className="d" style={{ color: "var(--mut)" }}>
-            Not synced yet
+          <div className="v">{att.length ? absentDays : "—"}</div>
+          <div className="d" style={{ color: unexcused ? "var(--warn)" : "var(--mut)" }}>
+            {att.length ? (
+              <Link href="/app/attendance" style={{ textDecoration: "underline" }}>
+                {`day${absentDays === 1 ? "" : "s"} absent · ${tardies} tard${tardies === 1 ? "y" : "ies"}${unexcused ? ` · ${unexcused} unexcused` : ""}`}
+              </Link>
+            ) : (
+              "Not synced yet"
+            )}
           </div>
         </div>
       </div>

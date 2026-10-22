@@ -24,6 +24,7 @@ export const MAIN = [
   { href: "/app/today", label: "Today", icon: I.today },
   { href: "/app/tasks", label: "Tasks", icon: I.tasks },
   { href: "/app/classes", label: "Grades & Classes", icon: I.classes },
+  { href: "/app/attendance", label: "Attendance", icon: I.today },
   { href: "/app/gpa", label: "GPA Simulator", icon: I.gpa },
   { href: "/app/scan", label: "Scan Homework", icon: I.scan },
 ];

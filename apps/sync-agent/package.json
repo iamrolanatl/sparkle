@@ -1,0 +1,14 @@
+{
+  "name": "@sparkle/sync-agent",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Laptop school-portal sync agent: reads signed-in portals over CDP (read-only) and uploads deltas to Sparkle.",
+  "scripts": {
+    "test": "node --test src/*.test.mjs",
+    "start": "node src/index.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "^1.56.0"
+  }
+}

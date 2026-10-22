@@ -142,7 +142,18 @@ export function ClassList({
         const meta = [c.teacher, [c.room, c.period].filter(Boolean).join(" · "), `${c.upcoming.length} upcoming`]
           .filter(Boolean)
           .join(" · ");
-        const practice = practiceLinks(c.name, c.unit?.topics ?? [], c.unit?.title ?? null);
+        const PRACTICE = /blooket|quizlet|khan|wayground|deltamath|desmos|gimkit|ixl|quizizz/;
+        const fromTeacher = c.resources.filter((r) => PRACTICE.test(r.provider ?? "")).slice(0, 6);
+        const otherLinks = c.resources.filter((r) => !PRACTICE.test(r.provider ?? "") && r.kind === "link").slice(0, 6);
+        const practice = [
+          ...fromTeacher.map((r) => ({
+            name: r.title.slice(0, 48),
+            desc: `From your teacher · ${r.provider}`,
+            color: "#7dd3fc",
+            href: r.url,
+          })),
+          ...practiceLinks(c.name, c.unit?.topics ?? [], c.unit?.title ?? null),
+        ];
         return (
           <div className={`panel cls ${isOpen ? "open" : ""}`} key={c.id} id={`c-${c.id}`}>
             <button className="ch" onClick={() => flip(c.id)} aria-expanded={isOpen}>
@@ -211,6 +222,22 @@ export function ClassList({
                       <div style={{ color: "var(--mut)", fontSize: 13 }}>Nothing upcoming.</div>
                     )}
                   </div>
+                  {c.missing.length ? (
+                    <div className="blk">
+                      <h4>
+                        Missing<span style={{ color: "var(--warn)" }}>{c.missing.length}</span>
+                      </h4>
+                      {c.missing.map((a) => (
+                        <div className="li" key={a.id}>
+                          <span className="dot" style={{ background: "var(--warn)" }} />
+                          {a.title}
+                          <span style={{ marginLeft: "auto", color: "var(--mut)", fontSize: 12 }}>
+                            {shortDate(a.due_at)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
                   <div className="blk">
                     <h4>
                       Category weights<span>Graded</span>
@@ -255,6 +282,56 @@ export function ClassList({
                     </div>
                   </div>
                   <div className="blk">
+                    <h4>
+                      From your teachers<span>Posts & emails</span>
+                    </h4>
+                    {c.feed.length ? (
+                      c.feed.map((f) => (
+                        <div className="li" key={f.id} style={{ alignItems: "flex-start" }}>
+                          <span className="chip">{f.kind === "email" ? "Email" : "Post"}</span>
+                          <span style={{ minWidth: 0 }}>
+                            {f.url ? (
+                              <a
+                                href={f.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ textDecoration: "underline" }}
+                              >
+                                {f.title}
+                              </a>
+                            ) : (
+                              f.title
+                            )}
+                            <small style={{ display: "block", color: "var(--dim)", fontSize: 12 }}>
+                              {[f.who, shortDate(f.at)].filter(Boolean).join(" · ")}
+                              {f.body ? ` — ${f.body.slice(0, 110)}${f.body.length > 110 ? "…" : ""}` : ""}
+                            </small>
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ color: "var(--mut)", fontSize: 13 }}>No class posts or emails yet.</div>
+                    )}
+                  </div>
+                  {otherLinks.length ? (
+                    <div className="blk">
+                      <h4>
+                        Class links<span>CTLS Learn</span>
+                      </h4>
+                      <div className="lk">
+                        {otherLinks.map((r) => (
+                          <L
+                            key={r.id}
+                            name={r.title.slice(0, 48)}
+                            desc={r.provider ?? "Link"}
+                            color="#e8edf3"
+                            href={r.url}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="blk">
                     <h4>Cobb County resources</h4>
                     <div className="lk">
                       {COBB_LINKS.map((r) => (
@@ -269,7 +346,7 @@ export function ClassList({
                     {practice.length ? (
                       <div className="lk">
                         {practice.map((r) => (
-                          <L key={r.name} name={r.name} desc={r.desc} color={r.color} href={r.href} />
+                          <L key={r.name + r.href} name={r.name} desc={r.desc} color={r.color} href={r.href} />
                         ))}
                       </div>
                     ) : (

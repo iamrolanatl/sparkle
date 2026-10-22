@@ -44,7 +44,7 @@ export interface SyncBatch {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ID = /^[\w.:-]{1,128}$/;
 
-function findForbiddenKey(v: unknown, depth = 0): string | null {
+export function findForbiddenKey(v: unknown, depth = 0): string | null {
   if (depth > 6 || v === null || typeof v !== "object") return null;
   for (const [k, x] of Object.entries(v as Record<string, unknown>)) {
     if (FORBIDDEN_KEY.test(snake(k))) return k;
