@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { inUS, roundCoord, safeNwsUrl, schoolDay, type Period } from "./nws";
-import { weather } from "./route";
+import { allowCacheWrite, weather } from "./route";
 
 const p = (startTime: string, temperature: number, shortForecast: string, rain = 0): Period => ({
   name: "",
@@ -53,5 +53,11 @@ describe("weather (FR-22)", () => {
   it("requires a signed-in user", async () => {
     const res = await weather.request("/?lat=33.95&lon=-84.55", {}, {});
     expect(res.status).toBe(401);
+  });
+  it("caps KV cache writes per isolate per hour", () => {
+    let ok = 0;
+    for (let i = 0; i < 100; i++) if (allowCacheWrite(1e12)) ok++;
+    expect(ok).toBe(60);
+    expect(allowCacheWrite(1e12 + 3_600_000)).toBe(true);
   });
 });

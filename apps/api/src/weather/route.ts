@@ -13,6 +13,17 @@ const TTL = 1800; // 30 min fresh
 const STALE_TTL = 6 * 3600; // keep up to 6 h for graceful degradation
 
 // In-isolate single-flight: concurrent misses for the same cell share one NWS fetch (stampede guard).
+// KV write guard: cap cache writes per isolate per hour so weather can never starve the account-wide KV write quota
+// that Today caching depends on. Over the cap we still answer, just without caching.
+const WRITE_CAP_PER_HOUR = 60;
+let writeWindow = { start: 0, n: 0 };
+export function allowCacheWrite(now = Date.now()): boolean {
+  if (now - writeWindow.start >= 3_600_000) writeWindow = { start: now, n: 0 };
+  if (writeWindow.n >= WRITE_CAP_PER_HOUR) return false;
+  writeWindow.n++;
+  return true;
+}
+
 const inflight = new Map<string, Promise<SchoolDayWeather | "unsupported">>();
 
 export const weather = new Hono<{ Bindings: WeatherEnv }>();
@@ -45,7 +56,8 @@ weather.get("/", async (c) => {
     const doc = await p;
     if (doc === "unsupported")
       return c.json({ error: "unsupported_location", message: "Weather is available for US locations." }, 404);
-    await kv?.put(key, JSON.stringify({ at: Date.now(), doc }), { expirationTtl: STALE_TTL }).catch(() => {});
+    if (kv && allowCacheWrite())
+      await kv.put(key, JSON.stringify({ at: Date.now(), doc }), { expirationTtl: STALE_TTL }).catch(() => {});
     return c.json({ ...doc, cache: "miss" });
   } catch {
     // Graceful degradation (NFR-41): serve stale data if we have it.
