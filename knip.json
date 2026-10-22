@@ -22,6 +22,10 @@
     "packages/*": {
       "entry": ["src/**/*.test.{ts,tsx}"],
       "project": ["src/**/*.{ts,tsx}"]
+    },
+    "apps/desktop": {
+      "entry": ["src/**/*.test.ts"],
+      "project": ["src/**/*.ts"]
     }
   },
   "ignoreDependencies": ["tailwindcss", "k6"],
