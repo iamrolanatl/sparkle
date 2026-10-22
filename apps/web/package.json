@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "pnpm scan-assets && next dev",
+    "build": "pnpm scan-assets && next build",
     "start": "next start",
     "build:worker": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
@@ -13,7 +13,8 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "scan-assets": "node scripts/copy-scan-assets.mjs"
   },
   "dependencies": {
     "@sparkle/character": "workspace:*",
@@ -24,16 +25,19 @@
     "next": "^15.5.28",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@opennextjs/cloudflare": "^1.20.13",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@tesseract.js-data/eng": "^1.0.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",
+    "tesseract.js-core": "^6.1.2",
     "wrangler": "^4.151.3"
   }
 }
