@@ -60,6 +60,7 @@
 | R-35 | No human on-call; incidents depend on bot automation and Rolan's availability | 3 | 4 | 12 | Accept/Mitigate | Runbooks RB-01..06, email alerts, kill switches fail closed (DEC-189) | Rolan | Open |
 | R-36 | Public pages keep script-src 'unsafe-inline' (static CSP) | 2 | 3 | 6 | Accept | No user data on public pages; nonce CSP on signed-in routes (DEC-186) | Team E | Open |
 | R-37 | Crash-free SLO (NFR-37) unmeasurable until a Sentry DSN exists | 3 | 3 | 9 | Mitigate | No-op adapters ready (DEC-184); SA-17 | Rolan | Open |
+| R-A1 | AI study helper or task text gives age-inappropriate or unsafe output to a minor | 2 | 5 | 10 | Mitigate | Pre/post screening, age bands, coach mode (DEC-102/103); crisis copy needs child-safety expert review (Sponsor action) | Team A | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |

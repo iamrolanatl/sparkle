@@ -39,6 +39,7 @@
 | SA-D1 | Counsel review of school-portal terms of use (StudentVue/Cobb first) before any real-portal adapter is built; prefer official APIs/agreements | Rolan + counsel | Before G2 | Open | DEC-161, R-05, D-06 |
 | SA-D2 | Approve Cloudflare Workers Paid ($5/mo) for Queues (ingest burst buffering); until then ingest writes inline | Rolan | Before real sync | Open | DEC-164 |
 | SA-D3 | Buy Apple Developer ($99/yr) + Windows code-signing certificate for the desktop agent installers | Rolan | Before G2 | Open | D-05, R-09 |
+| SA-A1 | Have a child-safety / counsel expert review the crisis reply and the K-12 AI guardrail policy (DEC-102/103) before real students use the study helper | Rolan | Before G3 | Open | DEC-102 |
 
 ## Revision History
 | Version | Date | Author | CR | Description |

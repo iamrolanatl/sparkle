@@ -81,6 +81,14 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 4.7 | Update landing page features & marketing content | | Recurring | At G2 |
 | 4.8 | Natural-language tasks (FR-21) | | Not started | CR-0004 |
 | 4.9 | School-day weather (FR-22) | | In progress | NWS, free, no key (DEC-66); API #19 in review; applet next |
+| 4.8 | Natural-language tasks (FR-21) | Team A | In progress | CR-0004; DEC-100..103 |
+| 4.8.1 | `tasks` table + RLS (migration `_a_tasks`) | Team A | In review | DEC-101 |
+| 4.8.2 | Deterministic parser + parse/save/list API with review step | Team A | In review | DEC-100 |
+| 4.8.3 | Safety + age-appropriate guardrails (tasks, study helper prompts) | Team A | In review | DEC-102/103; AI fallback wiring waits on PR #20 |
+| 4.8.4 | Tasks UI (type, review/edit, save, list) | Team A | In review | Neon glass per CR-0008 |
+| 4.8.5 | Due-soon + in-app reminders for Today | Team A | In review | DEC-107; Today embed via #66 |
+| 4.8.6 | Study helper chat (flag OFF, coach mode) | Team A | In review | DEC-108; router wiring after #20 |
+| 4.9 | School-day weather (FR-22) | | Not started | Weather provider TBD (cost/terms) |
 | 4.10 | OCR scanning (FR-23) | | Not started | R2 `sparkle-scans` ready |
 | 4.9 | School-day weather (FR-22) | | Not started | Weather provider TBD (cost/terms) |
 | 4.10 | OCR scanning (FR-23) | Team B | In progress | API pipeline + `scans` table in review (DEC-120..126); next: web camera/upload + on-device OCR + review UI; 30-day purge cron |
