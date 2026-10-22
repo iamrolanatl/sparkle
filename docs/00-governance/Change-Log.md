@@ -47,4 +47,4 @@
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | CR-0005 entry. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | CR-0006 entry. |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | SA-11 decided by Rolan: keep plain Sparkle; DEC-40 and R-26 updated; Runbook item 12 added. |
-| 1.6 | 2026-10-21 | Grok Bot (Integration lead, for Rolan Chowdhury) | CR-0010 | SOP-14, SOP-15, CI migration lint, CODEOWNERS, PR template, DEC-71, R-33/R-34. |
+| 1.4 | 2026-10-21 | Grok Bot (Integration lead, for Rolan Chowdhury) | CR-0010 | SOP-14, SOP-15, CI migration lint, CODEOWNERS, PR template, DEC-71, R-33/R-34. |

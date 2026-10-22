@@ -10,6 +10,17 @@ const CUTOFF = "20261022020000";
 const NAME = /^(\d{14})_[a-z0-9_]+\.sql$/;
 const NEW_NAME = /^\d{14}_(int|a|b|c|d|e)_[a-z0-9_]+\.sql$/;
 const OVERRIDE = /--\s*destructive-ok:\s*CR-\d{4}/i;
+// Access-widening changes need explicit Integration sign-off + RLS tests (Team E review of #28).
+const SIGNOFF = /--\s*integration-signoff:\s*\S+/i;
+const ACCESS_FNS = ["can_view_student", "redeem_invitation", "is_active_guardian", "is_student_self", "student_age"];
+const ACCESS_RULES = [
+  [
+    new RegExp(`\\bcreate\\s+or\\s+replace\\s+function\\s+(public\\.)?(${ACCESS_FNS.join("|")})\\b`, "i"),
+    "CREATE OR REPLACE on an access function",
+  ],
+  [/\balter\s+policy\b/i, "ALTER POLICY"],
+  [/\bsecurity\s+definer\b/i, "SECURITY DEFINER function"],
+];
 const RULES = [
   [
     /\bdrop\s+(table|schema|column|type|view|materialized\s+view|function|extension|index|trigger|policy|sequence)\b/i,
@@ -44,11 +55,29 @@ for (const f of files) {
   if (m[1] <= CUTOFF) continue;
   if (!NEW_NAME.test(f)) errors.push(`${f}: new migrations must be <timestamp>_<int|a|b|c|d|e>_<name>.sql`);
   const raw = readFileSync(`${DIR}/${f}`, "utf8");
-  if (!/--\s*rollback:/i.test(raw)) errors.push(`${f}: missing "-- rollback:" note`);
+  const rb = /--\s*rollback:[ \t]*(.*)/i.exec(raw);
+  if (!rb) errors.push(`${f}: missing "-- rollback:" note`);
+  else if (rb[1].trim().length < 5 || /^(n\/?a|none|tbd|-)$/i.test(rb[1].trim()))
+    errors.push(`${f}: "-- rollback:" note must describe the rollback (not blank / n/a)`);
   if (!OVERRIDE.test(raw)) {
-    const sql = stripComments(raw);
+    // Allow `drop policy if exists X on T;` when the same policy X on T is re-created in this file.
+    const full = stripComments(raw);
+    const esc = (v) => v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const sql = full.replace(
+      /\bdrop\s+policy\s+if\s+exists\s+("[^"]+"|\w+)\s+on\s+([\w."]+)\s*;/gi,
+      (m, name, table) =>
+        new RegExp(`\\bcreate\\s+policy\\s+${esc(name)}\\s+on\\s+${esc(table)}`, "i").test(full) ? ";" : m,
+    );
     for (const [re, label] of RULES)
       if (re.test(sql)) errors.push(`${f}: ${label} not allowed (additive only; needs "-- destructive-ok: CR-xxxx")`);
+  }
+  if (!SIGNOFF.test(raw)) {
+    const sql = stripComments(raw);
+    for (const [re, label] of ACCESS_RULES)
+      if (re.test(sql))
+        errors.push(
+          `${f}: ${label} can widen access — needs "-- integration-signoff: <PR#>" and RLS tests (SOP-15 §1.6)`,
+        );
   }
 }
 
