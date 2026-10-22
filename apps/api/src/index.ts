@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
 import { students, type StudentsEnv } from "./students/route";
+import { weather } from "./weather/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
 import { makeDispatcher, queueHandlers } from "./queues";
@@ -65,6 +66,7 @@ app.use("/chat/handoff", idempotency());
 app.route("/chat", chat);
 app.use("/students/:id/import", idempotency());
 app.route("/students", students);
+app.route("/weather", weather);
 
 app.notFound((c) => c.json({ error: "not_found" }, 404));
 app.onError((err, c) => {
