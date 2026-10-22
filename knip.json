@@ -16,7 +16,7 @@
       "project": ["src/**/*.{ts,tsx}"]
     },
     "apps/api": {
-      "entry": ["src/**/*.test.ts"],
+      "entry": ["src/**/*.test.ts", "src/synthetic/monitor.ts"],
       "project": ["src/**/*.ts"]
     },
     "packages/*": {
