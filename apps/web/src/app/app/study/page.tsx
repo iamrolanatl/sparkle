@@ -36,7 +36,8 @@ export default async function StudyPage({ searchParams }: { searchParams: Promis
   const first = me.display_name.split(" ")[0] ?? "";
   const items = dontMiss(classes).slice(0, 3);
   const sugg: string[] = ["What's due this week?"];
-  const cu = classes.find((c) => c.unit);
+  const DATEY = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s*\d|^week\b|\d+\/\d+/i;
+  const cu = classes.find((c) => c.unit && !DATEY.test(c.unit.title));
   if (cu?.unit) sugg.push(`Quiz me on ${cu.unit.title.replace(/^Unit\s*\d+\s*[·:-]\s*/i, "").slice(0, 36)}`);
   if (items.length) sugg.push("What did my teachers post that I should know?");
   const low = [...classes].filter((c) => c.pct != null).sort((a, b) => (a.pct ?? 0) - (b.pct ?? 0))[0];
