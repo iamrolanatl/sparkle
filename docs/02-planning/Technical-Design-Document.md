@@ -59,6 +59,8 @@ Full decisions with status in the [Decision Log](../00-governance/Decision-Log.m
 Budgets NFR-01..04, 09, 10 enforced in CI (smoke) and production (synthetics/RUM). Circuit breakers, bulkheads, rate limits and automatic fallbacks (AI tier, voice→text, live→last-known/cached). Per-user AI budgets + kill switches. Feature flags for all new animation and live features. UI error boundaries.
 
 ## 5. Security and Privacy
+
+> **AI router notes (#20, Team E review):** circuit breakers are per Worker isolate (each isolate learns independently; acceptable at our scale); token budgets are soft, batched per isolate and flushed to KV; every output passes a required output filter (unsafe → safe fallback with 988); source titles are sanitized and passed as data.
 RLS by family/tenant; age-threshold sharing with visible access list; redacted support bundles and logs; audit log; admin SSO + hardware MFA, least privilege, JIT elevation, recorded view-as; secrets in Cloudflare/GitHub secret stores, never in repo.
 
 ## 6. Scale Triggers
