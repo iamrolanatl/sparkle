@@ -9,7 +9,7 @@ workers_dev = true
 enabled = true
 
 [vars]
-APP_ENV = "production"
+APP_ENV = "dev"  # only deployed worker is dev (workers.dev); production sets APP_ENV="production" in its own [env.production] block (WBS 2.8)
 SUPABASE_URL = "https://nklbdyezbsugkdvaidtt.supabase.co"
 AI_GATEWAY_ID = "sparkle-gateway"
 ALLOWED_ORIGINS = "https://sparkle-web.crystal-iamrolan.workers.dev,http://localhost:3000"  # add production domain when known (WBS 2.8)
