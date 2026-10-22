@@ -1103,3 +1103,6 @@
     display: none;
   }
 }
+.sa .row > div[style*="min-width"] {
+  flex: 1;
+}

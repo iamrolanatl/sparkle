@@ -17,7 +17,7 @@ const initials = (n: string) =>
     .slice(0, 2)
     .toUpperCase();
 function Av({ name, color }: { name: string; color: string }) {
-  const light = /^#(e|f)/i.test(color);
+  const light = color.toLowerCase() === "#e8edf3";
   return (
     <span
       className="cav"

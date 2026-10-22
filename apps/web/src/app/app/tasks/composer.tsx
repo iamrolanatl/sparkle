@@ -346,12 +346,24 @@ function SchoolRow({ a, now }: { a: SchoolItem; now: Date }) {
   const n = a.due_at ? daysUntil(a.due_at, now) : null;
   return (
     <div className="row">
-      <span className="dot" style={{ background: a.color }} />
-      <div style={{ minWidth: 0 }}>
-        <div>{a.title}</div>
-        <div style={{ fontSize: 12, color: "var(--dim)" }}>{a.className}</div>
+      <span className="cav" style={{ background: a.color }} aria-hidden="true">
+        {a.className
+          .replace(/[^A-Za-z0-9 ]/g, "")
+          .split(" ")
+          .filter(Boolean)
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()}
+      </span>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ fontWeight: 600 }}>{a.title}</div>
+        <div style={{ fontSize: 13, color: "var(--mut)" }}>
+          {a.className}
+          {a.category ? ` · ${a.category}` : ""}
+        </div>
       </div>
-      <span className="chip">{a.status === "missing" ? "Missing" : (a.category ?? "Assignment")}</span>
+      {a.status === "missing" ? <span className="chip">Missing</span> : null}
       <span className={`due ${n == null ? "" : n < 0 ? "bad" : n <= 1 ? "h" : ""}`}>{dueText(a.due_at, now)}</span>
     </div>
   );
