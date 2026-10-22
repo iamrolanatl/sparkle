@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import { securityHeaders } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@sparkle/ui", "@sparkle/character"],
+  transpilePackages: ["@sparkle/ui"],
   // Expose only public values to the browser.
   poweredByHeader: false,
   async headers() {

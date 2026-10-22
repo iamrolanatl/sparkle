@@ -17,7 +17,6 @@
     "scan-assets": "node scripts/copy-scan-assets.mjs"
   },
   "dependencies": {
-    "@sparkle/character": "workspace:*",
     "@sparkle/ui": "workspace:*",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",

@@ -38,7 +38,7 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.4.2 | Seamless VideoBackground (CR-0008) | | Done | PR #10 |
 | 2.4.3 | Applets framework (isolated, lazy, skeleton) (CR-0008) | | Done | PR #10; DEC-58 |
 | 2.4.4 | Playwright E2E + visual tests; Lighthouse CI budget (CR-0008) | | Done | PR #10; DEC-56, DEC-59 |
-| 2.5 | Sparkle character states | | In progress | **Placeholder only** (`packages/sparkle-character`, Rive integration point stubbed). Production full-body Rive character needs an illustrator/animator — who/how TBD (D-03, R-11) |
+| 2.5 | Sparkle character states | | Replaced | Old placeholder robot removed; only the approved Spark robot (SparkRobot, DEC-192) remains. **Was placeholder** (`packages/sparkle-character`, Rive integration point stubbed). Production full-body Rive character needs an illustrator/animator — who/how TBD (D-03, R-11) |
 | 2.6 | Access and tooling | | Done | Supabase token; Google auth enabled in Supabase; GCP project `sparkle-app-2566` with OAuth Web client (web + mobile via Supabase, DEC-05); Cloudflare token verified; Rolan's Windows laptop: git, node, gh, gcloud, wrangler, supabase CLI |
 | 2.6.1 | Enable Cloudflare R2 | | Done | Enabled 2026-10-21; private buckets `sparkle-scans`, `sparkle-vault` (ENAM, no public access); bound as SCANS_BUCKET / VAULT_BUCKET in `apps/api` (CR-0003) — I-03 closed |
 | 2.7 | Landing page and sign-up (FR-17) | | In progress | Crystal-style cockpit redesign, "coming soon" cards for FR-21..24 (CR-0003/4); depends on 2.8 domain and 2.10 legal text before public launch |

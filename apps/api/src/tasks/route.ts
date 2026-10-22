@@ -146,3 +146,34 @@ tasks.get("/:id/tasks/due-soon", async (c) => {
   c.header("Cache-Control", "private, max-age=60");
   return c.json(dueSoon(r.data, new Date()));
 });
+
+/** Mark a task done (or reopen it). RLS (tasks_update) decides; can_write_tasks gates first. */
+tasks.patch("/:id/tasks/:taskId", async (c) => {
+  const a = await authorizeWrite(c);
+  if ("error" in a) return c.json({ error: ERR[a.error!] }, a.error!);
+  const taskId = c.req.param("taskId");
+  if (!UUID.test(taskId)) return c.json({ error: "bad_request" }, 400);
+  const b = (await c.req.json().catch(() => ({}))) as { done?: unknown };
+  if (typeof b.done !== "boolean") return c.json({ error: "bad_request" }, 400);
+  const r = await userRest(c.env, a.user.token)<unknown[]>(`tasks?id=eq.${taskId}&student_id=eq.${a.id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ done_at: b.done ? new Date().toISOString() : null }),
+  });
+  if (!r.ok) return c.json({ error: "save_failed" }, 502);
+  if (!r.data?.length) return c.json({ error: "not_found" }, 404);
+  return c.json({ task: r.data[0] });
+});
+
+/** Delete a task. */
+tasks.delete("/:id/tasks/:taskId", async (c) => {
+  const a = await authorizeWrite(c);
+  if ("error" in a) return c.json({ error: ERR[a.error!] }, a.error!);
+  const taskId = c.req.param("taskId");
+  if (!UUID.test(taskId)) return c.json({ error: "bad_request" }, 400);
+  const r = await userRest(c.env, a.user.token)<unknown[]>(`tasks?id=eq.${taskId}&student_id=eq.${a.id}`, {
+    method: "DELETE",
+  });
+  if (!r.ok) return c.json({ error: "delete_failed" }, 502);
+  if (!r.data?.length) return c.json({ error: "not_found" }, 404);
+  return c.json({ ok: true });
+});

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { ErrorBoundary, NeonWindow } from "@sparkle/ui";
 import { safetyMessage } from "./safety-message";
-import { listTasksAction, parseTaskAction, saveTaskAction } from "./actions";
+import { deleteTaskAction, listTasksAction, parseTaskAction, saveTaskAction, setTaskDoneAction } from "./actions";
 import { toLocalInput, fromLocalInput } from "./time";
 
 type Parsed = {
@@ -64,6 +64,21 @@ function TaskComposerInner({ students }: { students: { id: string; display_name:
       setDraft(null);
       setText("");
       setMsg("Saved ✨");
+      refresh(sid);
+    });
+
+  const onDone = (id: string) =>
+    start(async () => {
+      const r = await setTaskDoneAction(sid, id, true);
+      if (r.status !== 200) return setMsg("Couldn't mark that done. Please try again.");
+      setMsg("Nice work! Task done ✅");
+      refresh(sid);
+    });
+  const onDelete = (id: string) =>
+    start(async () => {
+      const r = await deleteTaskAction(sid, id);
+      if (r.status !== 200) return setMsg("Couldn't delete that. Please try again.");
+      setMsg("Task deleted.");
       refresh(sid);
     });
 
@@ -170,13 +185,13 @@ function TaskComposerInner({ students }: { students: { id: string; display_name:
             {tasks.map((t) => (
               <li
                 key={t.id}
-                className="flex justify-between rounded-lg border border-[var(--spk-border)] px-3 py-2 hover:border-[var(--spk-neon)] transition-colors"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[var(--spk-border)] px-3 py-2 hover:border-[var(--spk-neon)] transition-colors"
               >
                 <span>
                   {t.priority === "high" ? "⚡ " : ""}
                   {t.title}
                 </span>
-                <span className="text-muted text-sm">
+                <span className="flex flex-wrap items-center gap-3 text-muted text-sm">
                   {t.due_at
                     ? new Date(t.due_at).toLocaleString("en-US", {
                         timeZone: "America/New_York",
@@ -187,6 +202,24 @@ function TaskComposerInner({ students }: { students: { id: string; display_name:
                         minute: "2-digit",
                       }) + " ET"
                     : "No date"}
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => onDone(t.id)}
+                    aria-label={`Mark ${t.title} done`}
+                    className="rounded-md border border-[var(--spk-neon)] px-2 py-1 text-xs text-[var(--spk-fg,inherit)] hover:shadow-[0_0_12px_var(--spk-neon)]"
+                  >
+                    Done
+                  </button>
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => onDelete(t.id)}
+                    aria-label={`Delete ${t.title}`}
+                    className="rounded-md px-2 py-1 text-xs hover:text-rose-300"
+                  >
+                    Delete
+                  </button>
                 </span>
               </li>
             ))}

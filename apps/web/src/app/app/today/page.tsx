@@ -2,6 +2,7 @@ import { NeonWindow } from "@sparkle/ui";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { DueSoonTasks } from "../tasks/due-soon";
 import { formatDue, isEmpty, type TodayDoc, type TodayItem } from "@/lib/today-view";
 
 export const dynamic = "force-dynamic";
@@ -59,9 +60,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
-        <Link href="/app" className="text-lg font-semibold tracking-wide">
-          Sparkle
-        </Link>
+        <span className="text-muted text-sm">Student</span>
         <nav className="flex gap-3 text-sm">
           {list.map((x) => (
             <Link
@@ -108,6 +107,14 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           ) : null}
         </NeonWindow>
       )}
+      {current ? <DueSoonTasks studentId={current.id} /> : null}
+      {current ? (
+        <p className="text-sm">
+          <Link href="/app/tasks" className="underline">
+            Add or finish tasks →
+          </Link>
+        </p>
+      ) : null}
     </main>
   );
 }

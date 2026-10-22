@@ -17,7 +17,11 @@ export default async function StudyPage() {
     return (
       <main className="mx-auto max-w-3xl px-4 py-8">
         <NeonWindow title="Study helper">
-          <p className="text-muted">Coming soon. Sparkle&apos;s study helper is still in safety testing.</p>
+          <p className="text-lg font-semibold">Coming soon 🤖</p>
+          <p className="text-muted mt-2 text-sm">
+            Sparkle&apos;s study helper coaches students through homework without doing it for them. It stays switched
+            off until child-safety testing and review are finished.
+          </p>
         </NeonWindow>
       </main>
     );

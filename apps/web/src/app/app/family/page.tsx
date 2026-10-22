@@ -64,9 +64,7 @@ export default async function FamilyPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-4xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
-        <Link href="/app" className="text-lg font-semibold tracking-wide">
-          Sparkle
-        </Link>
+        <span className="text-muted text-sm">Family &amp; helpers</span>
         <Link href="/invite" className="text-sm underline">
           Have a code?
         </Link>

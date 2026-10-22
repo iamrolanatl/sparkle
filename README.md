@@ -11,7 +11,6 @@ Project documentation lives in [`docs/`](docs/README.md).
 | `apps/web` | Next.js (App Router) + TS + Tailwind 4 + Framer Motion, mobile-first; Google sign-in via `@supabase/ssr`; deploys to Cloudflare Workers via OpenNext |
 | `apps/api` | Hono on Cloudflare Workers (`GET /health`) |
 | `packages/ui` | Glass + cyan/teal neon tokens, light/dark high-contrast themes, reduced-motion, FPS-guarded aurora background |
-| `packages/sparkle-character` | Placeholder full-body Sparkle robot (idle / excited / thoughtful / helping) with a Rive integration point |
 | `supabase/` | Migrations (multi-tenant model + RLS) and RLS tests |
 
 ## Local development

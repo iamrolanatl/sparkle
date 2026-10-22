@@ -2,7 +2,6 @@
 @import "@sparkle/ui/theme.css";
 
 @source "../../../../packages/ui/src";
-@source "../../../../packages/sparkle-character/src";
 
 @theme {
   --color-neon: #22d3ee;

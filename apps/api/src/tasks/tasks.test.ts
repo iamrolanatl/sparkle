@@ -173,6 +173,35 @@ describe("tasks routes", () => {
     );
     expect(ok.status).toBe(201);
   });
+  it("complete and delete a task (owner only)", async () => {
+    const TID = "20000000-0000-0000-0000-00000000000b";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (url.endsWith("/auth/v1/user")) return Response.json({ id: "u1" });
+        if (url.includes("rpc/can_view_student") || url.includes("rpc/can_write_tasks")) return Response.json(true);
+        if (url.includes(`/tasks?id=eq.${TID}`) && (init?.method === "PATCH" || init?.method === "DELETE"))
+          return Response.json([{ id: TID }]);
+        return Response.json([]);
+      }),
+    );
+    const done = await app.request(
+      `/students/${SID}/tasks/${TID}`,
+      { method: "PATCH", headers: auth, body: JSON.stringify({ done: true }) },
+      env,
+    );
+    expect(done.status).toBe(200);
+    const bad = await app.request(`/students/${SID}/tasks/${TID}`, { method: "PATCH", headers: auth, body: "{}" }, env);
+    expect(bad.status).toBe(400);
+    const del = await app.request(`/students/${SID}/tasks/${TID}`, { method: "DELETE", headers: auth }, env);
+    expect(del.status).toBe(200);
+    const missing = await app.request(
+      `/students/${SID}/tasks/30000000-0000-0000-0000-00000000000c`,
+      { method: "DELETE", headers: auth },
+      env,
+    );
+    expect(missing.status).toBe(404);
+  });
   it("save never persists raw input (DEC-104: no source_text column)", async () => {
     let sent: Record<string, unknown> = {};
     stub(

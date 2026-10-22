@@ -15,9 +15,6 @@ export default async function ImportPage() {
   const students = (data ?? []).map((s) => ({ id: s.id as string, name: s.display_name as string }));
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 py-8">
-      <Link href="/app" className="text-lg font-semibold tracking-wide">
-        Sparkle
-      </Link>
       <NeonWindow title="Import assignments (CSV)">
         <p className="text-muted mb-4 text-sm">
           Until school sync is available, you can paste in a spreadsheet export. Re-importing the same file updates rows
