@@ -52,6 +52,8 @@
 | R-30 | Analytics scope creep adds trackers to child-facing pages | 2 | 4 | 8 | Avoid | DEC-42; PR checklist | Eng | Open |
 | R-31 | Rich effects (video, glow, tilt) regress mobile performance / battery | 3 | 3 | 9 | Mitigate | Perf budget, Lighthouse CI, auto-degrade < 30 fps, poster fallback (DEC-52) | Grok Bot | Open |
 | R-32 | Free tiers cannot actually serve 1M users (Supabase Free pauses, 60 conns, no PITR) | 4 | 4 | 16 | Mitigate | Capacity model; cache-first design; SA-15/16 before G5 | Rolan | Open |
+| R-33 | Data loss from a destructive or mis-ordered migration applied by a parallel team | 3 | 5 | 15 | Mitigate | SOP-15: additive-only CI lint, Integration-only apply, backup → dry-run → sparkle-dev → main | Integration | Open |
+| R-34 | Parallel teams (CR-0009) break each other via unreviewed merges or shared-file conflicts | 4 | 3 | 12 | Mitigate | SOP-14: cross-team review, Integration-only sequential merges, lanes, DEC ranges | Integration | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
