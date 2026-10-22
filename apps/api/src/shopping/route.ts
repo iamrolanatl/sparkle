@@ -66,11 +66,8 @@ shopping.post("/:id/list/items", async (c) => {
   const title = clean(b?.title, 120);
   if (!text && !title) return c.json({ error: "bad_request" }, 400);
   // Student's real class names (RLS-scoped via caller's token); display label only, no class_id link.
-  const classes = text
-    ? ((await a.db<{ name: string }[]>(`classes?student_id=eq.${a.id}&select=name&limit=30`).catch(() => [])) ?? [])
-        .map((x) => x.name)
-        .filter(Boolean)
-    : [];
+  const cr = text ? await a.db<{ name: string }[]>(`classes?student_id=eq.${a.id}&select=name&limit=30`) : null;
+  const classes = cr?.ok ? cr.data.map((x) => x.name).filter(Boolean) : [];
   const p = text ? parseItem(text, classes) : null;
   const source = b?.source === "teacher_post" ? "teacher_post" : "manual";
   const row = {
