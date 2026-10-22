@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["supabase/tests/*.ts"],
+      "project": ["supabase/**/*.ts"]
+    },
+    "apps/web": {
+      "entry": ["src/app/**/*.{ts,tsx}", "open-next.config.ts", "e2e/**/*.ts"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "apps/api": {
+      "entry": ["src/**/*.test.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/*": {
+      "entry": ["src/**/*.test.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}"]
+    }
+  },
+  "ignoreDependencies": ["tailwindcss", "k6"],
+  "ignore": ["tests/load/**"]
+}

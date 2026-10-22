@@ -1,0 +1,4 @@
+# CODEOWNERS (CR-0007, SOP-13)
+* @iamrolanatl
+/docs/ @iamrolanatl
+/supabase/ @iamrolanatl

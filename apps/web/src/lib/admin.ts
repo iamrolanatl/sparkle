@@ -17,7 +17,8 @@ export async function requireAdmin() {
 
 /** Service-role client — only call after requireAdmin(). Never import into client components. */
 export function adminDb() {
-  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SECRET_KEY;
+  const url = process.env.SUPABASE_URL,
+    key = process.env.SUPABASE_SECRET_KEY;
   if (!url || !key) throw new Error("Admin DB not configured");
   return createAdminClient(url, key, { auth: { persistSession: false } });
 }

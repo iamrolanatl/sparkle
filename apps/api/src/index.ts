@@ -1,3 +1,4 @@
+import { VERSION } from "./version";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { chat, type ChatEnv } from "./chat/route";
@@ -10,8 +11,6 @@ export interface Env extends ChatEnv {
   SUPABASE_URL?: string;
   SUPABASE_SECRET_KEY?: string;
 }
-
-export const VERSION = "0.1.0";
 
 const app = new Hono<{ Bindings: Env }>();
 

@@ -11,13 +11,18 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r --workspace-concurrency=1 test && pnpm test:db",
-    "test:db": "vitest run supabase"
+    "test:db": "vitest run supabase",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "knip": "knip"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.11",
     "@types/node": "^26.6.5",
     "eslint": "^9.39.5",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "knip": "^6.42.1",
+    "prettier": "^3.9.10",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.72.0",
     "vitest": "^5.0.5"

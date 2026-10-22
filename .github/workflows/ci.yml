@@ -19,8 +19,12 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Format check
+        run: pnpm format:check
       - name: Lint
         run: pnpm lint
+      - name: Unused code & dependencies (knip)
+        run: pnpm knip
       - name: Typecheck
         run: pnpm typecheck
       - name: Test (unit + Supabase RLS via PGlite)
@@ -36,3 +40,13 @@ jobs:
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      - name: Install k6
+        run: |
+          curl -sL https://github.com/grafana/k6/releases/download/v1.3.0/k6-v1.3.0-linux-amd64.tar.gz | tar xz
+          sudo mv k6-v1.3.0-linux-amd64/k6 /usr/local/bin/k6
+      - name: Load smoke (k6 vs local API)
+        working-directory: apps/api
+        run: |
+          pnpm exec wrangler dev -c wrangler.ci.toml --port 8788 > /tmp/wrangler.log 2>&1 &
+          for i in $(seq 1 30); do curl -fs localhost:8788/health >/dev/null && break; sleep 2; done
+          k6 run --quiet ../../tests/load/smoke.js || (cat /tmp/wrangler.log; exit 1)

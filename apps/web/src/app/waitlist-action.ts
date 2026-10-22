@@ -13,7 +13,9 @@ async function sha256Hex(v: string) {
 export async function joinWaitlist(_prev: WaitlistState, form: FormData): Promise<WaitlistState> {
   // Honeypot: real people never fill this hidden field.
   if (String(form.get("company") ?? "").trim() !== "") return { status: "ok", message: "Thanks! You're on the list." };
-  const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const email = String(form.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const role = String(form.get("role") ?? "other");
   if (!isValidEmail(email)) return { status: "error", message: "Please enter a valid email." };
   const supabase = await createClient();
@@ -26,7 +28,8 @@ export async function joinWaitlist(_prev: WaitlistState, form: FormData): Promis
     source: "landing",
     ip_hash: ip ? await sha256Hex(ip) : null,
   });
-  if (error && error.code === "P0429") return { status: "error", message: "Too many tries. Please wait a bit and try again." };
+  if (error && error.code === "P0429")
+    return { status: "error", message: "Too many tries. Please wait a bit and try again." };
   if (error && error.code !== "23505") return { status: "error", message: "Something went wrong. Please try again." };
   return { status: "ok", message: "Thanks! You're on the list. We'll email you when Sparkle is ready." };
 }
