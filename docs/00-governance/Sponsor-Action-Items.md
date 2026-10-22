@@ -26,7 +26,7 @@
 | SA-11 | Trademark direction | Rolan | 2026-10-21 | Decided — keep plain 'Sparkle' for now; revisit before SA-07 and public launch with counsel clearance | [Trademark notes](../02-planning/Trademark-Clearance-Notes.md), DEC-40, R-26 |
 | SA-12 | Approve creating `sparkle-dev` Supabase project (free tier) — token couldn't confirm org plan; create in dashboard or issue an account-level token | Rolan | TBD | Open | [Environments](../02-planning/Environments-and-Cost-Guardrails.md) |
 | SA-13 | Set AI spend limits in xAI and Anthropic consoles; confirm Supabase spend cap ON; add Cloudflare usage alerts (or grant token "Notifications: Edit") | Rolan | TBD | Open | [Cost guardrails](../02-planning/Environments-and-Cost-Guardrails.md) |
-| SA-14 | Sign in once at https://sparkle-web.crystal-iamrolan.workers.dev/login with iamrolan@gmail.com so I can grant admin (DEC-50) | Rolan | — | Open | DEC-50 |
+| SA-14 | Sign in once at https://sparkle-web.crystal-iamrolan.workers.dev/login with sponsor@example.com so I can grant admin (DEC-50) | Rolan | — | Open | DEC-50 |
 | SA-15 | Before public launch: Supabase Pro ($25/mo) for PITR (RPO 5 min, NFR-40), no auto-pause, bigger pool | Rolan | Before G5 | Open | DEC-51 |
 | SA-16 | Before public launch: Workers Paid ($5/mo) for CPU limits/Queues headroom and a full-scale load test window | Rolan | Before G5 | Open | DEC-55 |
 | SA-17 | Create a free Sentry account and share the DSN (via secret form) to switch on crash reporting | Rolan | Phase 1 | Open | DEC-54, D-10 |
