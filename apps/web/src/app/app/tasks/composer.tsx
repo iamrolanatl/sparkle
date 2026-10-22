@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
-import { NeonWindow } from "@sparkle/ui";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { ErrorBoundary, NeonWindow } from "@sparkle/ui";
+import { safetyMessage } from "./safety-message";
 import { listTasksAction, parseTaskAction, saveTaskAction } from "./actions";
 import { toLocalInput, fromLocalInput } from "./time";
 
@@ -16,42 +17,49 @@ type Task = { id: string; title: string; due_at: string | null; priority: string
 const field = "rounded-lg border border-[var(--spk-border)] bg-transparent px-3 py-2 w-full";
 
 /** FR-21: type it, review Sparkle's interpretation, edit, then save. Nothing saves without the confirm click. */
-export function TaskComposer({ students }: { students: { id: string; display_name: string }[] }) {
+function TaskComposerInner({ students }: { students: { id: string; display_name: string }[] }) {
   const [sid, setSid] = useState(students[0]?.id ?? "");
   const [text, setText] = useState("");
   const [draft, setDraft] = useState<Parsed | null>(null);
+  const [draftKey, setDraftKey] = useState("");
   const [msg, setMsg] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [pending, start] = useTransition();
 
-  const refresh = (id: string) =>
-    start(async () => {
-      const r = await listTasksAction(id);
-      setTasks(r.status === 200 ? ((r.body.tasks as Task[]) ?? []) : []);
-    });
+  const refresh = useCallback(
+    (id: string) =>
+      start(async () => {
+        const r = await listTasksAction(id);
+        setTasks(r.status === 200 ? ((r.body.tasks as Task[]) ?? []) : []);
+      }),
+    [],
+  );
   useEffect(() => {
     if (sid) refresh(sid);
-  }, [sid]);
+  }, [sid, refresh]);
 
   const onParse = () =>
     start(async () => {
       setMsg("");
       const r = await parseTaskAction(sid, text);
-      if (r.body.safety === "crisis") return setMsg(String(r.body.message));
-      if (r.body.safety === "blocked") return setMsg("Sparkle can't add that one. Try a school or home task.");
+      const safe = safetyMessage(r.body);
+      if (safe) return setMsg(safe);
       if (r.status !== 200) return setMsg("Couldn't read that right now. Please try again.");
       setDraft(r.body.parsed as Parsed);
+      setDraftKey(crypto.randomUUID()); // one key per reviewed draft: retries can't duplicate
     });
-  const onSave = () =>
+  /** Only the "Looks good, save" click passes confirmed=true. */
+  const onSave = (confirmed: boolean) =>
     draft &&
     start(async () => {
-      const r = await saveTaskAction(sid, {
-        title: draft.title,
-        dueAt: draft.dueAt,
-        priority: draft.priority,
-        classId: draft.classId,
-        sourceText: text,
-      });
+      const r = await saveTaskAction(
+        sid,
+        { title: draft.title, dueAt: draft.dueAt, priority: draft.priority, classId: draft.classId },
+        confirmed,
+        draftKey,
+      );
+      const safe = safetyMessage(r.body);
+      if (safe) return setMsg(safe);
       if (r.status !== 201) return setMsg("Couldn't save. Please try again.");
       setDraft(null);
       setText("");
@@ -143,7 +151,7 @@ export function TaskComposer({ students }: { students: { id: string; display_nam
             <button
               className="rounded-lg border border-[var(--spk-neon)] px-4 py-2 hover:shadow-[0_0_16px_var(--spk-neon)] transition-shadow"
               disabled={pending || !draft.title.trim()}
-              onClick={onSave}
+              onClick={() => onSave(true)}
             >
               Looks good, save
             </button>
@@ -186,5 +194,23 @@ export function TaskComposer({ students }: { students: { id: string; display_nam
         )}
       </NeonWindow>
     </div>
+  );
+}
+
+export function TaskComposer(props: { students: { id: string; display_name: string }[] }) {
+  return (
+    <ErrorBoundary
+      name="tasks"
+      fallback={(reset) => (
+        <NeonWindow title="Tasks">
+          <p className="text-muted">Tasks hit a snag. Your saved tasks are safe.</p>
+          <button className="mt-2 rounded-lg border border-[var(--spk-neon)] px-4 py-2" onClick={reset}>
+            Try again
+          </button>
+        </NeonWindow>
+      )}
+    >
+      <TaskComposerInner {...props} />
+    </ErrorBoundary>
   );
 }
