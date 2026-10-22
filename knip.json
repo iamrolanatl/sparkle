@@ -6,7 +6,13 @@
       "project": ["supabase/**/*.ts"]
     },
     "apps/web": {
-      "entry": ["src/app/**/*.{ts,tsx}", "open-next.config.ts", "e2e/**/*.ts"],
+      "entry": [
+        "src/app/**/*.{ts,tsx}",
+        "open-next.config.ts",
+        "e2e/**/*.ts",
+        "playwright.config.ts",
+        "vitest.config.ts"
+      ],
       "project": ["src/**/*.{ts,tsx}"]
     },
     "apps/api": {

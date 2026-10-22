@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { AuroraBackground } from "@sparkle/ui";
 import { SITE_URL } from "@/lib/site";
 import { CookieConsent } from "@/components/CookieConsent";
+import { ReporterInit } from "@/components/ReporterInit";
 import "./globals.css";
 
 const description =
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="font-sans antialiased">
+        <ReporterInit />
         <AuroraBackground />
         {children}
         <CookieConsent />

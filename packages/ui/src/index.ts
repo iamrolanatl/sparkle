@@ -1,5 +1,13 @@
 export * from "./tokens";
 export * from "./fps";
 export * from "./hooks";
+export * from "./motion";
+export * from "./report";
 export { AuroraBackground } from "./AuroraBackground";
 export { GlassPanel } from "./GlassPanel";
+export { NeonWindow } from "./NeonWindow";
+export { ErrorBoundary } from "./ErrorBoundary";
+export { CursorGlow, useCursorGlow, MagneticButton, TiltCard } from "./interactive";
+export { VideoBackground } from "./VideoBackground";
+export { Applet, AppletSkeleton, defineApplet, listApplets } from "./applets";
+export type { AppletDefinition, DefinedApplet } from "./applets";

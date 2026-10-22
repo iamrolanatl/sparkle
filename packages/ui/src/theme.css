@@ -90,3 +90,114 @@
     transition: none !important;
   }
 }
+
+/* ---- CR-0008: neon glass windows, cursor glow, magnetic/tilt, video, applets ---- */
+@property --spk-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.spk-neon-window {
+  position: relative;
+  isolation: isolate;
+  padding: 1.25rem;
+}
+.spk-neon-window::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--spk-angle),
+    transparent 0 60%,
+    var(--spk-neon) 75%,
+    var(--spk-neon-2) 85%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.7;
+  animation: spk-spin 8s linear infinite;
+}
+.spk-neon-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  box-shadow: 0 0 32px -10px var(--spk-glow);
+}
+.spk-neon-window-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--spk-text-muted);
+  margin-bottom: 0.5rem;
+}
+@keyframes spk-spin {
+  to {
+    --spk-angle: 360deg;
+  }
+}
+.spk-cursor-glow {
+  position: relative;
+}
+.spk-cursor-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: radial-gradient(240px circle at var(--spk-mx, 50%) var(--spk-my, 50%), var(--spk-glow), transparent 60%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .spk-cursor-glow:hover::after {
+    opacity: 0.6;
+  }
+}
+.spk-magnetic,
+.spk-tilt {
+  will-change: transform;
+}
+.spk-video-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+.spk-video-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.spk-skeleton {
+  background: linear-gradient(90deg, var(--spk-surface) 0%, rgba(148, 163, 184, 0.15) 50%, var(--spk-surface) 100%);
+  background-size: 200% 100%;
+  animation: spk-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes spk-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+.spk-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
