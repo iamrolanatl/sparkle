@@ -19,10 +19,14 @@
 - [ ] Docs updated: RTM/Feature Register status; CR + changelog + revision bump if a baseline changed; SOPs if a process changed.
 - [ ] No open Sev-1/Sev-2 findings.
 - [ ] PR body states what was NOT done (e.g., migration not applied, not deployed).
+- [ ] **Enterprise standard (CR-0007):** change fits the capacity model (1M users / 30k concurrent); no unbounded queries (pagination, indexes on filter + RLS columns, `(select auth.uid())`); outbound calls have timeouts/retries; POSTs idempotent; UI wrapped in an error boundary with a degraded state; k6 smoke thresholds pass; no new crash sources.
+- [ ] **Repo hygiene (SOP-13):** `pnpm format:check` and `pnpm knip` pass (no dead code/unused deps); Conventional Commit PR title; branch deleted after merge.
+- [ ] **UI (CR-0008):** reduced-motion + touch fallbacks; perf budget respected (Lighthouse mobile ≥ 90, 60 fps target).
 
 ## Release level
 - [ ] SOP-02 followed; Rolan approved; migration applied per SOP-03.
 - [ ] Health checks and smoke tests pass; rollback path confirmed.
+- [ ] Canary (gradual deployment) observed with no error-rate or SLO regression before 100 % (SOP-02).
 
 ## Phase-gate level
 - [ ] Gate exit criteria (Charter §5) met; Test Strategy exit criteria met.
