@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   if (NONCE_ROUTES.test(request.nextUrl.pathname)) {
     const nonce = btoa(crypto.randomUUID());
     const api = (process.env.NEXT_PUBLIC_API_URL ?? "https://sparkle-api.crystal-iamrolan.workers.dev").split(",");
-    csp = contentSecurityPolicy(process.env.SUPABASE_URL ?? "", api, nonce);
+    csp = contentSecurityPolicy(process.env.SUPABASE_URL ?? "", api, process.env.NEXT_PUBLIC_SENTRY_DSN, nonce);
     request.headers.set("x-nonce", nonce);
     request.headers.set("Content-Security-Policy", csp);
   }

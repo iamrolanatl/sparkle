@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contentSecurityPolicy, securityHeaders } from "./security-headers";
+import { contentSecurityPolicy, securityHeaders, sentryOrigin } from "./security-headers";
 
 describe("security headers (DEC-180)", () => {
   it("locks framing, objects and base-uri", () => {
@@ -16,15 +16,43 @@ describe("security headers (DEC-180)", () => {
   });
 });
 
+describe("CSP integration fixes (#27 review)", () => {
+  const sb = "https://abc.supabase.co";
+  it("form-action allows Supabase OAuth redirect", () => {
+    expect(contentSecurityPolicy(sb)).toMatch(
+      /form-action 'self' https:\/\/abc\.supabase\.co https:\/\/accounts\.google\.com/,
+    );
+  });
+  it("connect-src includes the Sentry ingest origin when a DSN is set", () => {
+    expect(contentSecurityPolicy(sb, [], "https://k@o1.ingest.sentry.io/42")).toMatch(
+      /connect-src [^;]*https:\/\/o1\.ingest\.sentry\.io/,
+    );
+    expect(sentryOrigin("not a url")).toBe("");
+  });
+  it("geolocation is disabled (weather uses school ZIP, DEC-75)", () => {
+    const pp = securityHeaders(sb).find((h) => h.key === "Permissions-Policy")!.value;
+    expect(pp).toContain("geolocation=()");
+  });
+  it("allows self-hosted tesseract wasm + worker for /app/scan, no blob:/CDN (DEC-77)", () => {
+    const csp = contentSecurityPolicy("https://x.supabase.co");
+    const dir = (n: string) => csp.split("; ").find((d) => d.startsWith(n + " "))!;
+    expect(dir("script-src")).toContain("'wasm-unsafe-eval'");
+    expect(dir("worker-src")).toBe("worker-src 'self'");
+    expect(csp).not.toMatch(/jsdelivr|unpkg|cdnjs/);
+  });
+});
+
 describe("nonce CSP (DEC-186)", () => {
-  it("uses nonce + strict-dynamic and drops unsafe-inline for scripts", () => {
-    const csp = contentSecurityPolicy("https://x.supabase.co", [], "abc");
-    expect(csp).toContain("script-src 'self' 'nonce-abc' 'strict-dynamic'");
+  it("uses nonce + strict-dynamic, keeps wasm for /app/scan, drops unsafe-inline for scripts", () => {
+    const csp = contentSecurityPolicy("https://x.supabase.co", [], undefined, "abc");
+    expect(csp).toContain("script-src 'self' 'nonce-abc' 'strict-dynamic' 'wasm-unsafe-eval'");
     expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
+    expect(csp).toContain("worker-src 'self';");
+    expect(csp).not.toMatch(/worker-src[^;]*blob:/);
   });
   it("matches only signed-in routes", async () => {
     const { NONCE_ROUTES } = await import("./security-headers");
-    expect(["/app", "/app/tasks", "/admin", "/invite/x"].every((p) => NONCE_ROUTES.test(p))).toBe(true);
+    expect(["/app", "/app/scan", "/admin", "/invite/x"].every((p) => NONCE_ROUTES.test(p))).toBe(true);
     expect(["/", "/apply", "/privacy", "/login"].some((p) => NONCE_ROUTES.test(p))).toBe(false);
   });
 });
