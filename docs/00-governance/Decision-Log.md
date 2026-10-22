@@ -87,6 +87,7 @@
 | DEC-188 | 2026-10-21 | Guard student_age() to the student, guardians, share grantees and server contexts | Cross-family disclosure of a child's age found in the DoD re-check | Leave it (UUIDs are unguessable) | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-189 | 2026-10-21 | SLOs measured with free-tier sources (Workers Analytics, Supabase Reports, AI Gateway; Sentry once SA-17 is done); multi-window burn alerts 14.4×/1 h and 6×/6 h | NFR-36..39, 44 | Paid APM | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-190 | 2026-10-21 | Launch Readiness Checklist (Q/S/A/P items with evidence) is the G5 entry artifact; the gate report template is used for every gate | Charter §5 gates | Runbook-only checklist | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-191 | 2026-10-21 | E2E core-flow guards run signed-out now; signed-in flows wait for a sample-user session fixture on sparkle-dev (no real data) | Hard limit: no real student data; secrets are owned by Integration | Mock auth in the app (test-only code paths in prod) | Team E (Grok Bot) under Rolan's standing delegation (2026-10-21) | Decided |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
