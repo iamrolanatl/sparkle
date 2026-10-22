@@ -51,7 +51,7 @@ MVP covers Cobb County (GA) data sources, student/parent experience, Sparkle rob
 
 ## 7. High-Level Risks, Assumptions, Constraints
 - Risks: see [RAID Register](../04-monitoring-controlling/RAID-Register.md) R-01..R-08.
-- Constraints: coach mode only; no outbound message without confirmation; device-default credential storage; performance budgets; student-only scope.
+- Constraints: coach mode only; no outbound message without confirmation; on-device-only portal credential storage (CR-0011); performance budgets; student-only scope.
 - Assumptions: Cobb platform access obtainable under appropriate agreements; users accept Google sign-in.
 
 ## 8. Stakeholders

@@ -1,0 +1,40 @@
+import { NeonWindow } from "@sparkle/ui";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { UploadForm } from "./upload-form";
+
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Import assignments", robots: { index: false } };
+
+export default async function ImportPage() {
+  const supabase = await createClient();
+  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  if (!supabase || !user) redirect("/login?next=/app/import");
+  const { data } = await supabase.from("students").select("id, display_name").order("created_at").limit(50);
+  const students = (data ?? []).map((s) => ({ id: s.id as string, name: s.display_name as string }));
+  return (
+    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-6 px-4 py-8">
+      <Link href="/app" className="text-lg font-semibold tracking-wide">
+        Sparkle
+      </Link>
+      <NeonWindow title="Import assignments (CSV)">
+        <p className="text-muted mb-4 text-sm">
+          Until school sync is available, you can paste in a spreadsheet export. Re-importing the same file updates rows
+          instead of duplicating them.
+        </p>
+        {students.length ? (
+          <UploadForm students={students} />
+        ) : (
+          <p className="text-sm">
+            Add a student on the{" "}
+            <Link href="/app/family" className="underline">
+              family page
+            </Link>{" "}
+            first.
+          </p>
+        )}
+      </NeonWindow>
+    </main>
+  );
+}
