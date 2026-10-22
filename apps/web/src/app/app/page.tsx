@@ -1,6 +1,7 @@
 import { GlassPanel } from "@sparkle/ui";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { signOut } from "../login/actions";
 import { StateDemo } from "./StateDemo";
 
@@ -22,9 +23,10 @@ export default async function TodayPage() {
       </header>
       <GlassPanel glow className="p-6 sm:p-8">
         <h1 className="text-2xl font-semibold sm:text-3xl">{`Hi ${user.user_metadata?.full_name ?? "there"}!`}</h1>
-        <p className="text-muted mt-2">
-          Today view arrives in Phase 2. This is the Phase 0 foundation: design system and Sparkle&apos;s states.
-        </p>
+        <p className="text-muted mt-2">Today view arrives in Phase 2. Meanwhile, set up your family and helpers.</p>
+        <Link href="/app/family" className="mt-4 inline-block underline">
+          Family &amp; helpers →
+        </Link>
       </GlassPanel>
       <GlassPanel className="p-6">
         <StateDemo />
