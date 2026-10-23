@@ -8,7 +8,7 @@ import { students, type StudentsEnv } from "./students/route";
 import { weather } from "./weather/route";
 import { ingest, type IngestEnv } from "./ingest/route";
 import { tasks } from "./tasks/route";
-import { shopping } from "./shopping/route";
+import { lists, shopping } from "./shopping/route";
 import { study } from "./study/route";
 import { idempotency, observe } from "./lib/middleware";
 import { resilientFetch } from "./lib/resilience";
@@ -89,6 +89,7 @@ app.route("/ingest", ingest);
 app.use("/students/:id/tasks", idempotency());
 app.route("/students", tasks);
 app.route("/students", shopping); // FR-08 shared shopping list
+app.route("/lists", lists); // FR-08 list sharing (household-id keyed)
 app.route("/study-helper", study);
 app.route("/vault", vault); // FR-24, behind vault_enabled (fail-closed)
 

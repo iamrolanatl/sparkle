@@ -185,7 +185,9 @@
   gap: 2px;
   flex-wrap: wrap;
 }
-.sa .lv-seg button {
+.sa .lv-seg button,
+.sa .lv-seg a {
+  text-decoration: none;
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 13px;
@@ -378,4 +380,135 @@
 }
 .sa .lv-row:has(.lv-menu) {
   z-index: 21;
+}
+/* List delete + sharing (structural; restyle may layer over) */
+.sa .lv-row {
+  touch-action: pan-y;
+  transition: transform 0.18s ease;
+}
+.sa .lv-row.lv-swiping {
+  box-shadow: inset -60px 0 0 -30px rgba(244, 63, 94, 0.35);
+}
+.sa .lv-del {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+}
+.sa .lv-del:hover,
+.sa .lv-del:focus-visible {
+  color: #f43f5e;
+  border-color: rgba(244, 63, 94, 0.45);
+}
+.sa .lv-ro .lv-del,
+.sa .lv-ro .lv-qty,
+.sa .lv-ro .lv-add,
+.sa .lv-ro .lv-row .lv-ghost {
+  display: none;
+}
+.sa .lv-cardh {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sa .lv-confirm {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+.sa .lv-danger {
+  background: #e11d48;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sa .lv-headr {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.sa .lv-avs {
+  display: flex;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.sa .lv-avs .lv-av {
+  margin-left: -6px;
+  box-shadow: 0 0 0 2px var(--bg, #fff);
+}
+.sa .lv-avs .lv-av:first-child {
+  margin-left: 0;
+}
+.sa .lv-av.more {
+  background: var(--soft);
+  color: var(--dim);
+  font-size: 11px;
+}
+.sa .lv-sheet-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.sa .lv-sheet {
+  width: min(520px, 100%);
+  max-height: 86vh;
+  overflow: auto;
+  border-radius: 20px;
+  padding: 18px;
+  background: var(--card, #fff);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh);
+}
+.sa .lv-sec {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  margin: 16px 0 4px;
+}
+.sa .lv-role {
+  flex: 0 0 auto;
+  width: auto;
+}
+.sa .lv-link {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--fg);
+}
+@media (max-width: 760px) {
+  .sa .lv-sheet-bg {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .sa .lv-sheet {
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+  }
 }

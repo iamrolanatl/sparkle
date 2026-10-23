@@ -37,8 +37,33 @@ describe("shopping routes auth", () => {
 
 import { matchClass } from "./parse";
 describe("class shorthand", () => {
-  const C = ["Int Chorus 7 Q2", "Language Arts 7 Q2", "Math 7 Q2", "Phys Ed 7Q2", "Reading 7 Q2", "Science 7 Q2", "Soc Stdy 7Q2"];
-  it.each([["ELA","Language Arts 7 Q2"],["LA","Language Arts 7 Q2"],["SS","Soc Stdy 7Q2"],["Sci","Science 7 Q2"],["Math","Math 7 Q2"],["PE","Phys Ed 7Q2"]])("%s", (k, v) => expect(matchClass(k, C)).toBe(v));
+  const C = [
+    "Int Chorus 7 Q2",
+    "Language Arts 7 Q2",
+    "Math 7 Q2",
+    "Phys Ed 7Q2",
+    "Reading 7 Q2",
+    "Science 7 Q2",
+    "Soc Stdy 7Q2",
+  ];
+  it.each([
+    ["ELA", "Language Arts 7 Q2"],
+    ["LA", "Language Arts 7 Q2"],
+    ["SS", "Soc Stdy 7Q2"],
+    ["Sci", "Science 7 Q2"],
+    ["Math", "Math 7 Q2"],
+    ["PE", "Phys Ed 7Q2"],
+  ])("%s", (k, v) => expect(matchClass(k, C)).toBe(v));
   it("parse uses real name", () => expect(parseItem("2 folders for SS", C).classLabel).toBe("Soc Stdy 7Q2"));
   it("no classes keeps typed", () => expect(parseItem("glue for ELA").classLabel).toBe("ELA"));
+});
+
+describe("list sharing routes (FR-08)", () => {
+  const env = { SUPABASE_URL: "https://x.supabase.co" };
+  it("requires auth and validates ids/tokens", async () => {
+    expect((await app.request("/lists/not-a-uuid", {}, env)).status).toBe(400);
+    expect((await app.request("/lists/00000000-0000-0000-0000-000000000000", {}, env)).status).toBe(401);
+    expect((await app.request("/lists/shared", {}, env)).status).toBe(401);
+    expect((await app.request("/lists/accept", { method: "POST", body: "{}" }, env)).status).toBe(401);
+  });
 });
