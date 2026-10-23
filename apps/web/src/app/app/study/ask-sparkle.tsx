@@ -147,10 +147,14 @@ export function AskSparkle(props: {
         setMode("idle");
         setNote(
           e === "denied"
-            ? "Microphone access is off. Allow it in your browser settings, or type instead."
-            : e === "no_speech"
-              ? "I didn't hear anything. Tap the mic and try again."
-              : "Voice isn't available right now. You can type instead.",
+            ? "Microphone access is blocked. Click the lock icon by the address bar, allow Microphone, then reload. On Windows, also check Settings > Privacy & security > Microphone."
+            : e === "no_mic"
+              ? "No microphone found. Plug one in or pick a different mic in Chrome settings, then try again."
+              : e === "no_speech"
+                ? "I didn't hear anything. Tap the mic and try again."
+                : e === "network"
+                  ? "Voice needs an internet connection to Chrome's speech service. Check your connection, or type instead."
+                  : "Voice isn't available right now. You can type instead.",
         );
       },
       onEnd: () => setMode((m) => (m === "listening" ? "idle" : m)),

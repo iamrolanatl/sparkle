@@ -35,7 +35,7 @@ export function voiceSupport(w: W | undefined = typeof window === "undefined" ? 
 export type ListenEvents = {
   onInterim?: (text: string) => void;
   onFinal: (text: string) => void;
-  onError?: (reason: "unsupported" | "denied" | "no_speech" | "other") => void;
+  onError?: (reason: "unsupported" | "denied" | "no_mic" | "no_speech" | "network" | "other") => void;
   onEnd?: () => void;
 };
 
@@ -65,14 +65,20 @@ export function listen(
     }
     if (interim) ev.onInterim?.((final + interim).trim());
   };
-  r.onerror = (e) =>
+  r.onerror = (e) => {
+    if (e.error === "aborted") return; // our own abort(), not a failure
     ev.onError?.(
       e.error === "not-allowed" || e.error === "service-not-allowed"
         ? "denied"
-        : e.error === "no-speech"
-          ? "no_speech"
-          : "other",
+        : e.error === "audio-capture"
+          ? "no_mic"
+          : e.error === "no-speech"
+            ? "no_speech"
+            : e.error === "network"
+              ? "network"
+              : "other",
     );
+  };
   r.onend = () => {
     const t = final.trim().slice(0, 1000);
     if (t && !done) ev.onFinal(t);

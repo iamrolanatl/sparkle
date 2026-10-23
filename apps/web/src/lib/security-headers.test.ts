@@ -56,3 +56,10 @@ describe("nonce CSP (DEC-186)", () => {
     expect(["/", "/apply", "/privacy", "/login"].some((p) => NONCE_ROUTES.test(p))).toBe(false);
   });
 });
+
+describe("microphone policy", () => {
+  it("allows the mic for our own origin (Ask Sparkle voice)", () => {
+    const pp = securityHeaders("https://x.supabase.co").find((h) => h.key === "Permissions-Policy")!.value;
+    expect(pp).toContain("microphone=(self)");
+  });
+});
