@@ -5,7 +5,8 @@ import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/loa
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
 import { Bot } from "../chrome";
-import { Applets, Star3D, type AppletClass } from "./applets";
+import { Applets, Star3D } from "./applets";
+import { toApplets } from "@/lib/classes/applets";
 
 const KIND: Record<string, string> = { missing: "Missing", assessment: "Test/quiz", bring: "Bring", due: "Due" };
 const initials = (n: string) =>
@@ -123,23 +124,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
     : nextUp
       ? `Start with ${nextUp.title}. It's due ${dueText(nextUp.due, now).toLowerCase()}.`
       : "You're all caught up. Nice work!";
-  const applets: AppletClass[] = classes.map((c) => {
-    const p = c.feed.find((f) => f.kind === "post") ?? c.feed[0];
-    return {
-      id: c.id,
-      name: c.name,
-      teacher: c.teacher,
-      color: c.color,
-      pct: c.pct,
-      letter: c.letter,
-      room: [c.room, c.period].filter(Boolean).join(" · ") || null,
-      unit: c.unit?.title ?? null,
-      tasks: c.upcoming
-        .filter((a) => !a.due_at || daysUntil(a.due_at, now) >= 0)
-        .map((a) => ({ id: a.id, title: a.title, when: dueText(a.due_at, now), chip: a.category ?? "Assignment" })),
-      post: p ? { title: p.title, body: p.body, who: p.who } : null,
-    };
-  });
+  const applets = toApplets(classes, now);
   return (
     <div className="page">
       <section className="hero" data-testid="hero">

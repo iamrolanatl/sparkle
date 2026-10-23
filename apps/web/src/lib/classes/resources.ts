@@ -60,4 +60,5 @@ export function practiceLinks(className: string, topics: string[], unitTitle: st
   });
 }
 
-export const CLASS_COLORS = ["#5ee0f0", "#f4b860", "#4ade80", "#f28b82", "#c4b5fd", "#94a3b8", "#f9a8d4", "#fde68a"];
+/** Warm, elegant class palette (render-time only; never stored). No blue/purple. */
+export const CLASS_COLORS = ["#c9a24a", "#c97b5a", "#8fa67a", "#d48a8a", "#b8936a", "#a3906f", "#d9a86c", "#9c7b6b"];

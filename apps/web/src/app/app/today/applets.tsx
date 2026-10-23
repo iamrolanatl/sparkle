@@ -1,23 +1,20 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import type { AppletClass } from "@/lib/classes/applets";
 
-export type AppletClass = {
-  id: string;
-  name: string;
-  teacher: string | null;
-  color: string;
-  pct: number | null;
-  letter: string | null;
-  room: string | null;
-  unit: string | null;
-  tasks: { id: string; title: string; when: string; chip: string }[];
-  post: { title: string; body: string | null; who: string | null } | null;
-};
 type St = "open" | "min" | "closed";
 
 /** Each class as a window: minimize to dock, maximize to fill the view, close (restore via dock/Add applet). */
-export function Applets({ classes, uid }: { classes: AppletClass[]; uid: string }) {
+export function Applets({
+  classes,
+  uid,
+  title = "Your classes",
+}: {
+  classes: AppletClass[];
+  uid: string;
+  title?: string;
+}) {
   const key = `sparkle-applets:${uid}`;
   const [st, setSt] = useState<Record<string, St>>({});
   const [max, setMax] = useState<string | null>(null);
@@ -56,7 +53,7 @@ export function Applets({ classes, uid }: { classes: AppletClass[]; uid: string 
   return (
     <section className="applets" aria-label="Class applets">
       <div className="ap-head">
-        <h2>Your classes</h2>
+        <h2>{title}</h2>
         <div style={{ position: "relative" }}>
           <button
             type="button"
@@ -134,7 +131,9 @@ export function Applets({ classes, uid }: { classes: AppletClass[]; uid: string 
             <div className="ap-body">
               <div className="ap-grade">
                 <div>
-                  <div className="ap-pct">{c.pct != null ? `${c.pct.toFixed(1)}%` : "—"}</div>
+                  <div className="ap-pct">
+                    {c.pct != null ? `${c.pct.toFixed(1)}%` : <span className="ap-nog">No grade yet</span>}
+                  </div>
                   <div className="ap-sub">
                     {[c.teacher, c.room].filter(Boolean).join(" · ") || "Teacher not synced"}
                   </div>

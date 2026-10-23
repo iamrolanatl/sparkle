@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { ClassList } from "./class-list";
+import { Applets, Star3D } from "../today/applets";
+import { toApplets } from "@/lib/classes/applets";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Grades & Classes", robots: { index: false } };
@@ -26,7 +28,43 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
   const upcoming = classes.reduce((a, c) => a + c.upcoming.length, 0);
   return (
     <div className="page">
-      <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginBottom: 20 }}>
+      <section className="hero" data-testid="hero">
+        <div className="hero-bg" data-par="0.18" aria-hidden="true">
+          <i style={{ left: "10%", top: "26%" }}>✦</i>
+          <i style={{ left: "62%", top: "14%" }}>✧</i>
+          <i style={{ left: "86%", top: "70%" }}>✦</i>
+        </div>
+        <div className="hero-copy" data-par="-0.06">
+          <div className="eyebrow">Grades &amp; Classes</div>
+          <h1>{me ? `${me.display_name.split(" ")[0]}’s classes` : "Classes"}</h1>
+          <div className="sub">
+            {classes.length} classes{gpa ? ` · GPA ${gpa.unweighted.toFixed(2)}` : ""}
+            {` · ${upcoming} upcoming`}
+          </div>
+          {best ? (
+            <div className="hero-next">
+              <span className="eyebrow">Top class</span>
+              <b>{best.name}</b>
+              <small>
+                {best.pct!.toFixed(1)}% · {best.letter}
+              </small>
+            </div>
+          ) : null}
+          <div className="hero-cta">
+            <Link className="pill mag" href="/app/gpa">
+              GPA Simulator
+            </Link>
+            <Link className="ghost mag" href="/app/study">
+              Ask Sparkle ✦
+            </Link>
+          </div>
+        </div>
+        <div data-par="0.08">
+          <Star3D />
+        </div>
+      </section>
+      {classes.length ? <Applets classes={toApplets(classes)} uid={user.id} title="Class applets" /> : null}
+      <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", margin: "20px 0" }}>
         <div className="panel stat">
           <div className="l">Unweighted GPA</div>
           <div className="v">{gpa ? gpa.unweighted.toFixed(2) : "—"}</div>
@@ -59,7 +97,7 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
         </div>
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <h1>Classes</h1>
+        <h2 style={{ margin: 0, fontSize: 18 }}>All class details</h2>
         <span style={{ color: "var(--dim)", fontSize: 12 }}>Click a class to expand</span>
       </div>
       {!me ? (
