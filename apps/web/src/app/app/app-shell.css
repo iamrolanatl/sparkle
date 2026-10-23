@@ -6,8 +6,8 @@
   --fg: #111114;
   --mut: #6b6b76;
   --dim: #8b8b96;
-  --acc: #6366f1;
-  --acc-rgb: 99 102 241;
+  --acc: #b8892f;
+  --acc-rgb: 184 137 47;
   --ink-rgb: 17 17 20;
   --line: #ececf0;
   --line2: #d4d4dc;
@@ -21,7 +21,7 @@
   --ok: #16a34a;
   --warn: #d97706;
   --bad: #dc2626;
-  --spk: #818cf8;
+  --spk: #d6b262;
   color-scheme: light;
   background: var(--bg);
   color: var(--fg);
@@ -39,8 +39,8 @@
   --fg: #f2f2f5;
   --mut: #9a9aa6;
   --dim: #74747f;
-  --acc: #a5b4fc;
-  --acc-rgb: 165 180 252;
+  --acc: #e9cf8f;
+  --acc-rgb: 236 205 140;
   --ink-rgb: 242 242 245;
   --line: #24242a;
   --line2: #3a3a44;
@@ -54,7 +54,7 @@
   --ok: #4ade80;
   --warn: #fbbf24;
   --bad: #f87171;
-  --spk: #a5b4fc;
+  --spk: #e9cf8f;
   color-scheme: dark;
 }
 .sa a {
@@ -718,13 +718,13 @@
   z-index: -1;
   pointer-events: none;
   mix-blend-mode: multiply;
-  filter: invert(1) sepia(0.4) hue-rotate(190deg) saturate(1.6);
+  filter: invert(1) sepia(0.5) saturate(0.9);
   opacity: 0.28;
 }
 .sa[data-theme="dark"] .bgv,
 .sa[data-theme="dark"] .bgp {
   mix-blend-mode: screen;
-  filter: sepia(0.3) hue-rotate(190deg);
+  filter: sepia(0.35) saturate(0.9);
   opacity: 0.55;
 }
 .sa .bgp {
@@ -814,8 +814,8 @@
 .sa .panel:hover {
   box-shadow:
     var(--sh),
-    0 0 0 1px rgba(129, 140, 248, 0.18),
-    0 8px 32px rgba(129, 140, 248, 0.16);
+    0 0 0 1px rgba(214, 178, 98, 0.18),
+    0 8px 32px rgba(214, 178, 98, 0.16);
 }
 .sa .panel.stat:hover,
 .sa .panel.cls:hover {
@@ -886,21 +886,21 @@
   cursor: pointer;
   white-space: nowrap;
   box-shadow:
-    0 0 0 1px rgba(129, 140, 248, 0.25),
-    0 4px 18px rgba(99, 102, 241, 0.28);
+    0 0 0 1px rgba(214, 178, 98, 0.25),
+    0 4px 18px rgba(201, 160, 72, 0.28);
   transition: box-shadow 0.25s;
 }
 .sa .up:hover,
 .sa .pill:hover {
   box-shadow:
-    0 0 0 1px rgba(129, 140, 248, 0.45),
-    0 6px 26px rgba(99, 102, 241, 0.45);
+    0 0 0 1px rgba(214, 178, 98, 0.45),
+    0 6px 26px rgba(201, 160, 72, 0.45);
 }
 .sa[data-theme="dark"] .up,
 .sa[data-theme="dark"] .pill {
   box-shadow:
-    0 0 0 1px rgba(165, 180, 252, 0.4),
-    0 0 22px rgba(165, 180, 252, 0.35);
+    0 0 0 1px rgba(242, 218, 160, 0.4),
+    0 0 22px rgba(242, 218, 160, 0.35);
 }
 .sa .up.ghost,
 .sa .ghost {
@@ -990,7 +990,7 @@
 }
 .sa .spk {
   color: var(--spk);
-  text-shadow: 0 0 8px rgba(129, 140, 248, 0.6);
+  text-shadow: 0 0 8px rgba(214, 178, 98, 0.6);
   font-size: 12px;
   margin-left: 4px;
   display: inline-block;
@@ -1022,7 +1022,7 @@
   background: var(--pill);
   border-color: transparent;
   color: var(--pillt);
-  box-shadow: 0 0 12px rgba(129, 140, 248, 0.55);
+  box-shadow: 0 0 12px rgba(214, 178, 98, 0.55);
 }
 .sa .burst {
   position: absolute;
@@ -1165,8 +1165,8 @@
 .sa a:hover > .spk-glass {
   box-shadow:
     var(--sh),
-    0 0 0 1px rgba(129, 140, 248, 0.18),
-    0 8px 32px rgba(129, 140, 248, 0.16);
+    0 0 0 1px rgba(214, 178, 98, 0.18),
+    0 8px 32px rgba(214, 178, 98, 0.16);
 }
 .sa a:hover > .spk-glass {
   transform: translateY(-1px);
@@ -1186,7 +1186,7 @@
 .sa .spk-neon-window-title::after {
   content: " ✦";
   color: var(--spk);
-  text-shadow: 0 0 8px rgba(129, 140, 248, 0.6);
+  text-shadow: 0 0 8px rgba(214, 178, 98, 0.6);
   font-size: 12px;
 }
 .sa .spk-glass .spk-glass {
@@ -1245,16 +1245,16 @@
   cursor: pointer;
   white-space: nowrap;
   box-shadow:
-    0 0 0 1px rgba(129, 140, 248, 0.25),
-    0 4px 18px rgba(99, 102, 241, 0.28);
+    0 0 0 1px rgba(214, 178, 98, 0.25),
+    0 4px 18px rgba(201, 160, 72, 0.28);
 }
 .sa[data-theme="dark"] .page button.rounded-full.border,
 .sa[data-theme="dark"] .page label.rounded-full.border,
 .sa[data-theme="dark"] .page .spk-glass button[type="submit"]:not(.underline),
 .sa[data-theme="dark"] .page button.rounded-md {
   box-shadow:
-    0 0 0 1px rgba(165, 180, 252, 0.4),
-    0 0 22px rgba(165, 180, 252, 0.35);
+    0 0 0 1px rgba(242, 218, 160, 0.4),
+    0 0 22px rgba(242, 218, 160, 0.35);
 }
 .sa .page button.rounded-full:not(.border) {
   background: var(--card);

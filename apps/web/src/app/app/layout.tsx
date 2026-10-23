@@ -1,10 +1,12 @@
 import "./app-shell.css";
+import "./effects.css";
 import { createClient } from "@/lib/supabase/server";
 import { loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { signOut } from "../login/actions";
 import { cookies } from "next/headers";
 import { SparkleBg, ThemeToggle } from "./chrome";
 import { Crumb, MobileTabs, SideNav } from "./nav";
+import { Fx, Hamburger } from "./fx";
 
 /** Signed-in shell (approved mockup sparkle-classes): sidebar, top bar, pinned mobile tab bar. */
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="sa" data-theme={theme}>
       <SparkleBg />
+      <Fx />
       <SideNav
         isAdmin={user.app_metadata?.role === "admin"}
         taskCount={count ?? null}
@@ -36,8 +39,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       />
       <div className="sa-main">
         <div className="top">
+          <Hamburger isAdmin={user.app_metadata?.role === "admin"} />
           <Crumb who={me?.display_name ?? name} />
-          <a className="pill askbtn" href="/app/study">
+          <a className="pill askbtn mag" href="/app/study">
             Ask Sparkle
           </a>
           <ThemeToggle initial={theme} hasCookie={saved === "light" || saved === "dark"} />

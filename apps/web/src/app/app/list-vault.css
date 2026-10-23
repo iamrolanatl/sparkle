@@ -20,8 +20,8 @@
 .sa .lv-card:hover {
   box-shadow:
     var(--sh),
-    0 0 0 1px rgba(129, 140, 248, 0.18),
-    0 8px 32px rgba(129, 140, 248, 0.16);
+    0 0 0 1px rgba(214, 178, 98, 0.18),
+    0 8px 32px rgba(214, 178, 98, 0.16);
 }
 .sa .lv-card h3 {
   margin: 0 0 10px;
@@ -82,7 +82,7 @@
   background: var(--pill);
   color: var(--pillt);
   border-color: transparent;
-  box-shadow: 0 0 12px rgba(129, 140, 248, 0.55);
+  box-shadow: 0 0 12px rgba(214, 178, 98, 0.55);
 }
 .sa .lv-av {
   width: 26px;
@@ -156,13 +156,13 @@
   cursor: pointer;
   white-space: nowrap;
   box-shadow:
-    0 0 0 1px rgba(129, 140, 248, 0.25),
-    0 4px 18px rgba(99, 102, 241, 0.28);
+    0 0 0 1px rgba(214, 178, 98, 0.25),
+    0 4px 18px rgba(201, 160, 72, 0.28);
 }
 .sa[data-theme="dark"] .lv-pill {
   box-shadow:
-    0 0 0 1px rgba(165, 180, 252, 0.4),
-    0 0 22px rgba(165, 180, 252, 0.35);
+    0 0 0 1px rgba(242, 218, 160, 0.4),
+    0 0 22px rgba(242, 218, 160, 0.35);
 }
 .sa .lv-pill:disabled {
   opacity: 0.5;
@@ -326,8 +326,8 @@
   font-size: 14px;
 }
 .sa .lv-review {
-  border: 1px solid rgba(129, 140, 248, 0.35);
-  box-shadow: 0 0 24px rgba(129, 140, 248, 0.15);
+  border: 1px solid rgba(214, 178, 98, 0.35);
+  box-shadow: 0 0 24px rgba(214, 178, 98, 0.15);
   border-radius: 14px;
   padding: 12px !important;
 }
@@ -372,5 +372,10 @@
   }
 }
 /* Open assign/edit menu must sit above the next (backdrop-filtered) card */
-.sa .lv-card:has(.lv-menu) { position: relative; z-index: 20; }
-.sa .lv-row:has(.lv-menu) { z-index: 21; }
+.sa .lv-card:has(.lv-menu) {
+  position: relative;
+  z-index: 20;
+}
+.sa .lv-row:has(.lv-menu) {
+  z-index: 21;
+}

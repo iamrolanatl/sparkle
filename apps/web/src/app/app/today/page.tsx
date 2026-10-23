@@ -5,6 +5,7 @@ import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/loa
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
 import { Bot } from "../chrome";
+import { Applets, Star3D, type AppletClass } from "./applets";
 
 const KIND: Record<string, string> = { missing: "Missing", assessment: "Test/quiz", bring: "Bring", due: "Due" };
 const initials = (n: string) =>
@@ -122,15 +123,64 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
     : nextUp
       ? `Start with ${nextUp.title}. It's due ${dueText(nextUp.due, now).toLowerCase()}.`
       : "You're all caught up. Nice work!";
+  const applets: AppletClass[] = classes.map((c) => {
+    const p = c.feed.find((f) => f.kind === "post") ?? c.feed[0];
+    return {
+      id: c.id,
+      name: c.name,
+      teacher: c.teacher,
+      color: c.color,
+      pct: c.pct,
+      letter: c.letter,
+      room: [c.room, c.period].filter(Boolean).join(" · ") || null,
+      unit: c.unit?.title ?? null,
+      tasks: c.upcoming
+        .filter((a) => !a.due_at || daysUntil(a.due_at, now) >= 0)
+        .map((a) => ({ id: a.id, title: a.title, when: dueText(a.due_at, now), chip: a.category ?? "Assignment" })),
+      post: p ? { title: p.title, body: p.body, who: p.who } : null,
+    };
+  });
   return (
     <div className="page">
-      <h1>{`${hello}${first ? `, ${first}` : ""}`}</h1>
-      <div className="sub">
-        {dateLine}
-        {rows.length
-          ? ` · ${tomorrow ? `${tomorrow} thing${tomorrow > 1 ? "s" : ""} due tomorrow` : `${rows.length} due this week`}`
-          : " · Nothing due this week"}
-      </div>
+      <section className="hero" data-testid="hero">
+        <div className="hero-bg" data-par="0.18" aria-hidden="true">
+          <i style={{ left: "12%", top: "22%" }}>✦</i>
+          <i style={{ left: "58%", top: "12%" }}>✧</i>
+          <i style={{ left: "84%", top: "64%" }}>✦</i>
+          <i style={{ left: "34%", top: "78%" }}>·</i>
+        </div>
+        <div className="hero-copy" data-par="-0.06">
+          <div className="eyebrow">{dateLine}</div>
+          <h1>{`${hello}${first ? `, ${first}` : ""}`}</h1>
+          <div className="sub">
+            {rows.length
+              ? `${tomorrow ? `${tomorrow} thing${tomorrow > 1 ? "s" : ""} due tomorrow` : `${rows.length} due this week`}`
+              : "Nothing due this week"}
+            {gpa ? ` · GPA ${gpa.unweighted.toFixed(2)}` : ""}
+            {newPosts ? ` · ${newPosts} new teacher post${newPosts > 1 ? "s" : ""}` : ""}
+          </div>
+          {nextUp ? (
+            <div className="hero-next">
+              <span className="eyebrow">Next up</span>
+              <b>{nextUp.title}</b>
+              <small>
+                {nextUp.cls} · {dueText(nextUp.due, now)}
+              </small>
+            </div>
+          ) : null}
+          <div className="hero-cta">
+            <Link className="pill mag" href={rows[0] ? "/app/tasks" : "/app/classes"}>
+              Start studying
+            </Link>
+            <Link className="ghost mag" href="/app/study">
+              Ask Sparkle ✦
+            </Link>
+          </div>
+        </div>
+        <div data-par="0.08">
+          <Star3D />
+        </div>
+      </section>
       <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginTop: 20 }}>
         <div className="panel stat">
           <div className="l">Unweighted GPA</div>
@@ -167,6 +217,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </div>
+      <Applets classes={applets} uid={user.id} />
       <div className="grid s2" style={{ gridTemplateColumns: "1.4fr 1fr", marginTop: 16, alignItems: "start" }}>
         <div className="grid">
           <div className="panel dm">
@@ -268,31 +319,6 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
                 Ask Sparkle ✦
               </Link>
             </div>
-          </div>
-          <div className="panel">
-            <div className="ph">
-              Classes <span>To date</span>
-            </div>
-            {classes.length ? (
-              classes.map((c) => (
-                <Link href={`/app/classes?open=${c.id}`} className="row" key={c.id}>
-                  <Av name={c.name} color={c.color} />
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div
-                      style={{ fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-                    >
-                      {c.name}
-                    </div>
-                    <div style={{ fontSize: 13, color: "var(--mut)" }}>
-                      {c.pct != null ? `${c.pct.toFixed(1)}%` : "No grade yet"}
-                    </div>
-                  </div>
-                  {c.letter ? <b className="badge">{c.letter}</b> : null}
-                </Link>
-              ))
-            ) : (
-              <div className="empty">No classes yet. They appear here after an import or school sync.</div>
-            )}
           </div>
         </div>
       </div>
