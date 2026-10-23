@@ -48,14 +48,24 @@ const num = (v: unknown) => (typeof v === "number" && Number.isInteger(v) && v >
 shopping.get("/:id/list", async (c) => {
   const a = await household(c);
   if ("error" in a) return c.json({ error: ERR[a.error!] }, a.error!);
-  const [items, members] = await Promise.all([
+  const [items, members, shares] = await Promise.all([
     a.db<unknown[]>(
       `shopping_items?household_id=eq.${a.hh}&select=${COLS}&order=done.asc,position.asc,created_at.asc&limit=500`,
     ),
     a.db<unknown[]>(`rpc/shopping_members`, { method: "POST", body: JSON.stringify({ p_household: a.hh }) }),
+    a.db<unknown[]>(
+      `list_shares?household_id=eq.${a.hh}&status=neq.revoked&select=id,email,role,status,member_profile_id,created_at,expires_at&order=created_at.asc`,
+    ),
   ]);
   if (!items.ok) return c.json({ error: "unavailable" }, 503);
-  return c.json({ household: a.hh, me: a.user.id, items: items.data, members: members.ok ? members.data : [] });
+  return c.json({
+    household: a.hh,
+    me: a.user.id,
+    role: "owner",
+    items: items.data,
+    members: members.ok ? members.data : [],
+    shares: shares.ok ? shares.data : [],
+  });
 });
 
 shopping.post("/:id/list/items", async (c) => {
