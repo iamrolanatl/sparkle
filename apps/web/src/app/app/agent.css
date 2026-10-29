@@ -824,11 +824,12 @@
   color: inherit;
 }
 .ag-redact:not([data-open]) {
+  min-width: 112px;
   color: transparent;
   background: var(--fg);
 }
 .ag-redact:not([data-open])::after {
-  content: "TAP TO DECLASSIFY";
+  content: "TAP TO REVEAL";
   position: absolute;
   inset: 0;
   display: grid;
@@ -941,10 +942,19 @@
   color: var(--neon);
   margin-bottom: 12px;
 }
+.sa.ag .hero {
+  position: relative;
+}
 .ag-hero-pg {
-  flex: none;
-  align-self: center;
-  margin-right: 160px;
+  position: absolute;
+  right: 48px;
+  bottom: 36px;
+}
+.ag-hero-pg .pg-quip {
+  left: auto;
+  right: calc(100% + 10px);
+  top: 0;
+  border-radius: 10px 2px 10px 10px;
 }
 @media (max-width: 900px) {
   .ag-hero-pg {
