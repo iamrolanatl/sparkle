@@ -19,8 +19,13 @@ export function SparkleBg() {
     if (!v) return;
     const sa = document.querySelector(".sa");
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
-    const allowed = () => !rm.matches && !saveData && sa?.getAttribute("data-motion") !== "off";
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const saveData = conn?.saveData === true;
+    // Perf: the video is ~650 KB, so only desktop-class devices on a fast connection get it; phones keep the poster.
+    const big = window.matchMedia("(min-width: 821px) and (pointer: fine)");
+    const slow = /(^|-)2g|3g/.test(conn?.effectiveType ?? "");
+    const allowed = () =>
+      !rm.matches && !saveData && !slow && big.matches && !document.hidden && sa?.getAttribute("data-motion") !== "off";
     let loaded = false;
     const sync = () => {
       if (allowed()) {
@@ -48,12 +53,14 @@ export function SparkleBg() {
     if (document.readyState === "complete") start();
     else window.addEventListener("load", start, { once: true });
     rm.addEventListener("change", sync);
+    document.addEventListener("visibilitychange", sync);
     const mo = sa ? new MutationObserver(sync) : null;
     if (sa && mo) mo.observe(sa, { attributes: true, attributeFilter: ["data-motion"] });
     return () => {
       window.removeEventListener("load", start);
       window.clearTimeout(idle);
       rm.removeEventListener("change", sync);
+      document.removeEventListener("visibilitychange", sync);
       mo?.disconnect();
       v.removeEventListener("playing", onPlaying);
     };
