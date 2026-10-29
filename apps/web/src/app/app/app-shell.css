@@ -717,25 +717,28 @@
   object-fit: cover;
   z-index: -1;
   pointer-events: none;
+  /* Light mode: galaxy inverted to a pale, warm sky with faint charcoal stars */
   mix-blend-mode: multiply;
-  filter: invert(1) sepia(0.5) saturate(0.9);
-  opacity: 0.28;
+  filter: invert(1) sepia(0.45) saturate(0.7) brightness(1.04);
+  opacity: 0.22;
 }
 .sa[data-theme="dark"] .bgv,
 .sa[data-theme="dark"] .bgp {
-  mix-blend-mode: screen;
-  filter: sepia(0.35) saturate(0.9);
-  opacity: 0.55;
+  mix-blend-mode: normal;
+  filter: none;
+  opacity: 0.9;
 }
-.sa .bgp {
-  display: none;
+/* Video fades in over the poster once it is actually playing */
+.sa .bgv:not(.on),
+.sa[data-theme="dark"] .bgv:not(.on) {
+  opacity: 0;
+}
+.sa .bgv {
+  transition: opacity 1.2s ease;
 }
 @media (prefers-reduced-motion: reduce) {
   .sa .bgv {
     display: none;
-  }
-  .sa .bgp {
-    display: block;
   }
 }
 .sa aside {

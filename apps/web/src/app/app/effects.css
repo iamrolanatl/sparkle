@@ -695,9 +695,6 @@
 .sa[data-motion="off"] .bgv {
   display: none;
 }
-.sa[data-motion="off"] .bgp {
-  display: block;
-}
 .sa .ap-nog {
   font-size: 18px;
   font-weight: 600;

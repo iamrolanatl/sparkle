@@ -1,27 +1,7 @@
 "use client";
 import { useEffect } from "react";
 
-/** Seamless star-sparkle background (loop is crossfaded in genbg.py so the rewind is invisible). */
-export function SparkleBg() {
-  return (
-    <>
-      <video
-        className="bgv"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/media/bg/bg-poster.jpg"
-        aria-hidden="true"
-      >
-        <source src="/media/bg/bg.webm" type="video/webm" />
-        <source src="/media/bg/bg.mp4" type="video/mp4" />
-      </video>
-      <img className="bgp" src="/media/bg/bg-poster.jpg" alt="" aria-hidden="true" />
-    </>
-  );
-}
+export { SparkleBg } from "./bgvideo";
 
 const KEY = "sparkle-theme";
 type Theme = "light" | "dark";
