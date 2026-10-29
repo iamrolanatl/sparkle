@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
+import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
+import { gpaOf, pickStudent } from "@/lib/classes/load";
 import { ClassList } from "./class-list";
 import { Applets } from "../today/applets";
 import { toApplets } from "@/lib/classes/applets";
@@ -10,12 +10,12 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Grades & Classes", robots: { index: false } };
 
 export default async function ClassesPage({ searchParams }: { searchParams: Promise<{ s?: string; open?: string }> }) {
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/classes");
   const { s, open } = await searchParams;
-  const me = pickStudent(await loadStudents(supabase), user.id, s);
-  const classes = me ? await loadClasses(supabase, me.id) : [];
+  const me = pickStudent(await getStudents(), user.id, s);
+  const classes = me ? await getClasses(me.id) : [];
   // Short-lived signed links for uploaded files (private bucket).
   const paths = classes.flatMap((c) => c.materials.filter((m) => m.storage_path).map((m) => m.storage_path!));
   const signed = paths.length

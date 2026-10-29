@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { NeonWindow, reportError } from "@sparkle/ui";
+import { NeonWindow } from "@sparkle/ui/NeonWindow";
+import { reportError } from "@sparkle/ui/report";
 
 /** Route-level boundary (NFR-41): the rest of the app keeps working. */
 export default function RouteError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {

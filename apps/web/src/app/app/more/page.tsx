@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { MAIN, MORE } from "../links";
 
 export const dynamic = "force-dynamic";

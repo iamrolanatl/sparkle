@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { NeonWindow } from "@sparkle/ui";
+import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import { computeGpa, type Course, type Level } from "@/lib/gpa";
 
 const LEVELS: Level[] = ["standard", "honors", "ap", "ib", "dual"];

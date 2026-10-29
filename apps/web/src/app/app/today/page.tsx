@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
+import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
+import { gpaOf, pickStudent } from "@/lib/classes/load";
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
 import { Bot } from "../chrome";
@@ -37,11 +37,11 @@ export const metadata = { title: "Today", robots: { index: false } };
 const TZ = "America/New_York";
 
 export default async function TodayPage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/today");
   const { s } = await searchParams;
-  const students = await loadStudents(supabase);
+  const students = await getStudents();
   const me = pickStudent(students, user.id, s);
   const now = new Date();
   const hour = Number(now.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hour12: false }));
@@ -62,7 +62,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
       </div>
     );
   const [classes, tasksRes, attRes] = await Promise.all([
-    loadClasses(supabase, me.id),
+    getClasses(me.id),
     supabase
       .from("tasks")
       .select("id, title, due_at, priority")

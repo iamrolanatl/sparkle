@@ -1,5 +1,5 @@
-import { NeonWindow } from "@sparkle/ui";
-import Link from "next/link";
+import { NeonWindow } from "@sparkle/ui/NeonWindow";
+import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { UploadForm } from "./upload-form";

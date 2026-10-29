@@ -1,0 +1,9 @@
+# Workers static assets headers (served before the Worker runs).
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+/media/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/icon-*
+  Cache-Control: public, max-age=86400
+/apple-icon.png
+  Cache-Control: public, max-age=86400

@@ -1,4 +1,4 @@
-import { GlassPanel } from "@sparkle/ui";
+import { GlassPanel } from "@sparkle/ui/GlassPanel";
 import { adminDb, audit, requireAdmin } from "@/lib/admin";
 
 export default async function Transcript({ params }: { params: Promise<{ id: string }> }) {

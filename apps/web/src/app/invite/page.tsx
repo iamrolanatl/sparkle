@@ -1,4 +1,4 @@
-import { NeonWindow } from "@sparkle/ui";
+import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import { RedeemForm } from "./redeem-form";
 
 export const metadata = { title: "Join with a code", robots: { index: false } };

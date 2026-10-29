@@ -1,4 +1,5 @@
-import { ErrorBoundary, NeonWindow } from "@sparkle/ui";
+import { ErrorBoundary } from "@sparkle/ui/ErrorBoundary";
+import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import { dueSoonAction } from "./actions";
 import { backlogText, reminderText, type DueSoonBody } from "./reminders";
 

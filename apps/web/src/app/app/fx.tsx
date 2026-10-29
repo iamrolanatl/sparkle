@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MAIN, MORE } from "./links";
@@ -16,46 +16,67 @@ export function Fx() {
       if (localStorage.getItem(MKEY) === "off") document.querySelector(".sa")?.setAttribute("data-motion", "off");
     } catch {}
     let raf = 0;
+    let mraf = 0;
+    let last: PointerEvent | null = null;
     const fine = window.matchMedia("(pointer: fine)").matches;
-    const move = (e: PointerEvent) => {
-      if (!fine || reduced()) return;
-      const t = e.target as HTMLElement | null;
-      // Magnetic buttons: attract within a 36px halo around the button's resting position.
-      document.querySelectorAll<HTMLElement>(".mag").forEach((m) => {
+    // Resting (untransformed) centers of magnetic buttons, cached; invalidated on scroll/resize/DOM change.
+    let mags: { m: HTMLElement; cx: number; cy: number; hw: number; hh: number }[] | null = null;
+    const measure = () =>
+      (mags = [...document.querySelectorAll<HTMLElement>(".mag")].map((m) => {
         const r = m.getBoundingClientRect();
         const ox = Number(m.dataset.mx ?? 0);
         const oy = Number(m.dataset.my ?? 0);
-        const cx = r.left - ox + r.width / 2;
-        const cy = r.top - oy + r.height / 2;
+        return { m, cx: r.left - ox + r.width / 2, cy: r.top - oy + r.height / 2, hw: r.width / 2, hh: r.height / 2 };
+      }));
+    const invalidate = () => (mags = null);
+    const mo = new MutationObserver(invalidate);
+    mo.observe(document.body, { childList: true, subtree: true });
+    // One rAF per frame for tilt + magnet: all reads first, then writes (no layout thrash).
+    const frame = () => {
+      mraf = 0;
+      const e = last;
+      if (!e || reduced()) return;
+      const list = mags ?? measure();
+      const t = e.target as HTMLElement | null;
+      const c = t?.closest?.(".tilt") as HTMLElement | null;
+      const cr = c && !c.classList.contains("max") ? c.getBoundingClientRect() : null;
+      for (const { m, cx, cy, hw, hh } of list) {
         const dx = e.clientX - cx;
         const dy = e.clientY - cy;
-        const near = Math.abs(dx) < r.width / 2 + 36 && Math.abs(dy) < r.height / 2 + 36;
+        const near = Math.abs(dx) < hw + 36 && Math.abs(dy) < hh + 36;
         const tx = near ? dx * 0.22 : 0;
         const ty = near ? dy * 0.3 : 0;
-        if (tx === ox && ty === oy) return;
+        if (tx === Number(m.dataset.mx ?? 0) && ty === Number(m.dataset.my ?? 0)) continue;
         m.dataset.mx = String(tx);
         m.dataset.my = String(ty);
         m.style.transform = near ? `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)` : "";
-      });
-      const c = t?.closest?.(".tilt") as HTMLElement | null;
+      }
       document.querySelectorAll<HTMLElement>(".tilt[data-on]").forEach((b) => {
         if (b !== c) {
           b.style.transform = "";
           b.removeAttribute("data-on");
         }
       });
-      if (c && !c.classList.contains("max")) {
-        const r = c.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
+      if (c && cr) {
+        const x = (e.clientX - cr.left) / cr.width - 0.5;
+        const y = (e.clientY - cr.top) / cr.height - 0.5;
         c.style.transform = `perspective(900px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg) translateZ(0)`;
         c.style.setProperty("--gx", `${((x + 0.5) * 100).toFixed(0)}%`);
         c.style.setProperty("--gy", `${((y + 0.5) * 100).toFixed(0)}%`);
         c.setAttribute("data-on", "");
       }
     };
+    const move = (e: PointerEvent) => {
+      if (!fine) return;
+      last = e;
+      if (!mraf) mraf = requestAnimationFrame(frame);
+    };
+    const hide = () => document.querySelector(".sa")?.toggleAttribute("data-hidden", document.hidden);
+    document.addEventListener("visibilitychange", hide);
+    window.addEventListener("resize", invalidate, { passive: true });
     const scroll = () => {
       cancelAnimationFrame(raf);
+      invalidate();
       raf = requestAnimationFrame(() => {
         const off = reduced();
         const y = window.scrollY;
@@ -71,7 +92,11 @@ export function Fx() {
     return () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("scroll", scroll);
+      window.removeEventListener("resize", invalidate);
+      document.removeEventListener("visibilitychange", hide);
+      mo.disconnect();
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(mraf);
     };
   }, []);
   return null;

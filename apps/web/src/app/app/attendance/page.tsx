@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { loadStudents, pickStudent } from "@/lib/classes/load";
+import { getSb, getStudents, getUser } from "@/lib/req";
+import { pickStudent } from "@/lib/classes/load";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Attendance", robots: { index: false } };
@@ -17,11 +17,11 @@ type Ev = {
 };
 
 export default async function AttendancePage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/attendance");
   const { s } = await searchParams;
-  const me = pickStudent(await loadStudents(supabase), user.id, s);
+  const me = pickStudent(await getStudents(), user.id, s);
   const [evRes, sessRes] = me
     ? await Promise.all([
         supabase

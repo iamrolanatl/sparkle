@@ -1,8 +1,8 @@
 "use client";
 import { burst } from "../chrome";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
-import { ErrorBoundary } from "@sparkle/ui";
+import { ErrorBoundary } from "@sparkle/ui/ErrorBoundary";
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { safetyMessage } from "./safety-message";
 import { deleteTaskAction, listTasksAction, parseTaskAction, saveTaskAction, setTaskDoneAction } from "./actions";

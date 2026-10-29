@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { burst } from "../chrome";
 import {
   clearDoneAction,
@@ -93,7 +93,7 @@ export function ShoppingList(p: {
   const hh = p.initial?.household ?? "";
   const canEdit = (data?.role ?? "owner") !== "viewer";
   const isOwner = (data?.role ?? "owner") === "owner";
-  const chan = useRef<ReturnType<ReturnType<typeof createBrowserClient>["channel"]> | null>(null);
+  const chan = useRef<RealtimeChannel | null>(null);
 
   const refresh = useCallback(async () => {
     const r = await hhListAction(hh);
@@ -108,29 +108,42 @@ export function ShoppingList(p: {
   // Realtime: RLS-filtered postgres_changes + broadcast nudge + presence for "online".
   useEffect(() => {
     if (!p.rt || !data?.household) return;
-    const sb = createBrowserClient(p.rt.url, p.rt.key);
+    const rt = p.rt;
+    const household = data.household;
+    const meKey = data.me;
     let t: ReturnType<typeof setTimeout> | undefined;
+    let stop = false;
+    let cleanup: (() => void) | undefined;
     const soon = () => {
       clearTimeout(t);
       t = setTimeout(refresh, 250);
     };
-    const ch = sb.channel(`list:${data.household}`, { config: { presence: { key: data.me } } });
-    ch.on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "shopping_items", filter: `household_id=eq.${data.household}` },
-      soon,
-    )
-      .on("broadcast", { event: "changed" }, soon)
-      .on("presence", { event: "sync" }, () => setOnline(new Set(Object.keys(ch.presenceState()))))
-      .subscribe(async (s) => {
-        setLive(s === "SUBSCRIBED");
-        if (s === "SUBSCRIBED") await ch.track({ at: Date.now() });
-      });
-    chan.current = ch;
+    // Realtime client (~56 KB) is loaded only after the list has rendered, not in the page bundle.
+    void import("@supabase/ssr").then(({ createBrowserClient }) => {
+      if (stop) return;
+      const sb = createBrowserClient(rt.url, rt.key);
+      const ch = sb.channel(`list:${household}`, { config: { presence: { key: meKey } } });
+      ch.on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "shopping_items", filter: `household_id=eq.${household}` },
+        soon,
+      )
+        .on("broadcast", { event: "changed" }, soon)
+        .on("presence", { event: "sync" }, () => setOnline(new Set(Object.keys(ch.presenceState()))))
+        .subscribe(async (s) => {
+          setLive(s === "SUBSCRIBED");
+          if (s === "SUBSCRIBED") await ch.track({ at: Date.now() });
+        });
+      chan.current = ch;
+      cleanup = () => {
+        chan.current = null;
+        void sb.removeChannel(ch);
+      };
+    });
     return () => {
+      stop = true;
       clearTimeout(t);
-      chan.current = null;
-      sb.removeChannel(ch);
+      cleanup?.();
     };
   }, [p.rt, data?.household, data?.me, refresh]);
 

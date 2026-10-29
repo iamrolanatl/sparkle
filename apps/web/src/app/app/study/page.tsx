@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
+import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
+import { pickStudent } from "@/lib/classes/load";
 import { dontMiss } from "@/lib/classes/guidance";
 import { studyStatusAction } from "../tasks/actions";
 import { Bot } from "../chrome";
@@ -12,11 +12,13 @@ export const metadata = { title: "Ask Sparkle", robots: { index: false } };
 
 /** Ask Sparkle (approved mockup sparkle-voice). Behind `study_helper` (global or per-student allowlist). */
 export default async function StudyPage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/study");
   const { s } = await searchParams;
-  const me = pickStudent(await loadStudents(supabase), user.id, s);
+  const me = pickStudent(await getStudents(), user.id, s);
+  // Start the class load alongside the feature check so they don't run one after another.
+  const classesP = me ? getClasses(me.id) : null;
   const status = me ? await studyStatusAction(me.id) : { body: { enabled: false } };
   if (!me || status.body.enabled !== true)
     return (
@@ -32,7 +34,7 @@ export default async function StudyPage({ searchParams }: { searchParams: Promis
         </div>
       </div>
     );
-  const classes = await loadClasses(supabase, me.id);
+  const classes = await classesP!;
   const first = me.display_name.split(" ")[0] ?? "";
   const items = dontMiss(classes).slice(0, 3);
   const sugg: string[] = ["What's due this week?"];

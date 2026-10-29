@@ -33,7 +33,8 @@ export async function middleware(request: NextRequest) {
       },
     },
   });
-  await supabase.auth.getUser();
+  // getClaims refreshes an expired session (writing cookies) but verifies the JWT locally otherwise: no Auth round-trip per request.
+  await supabase.auth.getClaims();
   return withCsp(response);
 }
 

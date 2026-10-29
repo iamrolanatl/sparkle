@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSb, getStudents, getUser } from "@/lib/req";
 import { supabaseEnv } from "@/lib/env";
-import { loadStudents, pickStudent } from "@/lib/classes/load";
+import { pickStudent } from "@/lib/classes/load";
 import { hhListAction, listAction, sharedListsAction, suggestionsAction } from "./actions";
 import { ShoppingList, type ListData, type Suggestion } from "./list";
 import "../list-vault.css";
@@ -10,11 +10,11 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Shopping list", robots: { index: false } };
 
 export default async function ListPage({ searchParams }: { searchParams: Promise<{ s?: string; l?: string }> }) {
-  const supabase = await createClient();
-  const user = (await supabase?.auth.getUser())?.data.user;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/list");
   const { s, l } = await searchParams;
-  const [students, shared] = await Promise.all([loadStudents(supabase), sharedListsAction()]);
+  const [students, shared] = await Promise.all([getStudents(), sharedListsAction()]);
   const sharedLists = (shared.body.lists as { household_id: string; role: string; owner_name: string }[]) ?? [];
   const me = pickStudent(students, user.id, s);
   const pickShared = sharedLists.find((x) => x.household_id === l) ?? (!me ? sharedLists[0] : undefined);

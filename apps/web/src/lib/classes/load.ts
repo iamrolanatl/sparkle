@@ -71,13 +71,12 @@ export function classPercent(
 }
 
 /** Students this user can act for now: their own record, or ones with an ACTIVE guardian link (revoked links hide the student). */
-export async function loadStudents(sb: SupabaseClient) {
-  const [{ data }, { data: links }, { data: u }] = await Promise.all([
+export async function loadStudents(sb: SupabaseClient, knownUid?: string) {
+  const [{ data }, { data: links }, uid] = await Promise.all([
     sb.from("students").select("id, display_name, profile_id").order("created_at").limit(50),
     sb.from("student_guardians").select("student_id, guardian_profile_id, status").limit(200),
-    sb.auth.getUser(),
+    knownUid ? Promise.resolve(knownUid) : sb.auth.getUser().then((r) => r.data.user?.id),
   ]);
-  const uid = u.user?.id;
   const active = new Set(
     (links ?? []).filter((l) => l.status === "active" && l.guardian_profile_id === uid).map((l) => l.student_id),
   );

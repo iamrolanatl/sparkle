@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { loadStudents, pickStudent } from "@/lib/classes/load";
+import { getSb, getStudents, getUser } from "@/lib/req";
+import { pickStudent } from "@/lib/classes/load";
 import { VaultView } from "./vault";
 import "../list-vault.css";
 
@@ -12,10 +12,10 @@ export const metadata = { title: "Vault", robots: { index: false } };
  * uploaded, stored or read here until launch gate LG-01..14 (incl. privacy counsel) is met.
  */
 export default async function VaultPage() {
-  const supabase = await createClient();
-  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/vault");
-  const me = pickStudent(await loadStudents(supabase), user.id);
+  const me = pickStudent(await getStudents(), user.id);
   const first = (n: string | null | undefined) => (n ?? "").split(" ")[0] || "";
   return (
     <div className="page">

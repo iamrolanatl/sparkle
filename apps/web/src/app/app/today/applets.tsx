@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useEffect, useState } from "react";
 import type { AppletClass } from "@/lib/classes/applets";
 

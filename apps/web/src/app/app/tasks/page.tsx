@@ -1,20 +1,19 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { loadClasses, loadLate, loadStudents, pickStudent } from "@/lib/classes/load";
+import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
+import { loadLate, pickStudent } from "@/lib/classes/load";
 import { TaskComposer, type SchoolItem } from "./composer";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Tasks", robots: { index: false } };
 
 export default async function TasksPage({ searchParams }: { searchParams: Promise<{ s?: string }> }) {
-  const supabase = await createClient();
-  const user = (await supabase?.auth.getUser())?.data.user;
+  const supabase = await getSb();
+  const user = await getUser();
   if (!supabase || !user) redirect("/login?next=/app/tasks");
   const { s } = await searchParams;
-  const students = await loadStudents(supabase);
+  const students = await getStudents();
   const me = pickStudent(students, user.id, s);
-  const classes = me ? await loadClasses(supabase, me.id) : [];
-  const late = me ? await loadLate(supabase, me.id) : [];
+  const [classes, late] = me ? await Promise.all([getClasses(me.id), loadLate(supabase, me.id)]) : [[], []];
   const color = new Map(classes.map((c) => [c.id, { name: c.name, color: c.color }]));
   const school: SchoolItem[] = [
     ...classes.flatMap((c) => c.upcoming),

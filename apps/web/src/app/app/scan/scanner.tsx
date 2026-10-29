@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
-import { GlassPanel, MagneticButton } from "@sparkle/ui";
+import { GlassPanel } from "@sparkle/ui/GlassPanel";
 import { ACCEPT, KIND_LABELS, SENSITIVE, errorMessage, fitWithin, toOcrResult, type Fields } from "@/lib/scan";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "";
@@ -300,17 +300,17 @@ function ReviewForm(props: {
         <pre className="mt-2 max-h-60 overflow-auto whitespace-pre-wrap">{props.text}</pre>
       </details>
       <div className="flex flex-wrap gap-3">
-        <MagneticButton
+        <button
           type="button"
           disabled={saving}
-          className="rounded-full border px-4 py-2"
+          className="spk-magnetic mag rounded-full border px-4 py-2"
           onClick={() => {
             setSaving(true);
             props.onConfirm(f);
           }}
         >
           {saving ? "Saving…" : "Looks right, save"}
-        </MagneticButton>
+        </button>
         <button
           type="button"
           disabled={saving}

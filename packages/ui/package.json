@@ -7,7 +7,11 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./theme.css": "./src/theme.css"
+    "./theme.css": "./src/theme.css",
+    "./ErrorBoundary": "./src/ErrorBoundary.tsx",
+    "./NeonWindow": "./src/NeonWindow.tsx",
+    "./GlassPanel": "./src/GlassPanel.tsx",
+    "./report": "./src/report.ts"
   },
   "scripts": {
     "lint": "eslint src",

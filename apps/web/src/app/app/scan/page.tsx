@@ -1,4 +1,4 @@
-import { NeonWindow } from "@sparkle/ui";
+import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseEnv } from "@/lib/env";

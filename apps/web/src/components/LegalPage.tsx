@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GlassPanel } from "@sparkle/ui";
+import { GlassPanel } from "@sparkle/ui/GlassPanel";
 
 export function LegalPage({
   title,

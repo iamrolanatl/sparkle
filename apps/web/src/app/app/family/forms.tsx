@@ -1,6 +1,5 @@
 "use client";
 import { useActionState } from "react";
-import { MagneticButton } from "@sparkle/ui";
 import { RELATIONSHIPS } from "@/lib/invite-code";
 import { addStudent, createInvitation, type ActionResult } from "./actions";
 
@@ -18,9 +17,9 @@ export function AddStudentForm() {
         Birth date (optional)
         <input name="birth_date" type="date" className={field} />
       </label>
-      <MagneticButton type="submit" disabled={pending} className="rounded-full border px-4 py-2">
+      <button type="submit" disabled={pending} className="spk-magnetic mag rounded-full border px-4 py-2">
         {pending ? "Adding…" : "Add student"}
-      </MagneticButton>
+      </button>
       {state && !state.ok ? (
         <p role="alert" className="text-sm text-red-400 sm:col-span-3">
           {state.error}
@@ -61,9 +60,9 @@ export function InviteForm({ studentId, siteUrl }: { studentId: string; siteUrl:
         <input name="email" type="email" className={field} />
       </label>
       <div className="sm:col-span-2">
-        <MagneticButton type="submit" disabled={pending} className="rounded-full border px-4 py-2">
+        <button type="submit" disabled={pending} className="spk-magnetic mag rounded-full border px-4 py-2">
           {pending ? "Creating…" : "Create invitation"}
-        </MagneticButton>
+        </button>
       </div>
       {state?.ok && state.code ? (
         <div role="status" className="spk-glass rounded-xl p-4 sm:col-span-2">

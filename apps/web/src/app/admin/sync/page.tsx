@@ -1,4 +1,4 @@
-import { GlassPanel } from "@sparkle/ui";
+import { GlassPanel } from "@sparkle/ui/GlassPanel";
 import { adminDb } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";

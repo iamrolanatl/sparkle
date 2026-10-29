@@ -1,4 +1,4 @@
-import { GlassPanel } from "@sparkle/ui";
+import { GlassPanel } from "@sparkle/ui/GlassPanel";
 import Link from "next/link";
 import { signInWithGoogle } from "./actions";
 
