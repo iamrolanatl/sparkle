@@ -1,4 +1,5 @@
 "use client";
+import { W } from "@/components/agent/Pigeon";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { burst } from "../chrome";
@@ -54,7 +55,7 @@ const ROLE_LABEL: Record<Member["role"], string> = {
 };
 export type Suggestion = { id: string; title: string; className: string | null; detail: string };
 
-const PALETTE = ["#6366f1", "#f43f5e", "#10b981", "#f59e0b", "#0ea5e9", "#8b5cf6"];
+const PALETTE = ["#c2410c", "#be123c", "#15803d", "#b45309", "#4d7c0f", "#9f1239"];
 function ago(iso: string) {
   const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
   return m < 1 ? "now" : m < 60 ? `${m}m` : m < 1440 ? `${Math.round(m / 60)}h` : `${Math.round(m / 1440)}d`;
@@ -272,7 +273,9 @@ export function ShoppingList(p: {
   if (!data)
     return (
       <>
-        <h1>Shopping list</h1>
+        <h1>
+          <W a="Supply run" p="Shopping list" />
+        </h1>
         <div className="panel empty" style={{ marginTop: 16 }}>
           This list isn&apos;t available. It may have been unshared, or it couldn&apos;t load. Refresh to try again.
         </div>
@@ -481,7 +484,9 @@ export function ShoppingList(p: {
     <>
       <div className="lv-head">
         <div>
-          <h1>Shopping list</h1>
+          <h1>
+            <W a="Supply run" p="Shopping list" />
+          </h1>
           <div className="sub">
             {isOwner
               ? `Shared with ${p.student}'s family${(data.shares ?? []).some((x) => x.status === "active") ? " and others" : ""} · updates live`

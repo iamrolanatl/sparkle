@@ -1,8 +1,5 @@
 "use client";
-import Link from "@/components/IntentLink";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { MAIN, MORE } from "./links";
+import { useEffect } from "react";
 
 const MKEY = "sparkle-motion";
 const reduced = () =>
@@ -100,90 +97,4 @@ export function Fx() {
     };
   }, []);
   return null;
-}
-
-function Toggle({ label, on, set, id }: { label: string; on: boolean; set: (v: boolean) => void; id: string }) {
-  return (
-    <label className="sw" data-testid={id}>
-      <span>{label}</span>
-      <input type="checkbox" role="switch" checked={on} onChange={(e) => set(e.target.checked)} />
-      <i aria-hidden="true" />
-    </label>
-  );
-}
-
-/** Hamburger menu: full nav + toggles. Used on mobile and as compact nav on desktop. */
-export function Hamburger({ isAdmin }: { isAdmin: boolean }) {
-  const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(false);
-  const [motion, setMotion] = useState(true);
-  const path = usePathname();
-  useEffect(() => {
-    if (!open) return;
-    const k = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
-  }, [open]);
-  const setTheme = (v: boolean) => {
-    setDark(v);
-    const want = v ? "dark" : "light";
-    if (document.querySelector(".sa")?.getAttribute("data-theme") !== want)
-      (document.querySelector('[data-testid="theme-toggle"]') as HTMLButtonElement | null)?.click();
-  };
-  const setMo = (v: boolean) => {
-    setMotion(v);
-    const sa = document.querySelector(".sa");
-    if (v) sa?.removeAttribute("data-motion");
-    else sa?.setAttribute("data-motion", "off");
-    try {
-      localStorage.setItem(MKEY, v ? "on" : "off");
-    } catch {}
-    document.querySelectorAll<HTMLElement>(".tilt,.mag,[data-par]").forEach((el) => (el.style.transform = ""));
-  };
-  const links = [...MAIN, ...MORE, ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : [])];
-  return (
-    <>
-      <button
-        type="button"
-        className={`burger ${open ? "x" : ""}`}
-        aria-label={open ? "Close menu" : "Open menu"}
-        aria-expanded={open}
-        data-testid="burger"
-        onClick={() => {
-          const sa = document.querySelector(".sa");
-          setDark(sa?.getAttribute("data-theme") === "dark");
-          setMotion(sa?.getAttribute("data-motion") !== "off");
-          setOpen((o) => !o);
-        }}
-      >
-        <i />
-        <i />
-        <i />
-      </button>
-      {open ? (
-        <div className="drawer-wrap" onClick={() => setOpen(false)}>
-          <nav className="drawer" aria-label="Menu" data-testid="drawer" onClick={(e) => e.stopPropagation()}>
-            <div className="dh">
-              Menu <span aria-hidden="true">✦</span>
-            </div>
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={path?.startsWith(l.href) ? "on" : ""}
-                onClick={() => setOpen(false)}
-              >
-                {l.label}
-              </Link>
-            ))}
-            <div className="dh" style={{ marginTop: 14 }}>
-              Settings
-            </div>
-            <Toggle id="tg-dark" label="Dark mode" on={dark} set={setTheme} />
-            <Toggle id="tg-motion" label="Motion & 3D effects" on={motion} set={setMo} />
-          </nav>
-        </div>
-      ) : null}
-    </>
-  );
 }

@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import { redirect } from "next/navigation";
 import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
 import { pickStudent } from "@/lib/classes/load";
@@ -23,7 +24,9 @@ export default async function StudyPage({ searchParams }: { searchParams: Promis
   if (!me || status.body.enabled !== true)
     return (
       <div className="page">
-        <h1>Ask Sparkle</h1>
+        <h1>
+          <W a="Secure line" p="Ask Sparkle" />
+        </h1>
         <div className="sub">Your study helper</div>
         <div className="panel empty" style={{ marginTop: 20, display: "flex", gap: 14, alignItems: "center" }}>
           <Bot size={44} />
@@ -52,7 +55,9 @@ export default async function StudyPage({ searchParams }: { searchParams: Promis
     : `Hi ${first}! I can quiz you, explain a topic, or help plan your week. What are you working on?`;
   return (
     <div className="page">
-      <h1>Ask Sparkle</h1>
+      <h1>
+        <W a="Secure line" p="Ask Sparkle" />
+      </h1>
       <div className="sub">Your study helper. Type or tap the mic.</div>
       <AskSparkle
         studentId={me.id}

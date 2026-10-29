@@ -5,10 +5,17 @@ import { gpaOf, pickStudent } from "@/lib/classes/load";
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
 import { Bot } from "../chrome";
+import { Pigeon, W, quipOfDay, type Pose } from "@/components/agent/Pigeon";
+import { Countdown, Redact } from "@/components/agent/Live";
 import { Applets } from "./applets";
 import { toApplets } from "@/lib/classes/applets";
 
-const KIND: Record<string, string> = { missing: "Missing", assessment: "Test/quiz", bring: "Bring", due: "Due" };
+const KIND: Record<string, React.ReactNode> = {
+  missing: <W a="Compromised" p="Missing" />,
+  assessment: <W a="Field test" p="Test/quiz" />,
+  bring: <W a="Gear check" p="Bring" />,
+  due: <W a="Deadline" p="Due" />,
+};
 const initials = (n: string) =>
   n
     .replace(/[^A-Za-z0-9 ]/g, "")
@@ -115,6 +122,18 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   const gpa = gpaOf(classes);
   const summative = rows.filter((r) => /summative|test|quiz|project/i.test(r.chip)).length;
   const nextUp = rows[0];
+  const missingN = classes.reduce((a, c) => a + c.missing.length, 0);
+  const pose: Pose = hour >= 21 || hour < 6 ? "sleepy" : missingN ? "worried" : rows.length ? "idle" : "celebrate";
+  const quip =
+    pose === "sleepy"
+      ? "Agents need sleep too. Coo… zzz."
+      : pose === "worried"
+        ? `${missingN} file${missingN > 1 ? "s" : ""} compromised. I'd fix ${missingN > 1 ? "those" : "that"} before I find more crumbs.`
+        : pose === "celebrate"
+          ? "Mission complete. All clear, agent. Coo!"
+          : quipOfDay(now);
+  const caseNo = `${String(now.getUTCFullYear()).slice(2)}-${String(now.getUTCMonth() + 1).padStart(2, "0")}${String(now.getUTCDate()).padStart(2, "0")}-${me.id.slice(0, 4).toUpperCase()}`;
+  const zulu = `${String(now.getUTCHours()).padStart(2, "0")}${String(now.getUTCMinutes()).padStart(2, "0")}Z`;
   const first =
     me.profile_id === user.id
       ? me.display_name.split(" ")[0]
@@ -128,15 +147,13 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   return (
     <div className="page">
       <section className="hero" data-testid="hero">
-        <div className="hero-bg" data-par="0.18" aria-hidden="true">
-          <i style={{ left: "12%", top: "22%" }}>✦</i>
-          <i style={{ left: "58%", top: "12%" }}>✧</i>
-          <i style={{ left: "84%", top: "64%" }}>✦</i>
-          <i style={{ left: "34%", top: "78%" }}>·</i>
-        </div>
         <div className="hero-copy" data-par="-0.06">
-          <div className="eyebrow">{dateLine}</div>
-          <h1>{`${hello}${first ? `, ${first}` : ""}`}</h1>
+          <div className="eyebrow ag-caseno">
+            <W a={`Daily briefing · Case ${caseNo}`} p={dateLine} /> · <time>{zulu}</time>
+          </div>
+          <h1>
+            <W a={`${hello}, Agent${first ? ` ${first}` : ""}`} p={`${hello}${first ? `, ${first}` : ""}`} />
+          </h1>
           <div className="sub">
             {rows.length
               ? `${tomorrow ? `${tomorrow} thing${tomorrow > 1 ? "s" : ""} due tomorrow` : `${rows.length} due this week`}`
@@ -146,27 +163,38 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           </div>
           {nextUp ? (
             <div className="hero-next">
-              <span className="eyebrow">Next up</span>
+              <span className="eyebrow">
+                <W a="Next mission" p="Next up" />
+              </span>
               <b>{nextUp.title}</b>
               <small>
                 {nextUp.cls} · {dueText(nextUp.due, now)}
+                {nextUp.due ? (
+                  <>
+                    {" "}
+                    · <Countdown to={nextUp.due} />
+                  </>
+                ) : null}
               </small>
             </div>
           ) : null}
           <div className="hero-cta">
             <Link className="pill mag" href={rows[0] ? "/app/tasks" : "/app/classes"}>
-              Start studying
+              <W a="Accept mission" p="Start studying" />
             </Link>
             <Link className="ghost mag" href="/app/study">
-              Ask Sparkle ✦
+              <W a="Open secure line" p="Ask Sparkle" />
             </Link>
           </div>
+        </div>
+        <div className="ag-hero-pg">
+          <Pigeon size={120} pose={pose} quip={quip} />
         </div>
       </section>
       <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginTop: 20 }}>
         <div className="panel stat">
           <div className="l">Unweighted GPA</div>
-          <div className="v">{gpa ? gpa.unweighted.toFixed(2) : "—"}</div>
+          <div className="v">{gpa ? <Redact label="Reveal GPA">{gpa.unweighted.toFixed(2)}</Redact> : "—"}</div>
           <div className="d" style={gpa ? undefined : { color: "var(--mut)" }}>
             {gpa ? `${gpa.credits} graded classes` : "No grades yet"}
           </div>
@@ -287,7 +315,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         <div className="grid">
           <div className="panel">
             <div className="mascot">
-              <Bot size={48} />
+              <Bot size={48} pose="thinking" />
               <div>
                 <div style={{ fontWeight: 600 }}>{first ? `Hi ${first}!` : "Hi!"}</div>
                 <div style={{ fontSize: 13, color: "var(--mut)" }}>{tip}</div>

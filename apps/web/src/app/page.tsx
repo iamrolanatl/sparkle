@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SparkRobot } from "@/components/landing/SparkRobot";
+import { AgentPigeon } from "@/components/landing/AgentPigeon";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { LazyChatWidget as ChatWidget } from "@/components/LazyChatWidget";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -42,6 +42,9 @@ const FEATURES = [
 export default function Landing() {
   return (
     <div className="spk-wrap">
+      <div className="spk-class" aria-hidden="true">
+        TOP SECRET // SPARKLE // EYES ONLY
+      </div>
       <header className="spk-nav">
         <span className="spk-logo">
           <i aria-hidden />
@@ -59,7 +62,7 @@ export default function Landing() {
         <section className="spk-hero">
           <div>
             <p className="spk-pill">
-              <b>New</b> AI coach for every class
+              <b>Clearance granted</b> Your AI field agent for every class
             </p>
             <h1 className="spk-h1">
               Take command of
@@ -67,25 +70,26 @@ export default function Landing() {
               your school day.
             </h1>
             <p className="spk-sub">
-              Grades, deadlines and focus time in one calm place — with a friendly coach that keeps you one step ahead.
+              Grades, deadlines and teacher intel in one secure ops center — with Sparkle, a very clever pigeon agent
+              who keeps you one step ahead.
             </p>
             <div className="spk-ctas">
               <Link className="spk-btn spk-btn-p" href="/login?next=/app">
-                Get started free →
+                Begin mission →
               </Link>
               <a className="spk-btn spk-btn-s" href="#features">
                 See how it works
               </a>
             </div>
           </div>
-          <SparkRobot />
+          <AgentPigeon />
         </section>
 
         <section id="features" aria-label="Features" className="spk-feats">
           {FEATURES.map((f) => (
             <div key={f.title} className="spk-f">
               <div className="spk-ic" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5ee0f0" strokeWidth="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5dffa5" strokeWidth="2">
                   {f.icon}
                 </svg>
               </div>

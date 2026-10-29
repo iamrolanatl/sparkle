@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
 import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
@@ -36,7 +37,9 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
         </div>
         <div className="hero-copy" data-par="-0.06">
           <div className="eyebrow">Grades &amp; Classes</div>
-          <h1>{me ? `${me.display_name.split(" ")[0]}’s classes` : "Classes"}</h1>
+          <h1>
+            <W a="Case files" p={me ? `${me.display_name.split(" ")[0]}’s classes` : "Classes"} />
+          </h1>
           <div className="sub">
             {classes.length} classes{gpa ? ` · GPA ${gpa.unweighted.toFixed(2)}` : ""}
             {` · ${upcoming} upcoming`}

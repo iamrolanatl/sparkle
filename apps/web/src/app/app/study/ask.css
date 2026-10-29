@@ -185,7 +185,7 @@
   animation: askbr 2.4s ease-in-out infinite;
 }
 .sa .speaking .orb {
-  background: radial-gradient(circle at 35% 30%, #ccfbf1, #2dd4bf 55%, #0ea5a4);
+  background: radial-gradient(circle at 35% 30%, #eafff2, #5dffa5 55%, #1f8a55);
   box-shadow:
     0 0 0 10px rgba(45, 212, 191, 0.1),
     0 0 0 22px rgba(45, 212, 191, 0.06),

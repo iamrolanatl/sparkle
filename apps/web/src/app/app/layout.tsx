@@ -1,19 +1,18 @@
 import "./app-shell.css";
 import "./effects.css";
+import "@/components/agent/pigeon.css";
+import "./agent.css";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
 import { pickStudent } from "@/lib/classes/load";
 import { signOut } from "../login/actions";
-import { cookies } from "next/headers";
-import { SparkleBg, ThemeToggle } from "./chrome";
-import { Crumb, MobileTabs, SideNav } from "./nav";
-import { Fx, Hamburger } from "./fx";
+import { SparkleBg } from "./chrome";
+import { Fx } from "./fx";
+import { Boot, Dock, Flyby, TopBar, type ShellProps } from "./agent-shell";
 
-/** Signed-in shell (approved mockup sparkle-classes): sidebar, top bar, pinned mobile tab bar. */
-type Who = { name: string; sub: string };
-
-/** Sidebar with class list + open-task count; streamed so the shell paints before these queries finish. */
-async function NavData({ isAdmin, who, sid }: { isAdmin: boolean; who: Who; sid: string | null }) {
+/** Dock data (classes for quick actions, open-mission badge); streamed so the shell paints first. */
+async function DockData({ base, sid }: { base: ShellProps; sid: string | null }) {
   const sb = await getSb();
   const [classes, count] =
     sb && sid
@@ -28,51 +27,49 @@ async function NavData({ isAdmin, who, sid }: { isAdmin: boolean; who: Who; sid:
         ])
       : [[], null];
   return (
-    <SideNav
-      isAdmin={isAdmin}
+    <Dock
+      {...base}
       taskCount={count ?? null}
-      classes={classes.map((c) => ({ id: c.id, name: c.name, color: c.color, letter: c.letter }))}
-      who={who}
+      classes={classes.map((c) => ({ id: c.id, name: c.name, pct: c.pct, letter: c.letter }))}
     />
   );
 }
 
-/** Signed-in shell (approved mockup sparkle-classes): sidebar, top bar, pinned mobile tab bar. */
+/** Signed-in shell: ops-center theme, compact top bar, floating dock, More sheet, command palette. */
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const [supabase, user, jar] = await Promise.all([getSb(), getUser(), cookies()]);
   if (!supabase || !user) return <>{children}</>;
   const students = await getStudents();
   const me = pickStudent(students, user.id);
-  const name = me && me.profile_id === user.id ? me.display_name : ((user.user_metadata?.full_name as string) ?? "You");
-  const sub = me ? (me.profile_id === user.id ? "Student" : `Following ${me.display_name}`) : "No student yet";
-  const saved = jar.get("sparkle-theme")?.value;
-  const theme = saved === "dark" ? "dark" : "light";
-  const isAdmin = user.app_metadata?.role === "admin";
-  const who = { name, sub };
+  const name = me ? me.display_name : ((user.user_metadata?.full_name as string) ?? "You");
+  const theme = jar.get("sparkle-theme")?.value === "light" ? "light" : "dark";
+  const plain = jar.get("sparkle-plain")?.value === "1";
+  const base: ShellProps = {
+    name,
+    students: students.map((s) => ({ id: s.id, name: s.display_name })),
+    current: me?.id ?? null,
+    isAdmin: user.app_metadata?.role === "admin",
+    taskCount: null,
+    classes: [],
+    signOut,
+  };
   return (
-    <div className="sa" data-theme={theme}>
+    <div className="sa ag" data-theme={theme} data-plain={plain ? "" : undefined}>
       <SparkleBg />
+      <div className="ag-tex" aria-hidden="true" />
+      <div className="ag-class" aria-hidden="true">
+        TOP SECRET // SPARKLE // EYES ONLY
+      </div>
       <Fx />
-      <Suspense fallback={<SideNav isAdmin={isAdmin} taskCount={null} classes={[]} who={who} />}>
-        <NavData isAdmin={isAdmin} who={who} sid={me?.id ?? null} />
-      </Suspense>
       <div className="sa-main">
-        <div className="top">
-          <Hamburger isAdmin={isAdmin} />
-          <Crumb who={me?.display_name ?? name} />
-          <a className="pill askbtn mag" href="/app/study">
-            Ask Sparkle
-          </a>
-          <ThemeToggle initial={theme} hasCookie={saved === "light" || saved === "dark"} />
-          <form action={signOut}>
-            <button className="out" style={{ background: "none", border: 0, cursor: "pointer" }}>
-              Sign out
-            </button>
-          </form>
-        </div>
+        <TopBar {...base} />
         {children}
       </div>
-      <MobileTabs />
+      <Suspense fallback={<Dock {...base} />}>
+        <DockData base={base} sid={me?.id ?? null} />
+      </Suspense>
+      {jar.get("sparkle-booted") ? null : <Boot />}
+      <Flyby />
     </div>
   );
 }

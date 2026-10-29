@@ -1,7 +1,7 @@
 /** Static, real links for Cobb County families and unit-matched practice searches (no fake data). */
 export const COBB_LINKS = [
   { name: "CTLS Learn", desc: "Lessons & posts", href: "https://ctlslearn.cobbk12.org", color: "#0ea5e9" },
-  { name: "CTLS Parent", desc: "Teacher messages", href: "https://ctlsparent.cobbk12.org", color: "#38bdf8" },
+  { name: "CTLS Parent", desc: "Teacher messages", href: "https://ctlsparent.cobbk12.org", color: "#b45309" },
   { name: "StudentVUE", desc: "Grades & attendance", href: "https://studentvue.cobbk12.org", color: "#22c55e" },
   { name: "Clever", desc: "Cobb digital library", href: "https://clever.com/in/cobb", color: "#3b82f6" },
   { name: "Office 365", desc: "Outlook · OneDrive", href: "https://portal.office.com", color: "#f97316" },

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { Pigeon, type Pose } from "@/components/agent/Pigeon";
 
 export { SparkleBg } from "./bgvideo";
 
@@ -61,19 +62,7 @@ export function burst(el: HTMLElement | null) {
   }
 }
 
-export function Bot({ size = 30 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true">
-      <rect x="14" y="6" width="5" height="12" rx="2" fill="#a78bfa" />
-      <circle cx="16.5" cy="6" r="4" fill="#2dd4bf" />
-      <rect x="2" y="24" width="8" height="18" rx="4" fill="#2dd4bf" />
-      <rect x="54" y="24" width="8" height="18" rx="4" fill="#a78bfa" />
-      <rect x="8" y="14" width="48" height="42" rx="18" fill="#fff" stroke="#d9d9e0" />
-      <rect x="14" y="22" width="36" height="20" rx="10" fill="#15151c" />
-      <circle cx="24" cy="32" r="4" fill="#38bdf8" />
-      <circle cx="40" cy="32" r="4" fill="#38bdf8" />
-      <circle cx="17" cy="48" r="3" fill="#f9a8d4" />
-      <circle cx="47" cy="48" r="3" fill="#f9a8d4" />
-    </svg>
-  );
+/** Legacy name kept for existing imports: Sparkle is now the agent pigeon. */
+export function Bot({ size = 30, pose }: { size?: number; pose?: Pose }) {
+  return <Pigeon size={size} pose={pose} />;
 }

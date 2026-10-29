@@ -1,4 +1,5 @@
 "use client";
+import { W } from "@/components/agent/Pigeon";
 import { burst } from "../chrome";
 import Link from "@/components/IntentLink";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
@@ -141,7 +142,9 @@ function TaskComposerInner({
   if (!students.length)
     return (
       <>
-        <h1>Tasks</h1>
+        <h1>
+          <W a="Missions" p="Tasks" />
+        </h1>
         <div className="panel empty" style={{ marginTop: 16 }}>
           Add a student on the{" "}
           <Link href="/app/family" style={{ textDecoration: "underline" }}>
@@ -156,7 +159,9 @@ function TaskComposerInner({
     <>
       <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div>
-          <h1>Tasks</h1>
+          <h1>
+            <W a="Missions" p="Tasks" />
+          </h1>
           <div className="sub">School assignments plus your own</div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import { redirect } from "next/navigation";
 import Link from "@/components/IntentLink";
@@ -65,7 +66,9 @@ export default async function FamilyPage() {
     <div className="page stack">
       <div className="phead">
         <div>
-          <h1>Family &amp; helpers</h1>
+          <h1>
+            <W a="The team" p="Family & helpers" />
+          </h1>
           <div className="sub">Students, the people who can see them, and invitations</div>
         </div>
         <Link href="/invite" className="ghost">

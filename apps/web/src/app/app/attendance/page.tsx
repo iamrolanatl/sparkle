@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
 import { getSb, getStudents, getUser } from "@/lib/req";
@@ -50,7 +51,9 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
     });
   return (
     <div className="page">
-      <h1>Attendance</h1>
+      <h1>
+        <W a="Check-ins" p="Attendance" />
+      </h1>
       <div className="sub">
         {me?.display_name ?? ""} · from StudentVUE
         {sync?.last_ok_at

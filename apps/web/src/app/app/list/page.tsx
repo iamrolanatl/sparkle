@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import { redirect } from "next/navigation";
 import { getSb, getStudents, getUser } from "@/lib/req";
 import { supabaseEnv } from "@/lib/env";
@@ -59,7 +60,9 @@ export default async function ListPage({ searchParams }: { searchParams: Promise
   if (!me)
     return (
       <div className="page">
-        <h1>Shopping list</h1>
+        <h1>
+          <W a="Supply run" p="Shopping list" />
+        </h1>
         <div className="panel empty" style={{ marginTop: 16 }}>
           Add a student in Family first.
         </div>

@@ -4,8 +4,8 @@
 @source "../../../../packages/ui/src";
 
 @theme {
-  --color-neon: #22d3ee;
-  --color-neon-2: #2dd4bf;
+  --color-neon: #5dffa5;
+  --color-neon-2: #ffb547;
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -35,9 +35,9 @@ body {
 html,
 body {
   background:
-    radial-gradient(900px 500px at 75% 20%, rgba(94, 224, 240, 0.06), transparent 60%),
-    linear-gradient(#0b0f16, #07090d);
-  background-color: #07090d;
+    radial-gradient(900px 500px at 75% 20%, rgba(93, 255, 165, 0.06), transparent 60%),
+    linear-gradient(#0b0f0d, #07090a);
+  background-color: #07090a;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
@@ -56,17 +56,17 @@ button {
 }
 .spk-glass:is(a, button):hover,
 .spk-glass:is(a, button):focus-visible {
-  border-color: rgba(94, 224, 240, 0.35);
+  border-color: rgba(93, 255, 165, 0.35);
 }
 .spk-glow:is(a, button):hover {
   box-shadow:
-    0 0 0 4px rgba(94, 224, 240, 0.12),
-    0 8px 30px rgba(94, 224, 240, 0.15);
+    0 0 0 4px rgba(93, 255, 165, 0.12),
+    0 8px 30px rgba(93, 255, 165, 0.15);
 }
 /* Floating layers (cookie banner, chat panel) need an opaque base to stay readable. */
 .fixed.spk-glass,
 .fixed .spk-glass.spk-glow {
-  background: rgba(12, 16, 24, 0.94);
+  background: rgba(10, 14, 12, 0.95);
 }
 input.spk-glass,
 textarea.spk-glass,
@@ -132,12 +132,12 @@ textarea::placeholder {
 }
 .spk-btn-p {
   background: var(--spk-text);
-  color: #07090d;
+  color: #07090a;
 }
 .spk-btn-p:hover {
   box-shadow:
-    0 0 0 4px rgba(94, 224, 240, 0.15),
-    0 8px 30px rgba(94, 224, 240, 0.2);
+    0 0 0 4px rgba(93, 255, 165, 0.15),
+    0 8px 30px rgba(93, 255, 165, 0.2);
   transform: translateY(-1px);
 }
 .spk-btn-s {
@@ -145,7 +145,7 @@ textarea::placeholder {
   background: rgba(255, 255, 255, 0.03);
 }
 .spk-btn-s:hover {
-  border-color: rgba(94, 224, 240, 0.35);
+  border-color: rgba(93, 255, 165, 0.35);
   transform: translateY(-1px);
 }
 .spk-hero {
@@ -193,9 +193,9 @@ textarea::placeholder {
   display: block;
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(18, 26, 40, 0.85), rgba(10, 14, 22, 0.9));
-  border: 1px solid rgba(94, 224, 240, 0.18);
+  border: 1px solid rgba(93, 255, 165, 0.18);
   box-shadow:
-    0 0 40px rgba(60, 220, 200, 0.07),
+    0 0 40px rgba(93, 255, 165, 0.07),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   aspect-ratio: 1 / 1;
   max-width: 420px;
@@ -207,9 +207,9 @@ textarea::placeholder {
   text-align: left;
 }
 .spk-bot-card:hover {
-  border-color: rgba(94, 224, 240, 0.35);
+  border-color: rgba(93, 255, 165, 0.35);
   box-shadow:
-    0 0 60px rgba(60, 220, 200, 0.14),
+    0 0 60px rgba(93, 255, 165, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .spk-bot-card::before {
@@ -257,10 +257,10 @@ textarea::placeholder {
 }
 .spk-f:hover {
   transform: translateY(-3px);
-  border-color: rgba(94, 224, 240, 0.25);
+  border-color: rgba(93, 255, 165, 0.25);
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.4),
-    0 0 24px rgba(94, 224, 240, 0.08);
+    0 0 24px rgba(93, 255, 165, 0.08);
 }
 .spk-ic {
   width: 34px;
@@ -268,8 +268,8 @@ textarea::placeholder {
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: rgba(94, 224, 240, 0.08);
-  border: 1px solid rgba(94, 224, 240, 0.18);
+  background: rgba(93, 255, 165, 0.08);
+  border: 1px solid rgba(93, 255, 165, 0.18);
   margin-bottom: 16px;
 }
 .spk-f-title {
@@ -309,4 +309,69 @@ textarea::placeholder {
   .spk-feats {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---- Ops-center theme for public pages (landing + login): classification strip, mono labels, HUD ---- */
+.spk-class {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  text-align: center;
+  font:
+    600 10.5px/20px ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.22em;
+  color: #04140b;
+  background: #5dffa5;
+  box-shadow: 0 0 14px rgba(93, 255, 165, 0.45);
+}
+.spk-mono,
+.spk-pill,
+.spk-logo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+html:has(.spk-class) body {
+  background:
+    linear-gradient(rgba(93, 255, 165, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, rgba(93, 255, 165, 0.04) 1px, transparent 1px) 0 0 / 48px 48px,
+    #07090a;
+}
+.spk-agent {
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border: 1px solid rgba(93, 255, 165, 0.35);
+  border-radius: 6px;
+  background: rgba(10, 14, 12, 0.85);
+  box-shadow: 0 0 40px rgba(93, 255, 165, 0.08);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.spk-agent-hd {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #9fb0a7;
+}
+.spk-agent-hd i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #5dffa5;
+  box-shadow: 0 0 8px #5dffa5;
+}
+.spk-agent-log {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #5dffa5;
+  text-shadow: 0 0 6px rgba(93, 255, 165, 0.4);
 }

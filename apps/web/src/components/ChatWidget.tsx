@@ -111,7 +111,7 @@ export function ChatWidget() {
             {msgs.map((m, i) => (
               <p
                 key={i}
-                className={`max-w-[85%] rounded-xl px-3 py-2 ${m.role === "user" ? "ml-auto bg-cyan-500/20" : "spk-glass"}`}
+                className={`max-w-[85%] rounded-xl px-3 py-2 ${m.role === "user" ? "ml-auto bg-emerald-500/15" : "spk-glass"}`}
               >
                 {m.content || "…"}
               </p>

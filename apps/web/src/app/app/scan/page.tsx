@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -20,7 +21,9 @@ export default async function ScanPage() {
   return (
     <div className="page stack" style={{ maxWidth: 900 }}>
       <div>
-        <h1>Scan homework</h1>
+        <h1>
+          <W a="Document scanner" p="Scan homework" />
+        </h1>
         <div className="sub">Snap or upload a school handout · read on your device</div>
       </div>
       <NeonWindow title="Your document">

@@ -1,3 +1,4 @@
+import { W } from "@/components/agent/Pigeon";
 import { NeonWindow } from "@sparkle/ui/NeonWindow";
 import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
@@ -16,7 +17,9 @@ export default async function ImportPage() {
   return (
     <div className="page stack" style={{ maxWidth: 820 }}>
       <div>
-        <h1>Import assignments</h1>
+        <h1>
+          <W a="Intel import" p="Import assignments" />
+        </h1>
         <div className="sub">Paste in a spreadsheet export (CSV)</div>
       </div>
       <NeonWindow title="Upload a CSV">

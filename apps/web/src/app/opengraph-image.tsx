@@ -19,7 +19,7 @@ export default function OgImage() {
         color: "#f8fafc",
       }}
     >
-      <div style={{ fontSize: 96, fontWeight: 700, color: "#22d3ee" }}>Sparkle</div>
+      <div style={{ fontSize: 96, fontWeight: 700, color: "#5dffa5" }}>Sparkle</div>
       <div style={{ fontSize: 44, marginTop: 16 }}>School, made calm. One next step at a time.</div>
     </div>,
     size,

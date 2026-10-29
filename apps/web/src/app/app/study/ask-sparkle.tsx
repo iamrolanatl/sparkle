@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { W } from "@/components/agent/Pigeon";
 import { Bot } from "../chrome";
 import { listen, patchById, readAsk, sentenceSplitter, speak, stopSpeaking, voiceSupport } from "@/lib/voice/speech";
 
@@ -36,6 +37,12 @@ export function AskSparkle(props: {
 }) {
   const [log, setLog] = useState<Msg[]>([{ who: "ai", text: props.greet, sources: props.greetSources }]);
   const [text, setText] = useState("");
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (!q) return;
+    const t = setTimeout(() => setText(q.slice(0, 500)), 0);
+    return () => clearTimeout(t);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<Mode>("idle");
   const [live, setLive] = useState("");
@@ -170,10 +177,15 @@ export function AskSparkle(props: {
     <div className="askwrap">
       <div className={`panel askchat ${mode}`}>
         <div className="askh">
-          <Bot size={38} />
+          <Bot size={38} pose={mode === "listening" ? "listening" : busy ? "thinking" : "idle"} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 600 }}>Sparkle</div>
-            <div className="mutd">Knows your classes, grades and teacher posts</div>
+            <div style={{ fontWeight: 600 }}>Agent Sparkle</div>
+            <div className="mutd">
+              <W
+                a="Secure line · cleared for your classes, grades and intel"
+                p="Knows your classes, grades and teacher posts"
+              />
+            </div>
           </div>
           <span className="beta">AI · beta</span>
         </div>
@@ -249,7 +261,7 @@ export function AskSparkle(props: {
               ✦
             </span>
             <div className="orb">
-              <Bot size={48} />
+              <Bot size={48} pose={mode === "listening" ? "listening" : "thinking"} />
             </div>
             <div className="wave" aria-hidden="true">
               {Array.from({ length: 18 }, (_, i) => (

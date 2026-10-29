@@ -1,7 +1,13 @@
+import { Pigeon } from "@/components/agent/Pigeon";
+
 /** Streamed instantly while the page's data loads: a calm skeleton in the same shell. */
 export default function Loading() {
   return (
     <div className="page" aria-busy="true" aria-live="polite">
+      <div className="ag-loading" data-testid="loading-pigeon">
+        <Pigeon size={44} pose="scan" label="" />
+        <span>Decrypting intel…</span>
+      </div>
       <section className="hero sk-hero">
         <div className="sk sk-line" style={{ width: 120 }} />
         <div className="sk sk-line" style={{ width: "46%", height: 30, marginTop: 12 }} />

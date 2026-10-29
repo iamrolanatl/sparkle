@@ -1,10 +1,11 @@
 import "../app/app-shell.css";
+import "../app/agent.css";
+import "@/components/agent/pigeon.css";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { requireAdmin } from "@/lib/admin";
 import { signOut } from "../login/actions";
 import { SparkleBg, ThemeToggle } from "../app/chrome";
-import { Crumb, MobileTabs, SideNav } from "../app/nav";
 
 export const metadata = { title: "Admin", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -13,14 +14,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const user = await requireAdmin();
   const jar = await cookies();
   const saved = jar.get("sparkle-theme")?.value;
-  const theme = saved === "dark" ? "dark" : "light";
+  const theme = saved === "light" ? "light" : "dark";
   return (
-    <div className="sa" data-theme={theme}>
+    <div className="sa ag" data-theme={theme}>
       <SparkleBg />
-      <SideNav isAdmin taskCount={null} classes={[]} who={{ name: "Admin", sub: user.email ?? "" }} />
+      <div className="ag-class" aria-hidden="true">
+        TOP SECRET // SPARKLE // ADMIN
+      </div>
       <div className="sa-main">
-        <div className="top">
-          <Crumb who="Sparkle" />
+        <div className="ag-top">
+          <Link href="/app/today">← Back to app</Link>
+          <span style={{ flex: 1 }} title={user.email ?? ""} />
           <ThemeToggle initial={theme} hasCookie={saved === "light" || saved === "dark"} />
           <form action={signOut}>
             <button className="out" style={{ background: "none", border: 0, cursor: "pointer" }}>
@@ -53,7 +57,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div>{children}</div>
         </div>
       </div>
-      <MobileTabs />
     </div>
   );
 }
