@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/load";
 import { ClassList } from "./class-list";
-import { Applets, Star3D } from "../today/applets";
+import { Applets } from "../today/applets";
 import { toApplets } from "@/lib/classes/applets";
 
 export const dynamic = "force-dynamic";
@@ -58,9 +58,6 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
               Ask Sparkle ✦
             </Link>
           </div>
-        </div>
-        <div data-par="0.08">
-          <Star3D />
         </div>
       </section>
       {classes.length ? <Applets classes={toApplets(classes)} uid={user.id} title="Class applets" /> : null}

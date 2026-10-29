@@ -5,7 +5,7 @@ import { gpaOf, loadClasses, loadStudents, pickStudent } from "@/lib/classes/loa
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
 import { Bot } from "../chrome";
-import { Applets, Star3D } from "./applets";
+import { Applets } from "./applets";
 import { toApplets } from "@/lib/classes/applets";
 
 const KIND: Record<string, string> = { missing: "Missing", assessment: "Test/quiz", bring: "Bring", due: "Due" };
@@ -161,9 +161,6 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
               Ask Sparkle ✦
             </Link>
           </div>
-        </div>
-        <div data-par="0.08">
-          <Star3D />
         </div>
       </section>
       <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginTop: 20 }}>

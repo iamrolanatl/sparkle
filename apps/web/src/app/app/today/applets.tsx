@@ -188,25 +188,3 @@ export function Applets({
     </section>
   );
 }
-
-/** Tasteful CSS-3D star: stacked layers give it thickness; rotates slowly, stops for reduced motion. */
-export function Star3D() {
-  const layers = Array.from({ length: 8 }, (_, i) => i);
-  return (
-    <div className="star3d" aria-hidden="true">
-      <div className="st-spin">
-        {layers.map((i) => (
-          <svg
-            key={i}
-            viewBox="0 0 100 100"
-            style={{ transform: `translateZ(${(i - 3.5) * 1.6}px)` }}
-            className={i === 7 || i === 0 ? "face" : ""}
-          >
-            <path d="M50 4 L61 39 L96 50 L61 61 L50 96 L39 61 L4 50 L39 39 Z" />
-          </svg>
-        ))}
-      </div>
-      <span className="st-glow" />
-    </div>
-  );
-}
