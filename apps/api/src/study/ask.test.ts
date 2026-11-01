@@ -30,7 +30,8 @@ const stub = (self = true) =>
         return new Response(null, { status: 201 });
       }
       if (url.includes("/classes?")) return Response.json([{ id: "c1", name: "Math 7 Advanced", teacher: "T" }]);
-      if (url.includes("/units?")) return Response.json([{ class_id: "c1", title: "Two-step equations" }]);
+      if (url.includes("/units?"))
+        return Response.json([{ class_id: "c1", title: "Two-step equations", topics: ["inverse operations"] }]);
       if (url.includes("/post_actions?"))
         return Response.json([
           { id: "p1", class_id: "c1", kind: "assessment", text: "Quiz B moved to Monday", due_at: null },
@@ -69,6 +70,8 @@ describe("Ask Sparkle", () => {
     expect(t).toContain('"safety":"ok"');
     expect(sys).toContain("Math 7 Advanced");
     expect(sys).toContain("Quiz B moved to Monday");
+    expect(sys).toContain("Two-step equations (topics: inverse operations)");
+    expect(sys).toContain("Hints first");
     await new Promise((s) => setTimeout(s, 10));
     expect(logs).toHaveLength(1);
     expect(JSON.stringify(logs[0])).not.toContain("math");
@@ -133,6 +136,7 @@ describe("stream helpers", () => {
   });
   it("suggestions come from data", () => {
     expect(suggestions("current unit: Cells\nOpen items from teacher posts:")).toContain("Quiz me on Cells");
+    expect(suggestions("current unit: Cells (topics: mitosis)")).toContain("Quiz me on Cells");
   });
 });
 

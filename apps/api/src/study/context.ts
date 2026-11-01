@@ -32,7 +32,7 @@ export async function loadContext(
   const [classes, grades, units, work, actions] = await Promise.all([
     get(`classes?${s}&select=id,name,teacher&limit=12`),
     get(`grade_snapshots?${s}&select=class_id,pct,mark,missing_count,captured_on&order=captured_on.desc&limit=40`),
-    get(`units?${s}&is_current=eq.true&select=class_id,title&limit=12`),
+    get(`units?${s}&is_current=eq.true&select=class_id,title,topics&limit=12`),
     get(`assignments?${s}&due_at=gte.${from}&due_at=lte.${to}&select=id,class_id,title,due_at&order=due_at&limit=15`),
     get(
       `post_actions?${s}&done_at=is.null&or=(due_at.is.null,due_at.gte.${new Date(now.getTime() - 2 * 864e5).toISOString()})&select=id,class_id,kind,text,due_at&order=due_at.asc.nullslast&limit=10`,
@@ -41,7 +41,17 @@ export async function loadContext(
   const name = new Map(classes.map((c) => [String(c.id), sanitizeTitle(String(c.name ?? "Class"))]));
   const latest = new Map<string, Row>();
   for (const g of grades) if (!latest.has(String(g.class_id))) latest.set(String(g.class_id), g);
-  const unit = new Map(units.map((u) => [String(u.class_id), sanitizeTitle(String(u.title))]));
+  const unit = new Map(
+    units.map((u) => {
+      const topics = Array.isArray(u.topics)
+        ? (u.topics as unknown[]).slice(0, 6).map((t) => sanitizeTitle(String(t)))
+        : [];
+      return [
+        String(u.class_id),
+        `${sanitizeTitle(String(u.title))}${topics.length ? ` (topics: ${topics.join(", ")})` : ""}`,
+      ];
+    }),
+  );
   const day = (d: unknown) => (d ? new Date(String(d)).toDateString().slice(0, 10) : "no date");
   const sources: Source[] = [];
   const lines: string[] = ["Classes:"];
@@ -72,8 +82,8 @@ export async function loadContext(
 /** Suggested prompts from real data (classes / teacher posts), no AI call. */
 export function suggestions(summary: string): string[] {
   const out = ["What's due this week?"];
-  const unit = /current unit: ([^\n]+)/.exec(summary);
-  if (unit) out.push(`Quiz me on ${unit[1]!.slice(0, 40)}`);
+  const unit = /current unit: ([^\n(]+)/.exec(summary);
+  if (unit) out.push(`Quiz me on ${unit[1]!.trim().slice(0, 40)}`);
   if (/Open items from teacher posts/.test(summary)) out.push("What did my teachers post that I should know?");
   out.push("Help me make a study plan");
   return out.slice(0, 4);
