@@ -31,8 +31,8 @@ export async function Goals({
   const goals = (data ?? []) as Goal[];
   const today = new Date().toISOString().slice(0, 10);
   return (
-    <div className="panel sh-goals" data-testid="goals">
-      <div className="sh-k">
+    <div className="panel sh-card sh-goals" data-testid="goals">
+      <div className="sh-l">
         <W a="Joint missions · goals & rewards" p="Family goals" />
       </div>
       {goals.length ? (
@@ -66,7 +66,7 @@ export async function Goals({
               {guardian ? (
                 <form action={archiveGoal}>
                   <input type="hidden" name="id" value={g.id} />
-                  <button className="btn" type="submit" style={{ fontSize: 12 }}>
+                  <button className="btn ghost" type="submit" style={{ fontSize: 12, marginTop: 4 }}>
                     Close goal
                   </button>
                 </form>
