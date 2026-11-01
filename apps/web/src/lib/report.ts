@@ -1,5 +1,5 @@
 "use client";
-import { reportError, setErrorReporter } from "@sparkle/ui";
+import { reportError, setErrorReporter } from "@sparkle/ui/report";
 
 /**
  * Crash reporter (DEC-54): sends a minimal Sentry envelope when NEXT_PUBLIC_SENTRY_DSN is set (free tier),

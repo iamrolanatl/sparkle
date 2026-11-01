@@ -6,6 +6,8 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "observability": { "enabled": true },
+  // Smart Placement (free): run the Worker near Supabase when that is faster than near the user.
+  "placement": { "mode": "smart" },
   "vars": {
     "SUPABASE_URL": "https://nklbdyezbsugkdvaidtt.supabase.co",
     "NEXT_PUBLIC_API_URL": "https://sparkle-api.crystal-iamrolan.workers.dev",
