@@ -8,6 +8,7 @@ import { Bot } from "../chrome";
 import { Pigeon, W, quipOfDay, type Pose } from "@/components/agent/Pigeon";
 import { Countdown, Redact } from "@/components/agent/Live";
 import { Applets } from "./applets";
+import { Goals } from "./goals";
 import { toApplets } from "@/lib/classes/applets";
 import Battle from "@/components/ship/LazyBattle";
 import WhatIf from "@/components/ship/WhatIf";
@@ -149,10 +150,9 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           : quipOfDay(now);
   const caseNo = `${String(now.getUTCFullYear()).slice(2)}-${String(now.getUTCMonth() + 1).padStart(2, "0")}${String(now.getUTCDate()).padStart(2, "0")}-${me.id.slice(0, 4).toUpperCase()}`;
   const zulu = `${String(now.getUTCHours()).padStart(2, "0")}${String(now.getUTCMinutes()).padStart(2, "0")}Z`;
-  const first =
-    me.profile_id === user.id
-      ? me.display_name.split(" ")[0]
-      : ((user.user_metadata?.full_name as string) ?? "").split(" ")[0];
+  const own = me.profile_id === user.id;
+  const first = me.display_name.split(" ")[0] ?? "";
+  const guardian = ((user.user_metadata?.full_name as string) ?? "").split(" ")[0];
   const tip = miss[0]
     ? `Start with this from ${miss[0].className}: ${miss[0].text}`
     : nextUp
@@ -190,7 +190,14 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
             <W a={`Bridge log · Stardate ${caseNo}`} p={dateLine} /> · <time>{zulu}</time>
           </div>
           <h1>
-            <W a={`${hello}, Commander${first ? ` ${first}` : ""}`} p={`${hello}${first ? `, ${first}` : ""}`} />
+            {own ? (
+              <W a={`${hello}, ${stats.rank}${first ? ` ${first}` : ""}`} p={`${hello}${first ? `, ${first}` : ""}`} />
+            ) : (
+              <W
+                a={`${hello}${guardian ? `, ${guardian}` : ""} · ${stats.rank} ${first}'s bridge`}
+                p={`${hello}${guardian ? `, ${guardian}` : ""} · ${first}'s day`}
+              />
+            )}
           </h1>
           <div className="sub">
             {rows.length
@@ -314,6 +321,12 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
             Built from real upcoming tests, missing work and due items. Missing work first, then spaced test review.
           </div>
         </div>
+        <Goals
+          sb={supabase}
+          studentId={me.id}
+          first={first}
+          classes={classes.map((c) => ({ id: c.id, name: c.name, pct: c.pct }))}
+        />
         <div className="panel sh-card">
           <div className="sh-l">
             <W a="Trajectory · what-if" p="What-if grade calculator" />

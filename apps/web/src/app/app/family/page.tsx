@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SITE_URL } from "@/lib/site";
 import { approveInvitation, revokeInvitation, revokeShare } from "./actions";
 import { AddStudentForm, InviteForm } from "./forms";
-import { shipStats } from "@/lib/ship/load";
+import { shipStatsFull } from "@/lib/ship/load";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Family & helpers", robots: { index: false } };
@@ -64,7 +64,7 @@ export default async function FamilyPage() {
   ]);
 
   const crew = await Promise.all(
-    ((students ?? []) as Student[]).slice(0, 12).map(async (s) => ({ s, st: await shipStats(supabase, s.id, []) })),
+    ((students ?? []) as Student[]).slice(0, 12).map(async (s) => ({ s, st: await shipStatsFull(supabase, s.id) })),
   );
   crew.sort((a, b) => b.st.xp - a.st.xp);
   return (
