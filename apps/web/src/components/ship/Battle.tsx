@@ -2,13 +2,16 @@
 import { useEffect, useRef } from "react";
 
 /** Space-battle backdrop for the Bridge hero. Canvas only; pauses offscreen / hidden tab; static frame when motion is off. */
-export default function Battle() {
+export default function Battle({ animate = true }: { animate?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const cv = ref.current;
     const x = cv?.getContext("2d");
     if (!cv || !x) return;
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
     const still = () =>
+      !animate ||
       matchMedia("(prefers-reduced-motion: reduce)").matches ||
       document.querySelector(".sa")?.getAttribute("data-motion") === "off";
     const dpr = Math.min(2, devicePixelRatio || 1);
@@ -22,12 +25,12 @@ export default function Battle() {
       H = cv.height = cv.offsetHeight * dpr;
     };
     rs();
-    const st = Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random(), z: Math.random() }));
+    const st = Array.from({ length: 160 }, () => ({ x: rnd(), y: rnd(), z: rnd() }));
     const sh = Array.from({ length: 6 }, (_, i) => ({
-      x: Math.random(),
-      y: 0.15 + Math.random() * 0.55,
-      s: 0.6 + Math.random(),
-      v: 0.0004 + Math.random() * 0.0008,
+      x: rnd(),
+      y: 0.15 + rnd() * 0.55,
+      s: 0.6 + rnd(),
+      v: 0.0004 + rnd() * 0.0008,
       f: i % 3 ? 0 : 1,
     }));
     let bolts: { x: number; y: number; tx: number; ty: number; k: number; c: string }[] = [];
@@ -84,7 +87,7 @@ export default function Battle() {
           s.x += s.f ? -s.v : s.v;
           if (s.x > 1.1) s.x = -0.1;
           if (s.x < -0.1) s.x = 1.1;
-          if (Math.random() < 0.008) {
+          if (rnd() < 0.008) {
             const o = sh.find((q) => q.f !== s.f);
             if (o)
               bolts.push({ x: s.x * W, y: s.y * H, tx: o.x * W, ty: o.y * H, k: 0, c: s.f ? "#ff4a3d" : "#5dff8a" });
@@ -131,6 +134,6 @@ export default function Battle() {
       window.removeEventListener("sparkle-prefs", wake);
       window.removeEventListener("resize", onRs);
     };
-  }, []);
+  }, [animate]);
   return <canvas ref={ref} className="sh-battle" aria-hidden="true" data-testid="battle" />;
 }

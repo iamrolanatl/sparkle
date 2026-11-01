@@ -375,3 +375,22 @@ html:has(.spk-class) body {
   color: #5dffa5;
   text-shadow: 0 0 6px rgba(93, 255, 165, 0.4);
 }
+
+/* Starship backdrop for public pages (static frame) */
+.sh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+}
+.sh-bg ~ *,
+.spk-wrap > :not(.sh-bg) {
+  position: relative;
+  z-index: 1;
+}
+.sh-bg .sh-battle {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

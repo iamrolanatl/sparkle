@@ -24,7 +24,7 @@ export function fuelStreak(doneAt: string[], now: Date, tz = "America/New_York")
   return n;
 }
 
-export const RANKS = ["Cadet", "Ensign", "Lieutenant", "Commander", "Captain", "Admiral"] as const;
+const RANKS = ["Cadet", "Ensign", "Lieutenant", "Commander", "Captain", "Admiral"] as const;
 /** XP only for real work: 20 per completed task (last 60 days), 15 per class at/above 90%, 5 per streak day. */
 export function rankOf(tasksDone: number, classesAbove90: number, streak: number) {
   const xp = tasksDone * 20 + classesAbove90 * 15 + streak * 5;

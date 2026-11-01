@@ -44,7 +44,7 @@ export default function Landing() {
   return (
     <div className="spk-wrap">
       <div className="sh-bg" aria-hidden="true">
-        <Battle />
+        <Battle animate={false} />
       </div>
       <div className="spk-class" aria-hidden="true">
         STARSHIP SPARKLE // MISSION CONTROL FOR SCHOOL
