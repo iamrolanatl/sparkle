@@ -57,6 +57,8 @@ describe("recoveryPlan", () => {
     expect(r.email).toContain("Hello Ms. Hyden,");
     expect(r.email).toContain("This is Eli.");
     expect(r.subject).toBe("Eli: catching up in Math");
+    const r2 = recoveryPlan({ cls: "Math", teacher: "Hyden", pct: 70, student: "Eli", missing: [] });
+    expect(r2.email).toContain("Hello [Mr./Ms.] Hyden,");
   });
 });
 

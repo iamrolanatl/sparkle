@@ -118,9 +118,8 @@ export function recoveryPlan(r: RecoveryInput): Recovery {
     "When is a good time for extra help?",
   ];
   const last = (r.teacher ?? "").trim().split(/\s+/).pop();
-  const hi = last
-    ? `Hello ${/^(mr|ms|mrs|dr)\.?$/i.test(r.teacher!.split(/\s+/)[0]!) ? r.teacher : `${last}`},`
-    : "Hello,";
+  const titled = /^(mr|ms|mrs|dr)\.?$/i.test((r.teacher ?? "").trim().split(/\s+/)[0] ?? "");
+  const hi = last ? `Hello ${titled ? r.teacher!.trim() : `[Mr./Ms.] ${last}`},` : "Hello,";
   const list = items.length
     ? `\n\nI'm working on getting caught up on:\n${items.map((m) => `- ${m.title}`).join("\n")}`
     : "";
