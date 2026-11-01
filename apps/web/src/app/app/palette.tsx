@@ -149,7 +149,7 @@ export default function Palette({
           {!list.length ? <li className="ag-sec">No match. Type a question to ask Sparkle.</li> : null}
         </ul>
         <div className="ag-pal-f">
-          <kbd>↑↓</kbd> move <kbd>↵</kbd> open <kbd>Esc</kbd> close · <kbd>1–4</kbd> dock <kbd>M</kbd> more <kbd>/</kbd>{" "}
+          <kbd>↑↓</kbd> move <kbd>↵</kbd> open <kbd>Esc</kbd> close · <kbd>1–5</kbd> dock <kbd>M</kbd> more <kbd>/</kbd>{" "}
           search
         </div>
         <form id="ag-signout" action={signOut} hidden />

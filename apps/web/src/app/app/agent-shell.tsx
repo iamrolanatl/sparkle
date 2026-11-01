@@ -19,7 +19,7 @@ const ls = (k: string, v?: string) => {
   } catch {}
   return null;
 };
-export type Prefs = { dark: boolean; motion: boolean; plain: boolean; sound: boolean; haptics: boolean };
+export type Prefs = { dark: boolean; motion: boolean; plain: boolean; sound: boolean; haptics: boolean; hum: boolean };
 function readPrefs(): Prefs {
   const el = sa();
   return {
@@ -28,6 +28,7 @@ function readPrefs(): Prefs {
     plain: el?.hasAttribute("data-plain") ?? false,
     sound: ls("sparkle-sound") === "on",
     haptics: ls("sparkle-haptics") === "on",
+    hum: ls("sparkle-hum") === "on",
   };
 }
 export function applyPref(k: keyof Prefs, v: boolean) {
@@ -48,7 +49,14 @@ export function applyPref(k: keyof Prefs, v: boolean) {
   window.dispatchEvent(new Event("sparkle-prefs"));
 }
 export function usePrefs(): [Prefs, (k: keyof Prefs, v: boolean) => void] {
-  const [p, setP] = useState<Prefs>({ dark: true, motion: true, plain: false, sound: false, haptics: false });
+  const [p, setP] = useState<Prefs>({
+    dark: true,
+    motion: true,
+    plain: false,
+    sound: false,
+    haptics: false,
+    hum: false,
+  });
   useEffect(() => {
     const r = () => setP(readPrefs());
     r();
@@ -58,23 +66,71 @@ export function usePrefs(): [Prefs, (k: keyof Prefs, v: boolean) => void] {
   return [p, applyPref];
 }
 
-/* ---------- tiny synthesized cues (opt-in) ---------- */
+/* ---------- command-center cues (WebAudio, opt-in, off by default) ---------- */
 let ac: AudioContext | null = null;
-export function cue(kind: "tap" | "open" | "ok" = "tap") {
+const TONES: Record<string, [number, number, OscillatorType][]> = {
+  tap: [[660, 0.08, "sine"]],
+  open: [[520, 0.1, "sine"]],
+  ok: [
+    [880, 0.08, "sine"],
+    [1320, 0.1, "sine"],
+  ],
+  nav: [[1200, 0.05, "square"]],
+  boot: [
+    [440, 0.08, "square"],
+    [660, 0.08, "square"],
+    [990, 0.12, "square"],
+  ],
+  alert: [
+    [620, 0.14, "triangle"],
+    [460, 0.18, "triangle"],
+  ],
+};
+export function cue(kind: keyof typeof TONES = "tap") {
   if (ls("sparkle-haptics") === "on") navigator.vibrate?.(kind === "ok" ? [8, 40, 8] : 6);
   if (ls("sparkle-sound") !== "on") return;
   try {
     ac ??= new AudioContext();
-    const o = ac.createOscillator();
+    let at = ac.currentTime;
+    for (const [f, d, type] of TONES[kind] ?? TONES.tap!) {
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.type = type;
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.exponentialRampToValueAtTime(type === "square" ? 0.018 : 0.04, at + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + d);
+      o.connect(g).connect(ac.destination);
+      o.start(at);
+      o.stop(at + d + 0.01);
+      at += d * 0.9;
+    }
+  } catch {}
+}
+/** Low hull hum: two detuned low oscillators through a lowpass, very quiet. */
+let hum: { stop: () => void } | null = null;
+export function setHum(on: boolean) {
+  hum?.stop();
+  hum = null;
+  if (!on || ls("sparkle-sound") !== "on") return;
+  try {
+    ac ??= new AudioContext();
     const g = ac.createGain();
-    o.type = "sine";
-    o.frequency.value = kind === "ok" ? 880 : kind === "open" ? 520 : 660;
+    const lp = ac.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 180;
     g.gain.setValueAtTime(0.0001, ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.05, ac.currentTime + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.12);
-    o.connect(g).connect(ac.destination);
-    o.start();
-    o.stop(ac.currentTime + 0.13);
+    g.gain.exponentialRampToValueAtTime(0.025, ac.currentTime + 1.5);
+    const os = [55, 55.7].map((f) => {
+      const o = ac!.createOscillator();
+      o.type = "sawtooth";
+      o.frequency.value = f;
+      o.connect(lp);
+      o.start();
+      return o;
+    });
+    lp.connect(g).connect(ac.destination);
+    hum = { stop: () => os.forEach((o) => o.stop()) };
   } catch {}
 }
 
@@ -131,6 +187,39 @@ export type ShellProps = {
   signOut: () => Promise<void>;
 };
 
+/* ---------- visible sound toggle (off by default) ---------- */
+function SoundBtn() {
+  const [p, set] = usePrefs();
+  useEffect(() => {
+    // browsers need a gesture before audio; resume the hum on the first tap if it was left on
+    const first = () => ls("sparkle-hum") === "on" && setHum(true);
+    addEventListener("pointerdown", first, { once: true });
+    return () => removeEventListener("pointerdown", first);
+  }, []);
+  return (
+    <button
+      type="button"
+      className={`ag-me sh-snd ${p.sound ? "on" : ""}`}
+      aria-pressed={p.sound}
+      aria-label={p.sound ? "Mute command-center sounds" : "Turn on command-center sounds"}
+      title={p.sound ? "Sounds on" : "Sounds off"}
+      data-testid="sound-toggle"
+      onClick={() => {
+        set("sound", !p.sound);
+        if (!p.sound) setTimeout(() => cue("boot"), 0);
+        else setHum(false);
+      }}
+    >
+      <Ico
+        d={
+          p.sound ? "M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6M19 6a8 8 0 010 12" : "M4 9v6h4l5 4V5L8 9zM17 9l5 6M22 9l-5 6"
+        }
+        s={18}
+      />
+    </button>
+  );
+}
+
 /* ---------- top bar ---------- */
 export function TopBar(props: ShellProps) {
   const [menu, setMenu] = useState<"" | "who" | "me">("");
@@ -170,7 +259,7 @@ export function TopBar(props: ShellProps) {
         <span className="ag-av">{props.name.slice(0, 1).toUpperCase()}</span>
         <span className="ag-nm">
           <small>
-            <W a="Agent" p="Student" />
+            <W a="Pilot" p="Student" />
           </small>
           {props.name}
         </span>
@@ -216,6 +305,7 @@ export function TopBar(props: ShellProps) {
         <b>{online ? <W a="Uplink secure" p="Online" /> : "Offline"}</b>
         <time suppressHydrationWarning>{clock}</time>
       </span>
+      <SoundBtn />
       <button
         type="button"
         className="ag-me"
@@ -232,9 +322,19 @@ export function TopBar(props: ShellProps) {
           <div className="ag-mh">{props.name}</div>
           <Switch id="tg-dark" label="Dark mode" on={prefs.dark} set={(v) => set("dark", v)} />
           <Switch id="tg-motion" label="Motion & effects" on={prefs.motion} set={(v) => set("motion", v)} />
+          <Switch
+            id="tg-hum"
+            label="Hull hum"
+            hint="Needs sound on"
+            on={prefs.hum}
+            set={(v) => {
+              set("hum", v);
+              setHum(v);
+            }}
+          />
           <Switch id="tg-plain" label="Plain wording" on={prefs.plain} set={(v) => set("plain", v)} />
           <Link href="/app/more" onClick={() => setMenu("")} role="menuitem">
-            <W a="Agent settings" p="Settings" />
+            <W a="Hangar" p="Settings" />
           </Link>
           {props.isAdmin ? (
             <Link href="/admin" role="menuitem">
@@ -286,12 +386,16 @@ export function Dock(props: ShellProps) {
       { label: <W a="Open secure line" p="Ask Sparkle" />, href: "/app/study" },
       { label: <W a="Scan a document" p="Scan homework" />, href: "/app/scan" },
     ],
+    [
+      { label: <W a="Crew roster" p="Family" />, href: "/app/family" },
+      { label: <W a="Share mission report" p="Share weekly summary" />, href: "/app/today#report" },
+    ],
   ];
   const go = useCallback(
     (href: string) => {
       setSheet(false);
       setQuick(null);
-      cue("tap");
+      cue("nav");
       router.push(href);
     },
     [router],
@@ -317,8 +421,8 @@ export function Dock(props: ShellProps) {
       if (e.key === "/") {
         e.preventDefault();
         setPal(true);
-      } else if (e.key >= "1" && e.key <= "4") go(PRIMARY[Number(e.key) - 1]!.href);
-      else if (e.key === "5" || e.key === "m") setSheet((s) => !s);
+      } else if (e.key >= "1" && e.key <= String(PRIMARY.length)) go(PRIMARY[Number(e.key) - 1]!.href);
+      else if (e.key === "m") setSheet((s) => !s);
     };
     window.addEventListener("sparkle-palette", openPal);
     window.addEventListener("keydown", key);

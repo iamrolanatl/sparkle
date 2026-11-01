@@ -179,10 +179,10 @@ export function AskSparkle(props: {
         <div className="askh">
           <Bot size={38} pose={mode === "listening" ? "listening" : busy ? "thinking" : "idle"} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 600 }}>Agent Sparkle</div>
+            <div style={{ fontWeight: 600 }}>Co-pilot Sparkle</div>
             <div className="mutd">
               <W
-                a="Secure line · cleared for your classes, grades and intel"
+                a="Comms · co-pilot cleared for your classes, grades and star charts"
                 p="Knows your classes, grades and teacher posts"
               />
             </div>

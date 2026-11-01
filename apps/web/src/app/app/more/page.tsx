@@ -12,7 +12,7 @@ export default function MorePage() {
         <Pigeon size={72} pose="idle" quip="Adjust your gadgets, agent. Not the crumbs." />
       </div>
       <h1>
-        <W a="Agent settings" p="Settings" />
+        <W a="Hangar" p="Settings" />
       </h1>
       <div className="sub">Appearance, wording, sound and shortcuts</div>
       <SettingsPanel />

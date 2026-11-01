@@ -961,3 +961,303 @@
     display: none;
   }
 }
+
+/* ===== Starship phase 1 (Bridge HUD, battle canvas, what-if, plan, crew) ===== */
+.sh-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sh-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.sh-hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.75), rgb(0 0 0 / 0.2));
+}
+[data-theme="light"] .sh-hero-bg {
+  opacity: 0.9;
+}
+[data-theme="light"] .sh-hero h1,
+[data-theme="light"] .sh-hero .sub,
+[data-theme="light"] .sh-hero .eyebrow,
+[data-theme="light"] .sh-hero .hero-next {
+  color: #f3ead8;
+}
+.sh-battle {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.sh-hud {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.2fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+.sh-hud.sh-two {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 900px) {
+  .sh-hud,
+  .sh-hud.sh-two {
+    grid-template-columns: 1fr;
+  }
+}
+.sh-card {
+  padding: 18px 20px;
+  min-width: 0;
+}
+.sh-report {
+  margin-top: 16px;
+}
+.sh-l {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--neon);
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.sh-l small {
+  color: var(--mut);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.sh-d {
+  font-size: 13px;
+  color: var(--mut);
+  margin-top: 8px;
+}
+.sh-big {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--amb);
+  font-family: var(--mono);
+  text-shadow: 0 0 12px rgb(255 181 71 / 0.35);
+}
+.sh-big small {
+  font-size: 15px;
+  color: var(--mut);
+  text-shadow: none;
+}
+.sh-rank {
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.sh-rank b {
+  color: var(--neon);
+}
+.sh-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  margin-top: 8px;
+  overflow: hidden;
+}
+.sh-bar i {
+  display: block;
+  height: 100%;
+  background: var(--neon);
+  box-shadow: 0 0 8px rgb(var(--glow) / 0.6);
+}
+.sh-shields {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.sh-shields li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px 44px;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.sh-shields span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sh-shields i {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ok);
+  box-shadow: 0 0 8px currentColor;
+  color: var(--ok);
+}
+.sh-shields b {
+  font-family: var(--mono);
+  text-align: right;
+}
+.sh-shields .sh-warn i {
+  background: var(--warn);
+  color: var(--warn);
+}
+.sh-shields .sh-bad i {
+  background: var(--bad);
+  color: var(--bad);
+}
+.sh-shields .sh-none i {
+  background: var(--line);
+  box-shadow: none;
+}
+.sh-radar,
+.sh-plan {
+  margin: 0;
+  padding: 0 0 0 2px;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+.sh-plan {
+  list-style: decimal inside;
+}
+.sh-radar small,
+.sh-plan small {
+  display: block;
+  color: var(--mut);
+  font-size: 12px;
+}
+.sh-radar li {
+  border-left: 3px solid var(--ok);
+  padding-left: 10px;
+}
+.sh-radar .sh-bad {
+  border-color: var(--bad);
+}
+.sh-radar .sh-warn {
+  border-color: var(--warn);
+}
+.sh-plan b {
+  color: var(--amb);
+  font-family: var(--mono);
+}
+.sh-alert {
+  color: var(--bad);
+  font-family: var(--mono);
+  animation: shBlink 1.6s steps(2) infinite;
+}
+.sh-clear {
+  color: var(--ok);
+}
+@keyframes shBlink {
+  50% {
+    opacity: 0.35;
+  }
+}
+[data-motion="off"] .sh-alert {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sh-alert {
+    animation: none;
+  }
+}
+.sh-whatif label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--mut);
+}
+.sh-wf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sh-wf-row label:last-child {
+  grid-column: 1 / -1;
+}
+.sh-whatif select {
+  background: var(--soft);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font: inherit;
+}
+.sh-whatif input[type="range"] {
+  accent-color: var(--neon);
+}
+.sh-wf-out {
+  margin: 12px 0 0;
+  font-size: 15px;
+}
+.sh-wf-out b {
+  color: var(--neon);
+  font-family: var(--mono);
+  font-size: 18px;
+}
+.sh-wf-out small {
+  display: block;
+  color: var(--mut);
+  font-size: 12px;
+}
+.sh-share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.sh-share small {
+  color: var(--mut);
+}
+.sh-crew {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.sh-crew li {
+  display: grid;
+  grid-template-columns: 40px 1fr auto auto auto;
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+  font-family: var(--mono);
+}
+@media (max-width: 600px) {
+  .sh-crew li {
+    grid-template-columns: 32px 1fr auto;
+  }
+  .sh-crew li span:nth-child(n + 4) {
+    display: none;
+  }
+}
+.sh-pos {
+  color: var(--amb);
+}
+.sh-sample {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px dashed var(--line2);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--mut);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.sh-snd.on {
+  color: var(--neon);
+}

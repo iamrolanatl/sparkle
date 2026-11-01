@@ -3,7 +3,7 @@ import { Switch, usePrefs } from "../agent-shell";
 
 const KEYS: [string, string][] = [
   ["Ctrl/⌘ K or /", "Search, go anywhere, or ask Sparkle"],
-  ["1 · 2 · 3 · 4", "Briefing · Missions · Case files · Secure line"],
+  ["1 · 2 · 3 · 4 · 5", "Bridge · Missions · Star Charts · Comms · Crew"],
   ["M", "Open More"],
   ["Esc", "Close menus"],
   ["Hold or right-click a dock icon", "Quick actions"],

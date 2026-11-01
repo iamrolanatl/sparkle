@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Battle from "@/components/ship/LazyBattle";
 import { AgentPigeon } from "@/components/landing/AgentPigeon";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { LazyChatWidget as ChatWidget } from "@/components/LazyChatWidget";
@@ -8,8 +9,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 const FEATURES = [
   {
-    title: "Today view",
-    body: "Every class, task and deadline for today at a glance.",
+    title: "Bridge",
+    body: "Shields per class, fuel streak, rank and a threat radar for missing work and tests.",
     icon: (
       <>
         <rect x="3" y="5" width="18" height="16" rx="3" />
@@ -18,8 +19,8 @@ const FEATURES = [
     ),
   },
   {
-    title: "Focus mode",
-    body: "Timed study sprints that block the noise.",
+    title: "Nightly study plan",
+    body: "15–30 minutes built from real upcoming tests and missing work. Spacing beats cramming.",
     icon: (
       <>
         <circle cx="12" cy="12" r="9" />
@@ -33,8 +34,8 @@ const FEATURES = [
     icon: <path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" />,
   },
   {
-    title: "Classes & units",
-    body: "Grades and units organised, with a GPA simulator.",
+    title: "Star Charts",
+    body: "Every class with a what-if calculator: see what Friday's test does to the grade.",
     icon: <path d="M4 5h7v14H4zM13 5h7v14h-7z" />,
   },
 ];
@@ -42,8 +43,11 @@ const FEATURES = [
 export default function Landing() {
   return (
     <div className="spk-wrap">
+      <div className="sh-bg" aria-hidden="true">
+        <Battle />
+      </div>
       <div className="spk-class" aria-hidden="true">
-        TOP SECRET // SPARKLE // EYES ONLY
+        STARSHIP SPARKLE // MISSION CONTROL FOR SCHOOL
       </div>
       <header className="spk-nav">
         <span className="spk-logo">
@@ -62,20 +66,20 @@ export default function Landing() {
         <section className="spk-hero">
           <div>
             <p className="spk-pill">
-              <b>Clearance granted</b> Your AI field agent for every class
+              <b>Condition green</b> Mission control for your child's grades
             </p>
             <h1 className="spk-h1">
               Take command of
               <br />
-              your school day.
+              every grade.
             </h1>
             <p className="spk-sub">
-              Grades, deadlines and teacher intel in one secure ops center — with Sparkle, a very clever pigeon agent
-              who keeps you one step ahead.
+              Shields for every class, a threat radar for missing work and tests, a nightly study plan and a what-if
+              grade calculator — with Sparkle, a very smug pigeon co-pilot who keeps the whole crew on course.
             </p>
             <div className="spk-ctas">
               <Link className="spk-btn spk-btn-p" href="/login?next=/app">
-                Begin mission →
+                Launch mission →
               </Link>
               <a className="spk-btn spk-btn-s" href="#features">
                 See how it works

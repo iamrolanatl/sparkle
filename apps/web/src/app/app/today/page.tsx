@@ -9,6 +9,11 @@ import { Pigeon, W, quipOfDay, type Pose } from "@/components/agent/Pigeon";
 import { Countdown, Redact } from "@/components/agent/Live";
 import { Applets } from "./applets";
 import { toApplets } from "@/lib/classes/applets";
+import Battle from "@/components/ship/LazyBattle";
+import WhatIf from "@/components/ship/WhatIf";
+import ShareCard from "@/components/ship/ShareCard";
+import { nightlyPlan, shieldOf, type PlanItem } from "@/lib/ship/derive";
+import { shipStats } from "@/lib/ship/load";
 
 const KIND: Record<string, React.ReactNode> = {
   missing: <W a="Compromised" p="Missing" />,
@@ -68,8 +73,17 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         </div>
       </div>
     );
-  const [classes, tasksRes, attRes] = await Promise.all([
-    getClasses(me.id),
+  const classesP = getClasses(me.id);
+  const statsP = classesP.then((cs) =>
+    shipStats(
+      supabase,
+      me.id,
+      cs.map((c) => c.pct),
+      now,
+    ),
+  );
+  const [classes, tasksRes, attRes, stats] = await Promise.all([
+    classesP,
     supabase
       .from("tasks")
       .select("id, title, due_at, priority")
@@ -83,6 +97,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
       .eq("student_id", me.id)
       .order("day", { ascending: false })
       .limit(500),
+    statsP,
   ]);
   const att = (attRes.data ?? []) as {
     day: string;
@@ -144,15 +159,38 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
       ? `Start with ${nextUp.title}. It's due ${dueText(nextUp.due, now).toLowerCase()}.`
       : "You're all caught up. Nice work!";
   const applets = toApplets(classes, now);
+  const TEST = /test|quiz|exam|summative|assessment/i;
+  const shields = classes.map((c) => shieldOf({ id: c.id, name: c.name, pct: c.pct, missing: c.missing.length }));
+  const tests = classes
+    .flatMap((c) =>
+      c.upcoming
+        .filter((a) => a.due_at && TEST.test(`${a.title} ${a.category ?? ""}`))
+        .map((a) => ({ id: a.id, title: a.title, cls: c.name, due: a.due_at! })),
+    )
+    .filter((t) => daysUntil(t.due, now) >= 0 && daysUntil(t.due, now) <= 14)
+    .sort((a, b) => Date.parse(a.due) - Date.parse(b.due));
+  const missingAll = classes.flatMap((c) => c.missing.map((a) => ({ id: a.id, title: a.title, cls: c.name })));
+  const planItems: PlanItem[] = [
+    ...missingAll.map((m) => ({ title: m.title, cls: m.cls, due: now.toISOString(), kind: "missing" as const })),
+    ...tests.map((t) => ({ title: t.title, cls: t.cls, due: t.due, kind: "test" as const })),
+    ...rows
+      .filter((r) => !TEST.test(`${r.title} ${r.chip}`))
+      .map((r) => ({ title: r.title, cls: r.cls, due: r.due!, kind: "due" as const })),
+  ];
+  const plan = nightlyPlan(planItems, now);
+  const threats = missingAll.length + tests.length;
   return (
     <div className="page">
-      <section className="hero" data-testid="hero">
+      <section className="hero sh-hero" data-testid="hero">
+        <div className="sh-hero-bg" aria-hidden="true">
+          <Battle />
+        </div>
         <div className="hero-copy" data-par="-0.06">
           <div className="eyebrow ag-caseno">
-            <W a={`Daily briefing · Case ${caseNo}`} p={dateLine} /> · <time>{zulu}</time>
+            <W a={`Bridge log · Stardate ${caseNo}`} p={dateLine} /> · <time>{zulu}</time>
           </div>
           <h1>
-            <W a={`${hello}, Agent${first ? ` ${first}` : ""}`} p={`${hello}${first ? `, ${first}` : ""}`} />
+            <W a={`${hello}, Commander${first ? ` ${first}` : ""}`} p={`${hello}${first ? `, ${first}` : ""}`} />
           </h1>
           <div className="sub">
             {rows.length
@@ -180,16 +218,118 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           ) : null}
           <div className="hero-cta">
             <Link className="pill mag" href={rows[0] ? "/app/tasks" : "/app/classes"}>
-              <W a="Accept mission" p="Start studying" />
+              <W a="Engage" p="Start studying" />
             </Link>
             <Link className="ghost mag" href="/app/study">
-              <W a="Open secure line" p="Ask Sparkle" />
+              <W a="Open comms" p="Ask Sparkle" />
             </Link>
           </div>
         </div>
         <div className="ag-hero-pg">
           <Pigeon size={120} pose={pose} quip={quip} />
         </div>
+      </section>
+      <section className="sh-hud" data-testid="ship-hud" aria-label="Ship status">
+        <div className="panel sh-card">
+          <div className="sh-l">
+            <W a="Shields · grade health" p="Grade health" />
+          </div>
+          {shields.length ? (
+            <ul className="sh-shields">
+              {shields.map((x) => (
+                <li key={x.id} className={`sh-${x.level}`}>
+                  <span>{x.name}</span>
+                  <i style={{ width: `${Math.max(4, Math.min(100, x.pct ?? 0))}%` }} aria-hidden="true" />
+                  <b>{x.pct != null ? `${Math.round(x.pct)}%` : "—"}</b>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="empty">No grades synced yet.</div>
+          )}
+        </div>
+        <div className="panel sh-card">
+          <div className="sh-l">
+            <W a="Fuel · study streak" p="Streak" />
+          </div>
+          <div className="sh-big">
+            {stats.streak}
+            <small> day{stats.streak === 1 ? "" : "s"}</small>
+          </div>
+          <div className="sh-d">
+            {stats.streak ? "Finish one task today to keep it burning." : "Finish a task today to start your streak."}
+          </div>
+          <div className="sh-l" style={{ marginTop: 14 }}>
+            <W a="Rank" p="Level" />
+          </div>
+          <div className="sh-rank">
+            <b>{stats.rank}</b> · Lv {stats.level} · {stats.xp} XP
+          </div>
+          <div className="sh-bar" aria-hidden="true">
+            <i style={{ width: `${Math.round(stats.progress * 100)}%` }} />
+          </div>
+          <div className="sh-d">XP only for real work: {stats.done} tasks done in 60 days.</div>
+        </div>
+        <div className="panel sh-card" data-testid="radar">
+          <div className="sh-l">
+            <W a="Threat radar" p="Alerts" />{" "}
+            <b className={threats ? "sh-alert" : "sh-clear"}>{threats ? `${threats}` : "clear"}</b>
+          </div>
+          <ul className="sh-radar">
+            {missingAll.slice(0, 4).map((m) => (
+              <li key={m.id} className="sh-bad">
+                <W a="Hull breach" p="Missing" />: {m.title} <small>{m.cls}</small>
+              </li>
+            ))}
+            {tests.slice(0, 4).map((t) => (
+              <li key={t.id} className="sh-warn">
+                <W a="Incoming" p="Test" />: {t.title}{" "}
+                <small>
+                  {t.cls} · {dueText(t.due, now)} · <Countdown to={t.due} />
+                </small>
+              </li>
+            ))}
+            {!threats ? <li className="sh-ok">No missing work or tests in the next 14 days.</li> : null}
+          </ul>
+        </div>
+      </section>
+      <section className="sh-hud sh-two" aria-label="Tonight">
+        <div className="panel sh-card" data-testid="study-plan">
+          <div className="sh-l">
+            <W a="Tonight's flight plan" p="Tonight's study plan" />{" "}
+            <small>{plan.reduce((a, p) => a + p.min, 0)} min</small>
+          </div>
+          {plan.length ? (
+            <ol className="sh-plan">
+              {plan.map((p, i) => (
+                <li key={i}>
+                  <b>{p.min} min</b> {p.text} <small>{p.cls}</small>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <div className="empty">Nothing urgent. A 15-minute review of this week&apos;s notes keeps fuel up.</div>
+          )}
+          <div className="sh-d">
+            Built from real upcoming tests, missing work and due items. Missing work first, then spaced test review.
+          </div>
+        </div>
+        <div className="panel sh-card">
+          <div className="sh-l">
+            <W a="Trajectory · what-if" p="What-if grade calculator" />
+          </div>
+          <WhatIf
+            classes={classes
+              .filter((c) => c.pct != null || c.categories.length)
+              .map((c) => ({ id: c.id, name: c.name, pct: c.pct, cats: c.categories }))}
+          />
+        </div>
+      </section>
+      <section className="panel sh-card sh-report" id="report" aria-label="Mission report">
+        <div className="sh-l">
+          <W a="Mission report" p="Weekly summary" />
+        </div>
+        <ShareCard first={first || "Pilot"} rank={stats.rank} xp={stats.xp} streak={stats.streak} done={stats.done} />
       </section>
       <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginTop: 20 }}>
         <div className="panel stat">

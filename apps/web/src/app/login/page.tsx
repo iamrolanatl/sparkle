@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Pigeon } from "@/components/agent/Pigeon";
 import "@/components/agent/pigeon.css";
 import { signInWithGoogle } from "./actions";
+import Battle from "@/components/ship/LazyBattle";
 
 export const metadata = { title: "Sign in", robots: { index: false } };
 
@@ -19,18 +20,21 @@ export default async function LoginPage({
   const { error, next } = await searchParams;
   return (
     <>
+      <div className="sh-bg" aria-hidden="true">
+        <Battle />
+      </div>
       <div className="spk-class" aria-hidden="true">
-        TOP SECRET // SPARKLE // AUTHORIZED PERSONNEL
+        STARSHIP SPARKLE // DOCKING BAY // AUTHORIZED CREW
       </div>
       <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-4 py-10">
         <Link href="/" className="spk-logo" aria-label="Sparkle home">
           <i aria-hidden />
           SPARKLE
         </Link>
-        <Pigeon size={96} pose="idle" quip="Credentials, please. I know it's you. Protocol." />
+        <Pigeon size={96} pose="idle" quip="Co-pilot here. Badge in, Commander. I'll warm up the engines." />
         <GlassPanel glow className="w-full p-6 sm:p-8">
           <p className="spk-mono text-neon text-xs tracking-[0.2em]">IDENTITY CHECK</p>
-          <h1 className="text-2xl font-semibold">Agent sign-in</h1>
+          <h1 className="text-2xl font-semibold">Board the ship</h1>
           <p className="text-muted mt-2">See what matters next. Sign in to get started.</p>
           {error && (
             <p role="alert" className="mt-4 rounded-lg border border-red-400/60 p-3 text-sm">

@@ -25,7 +25,7 @@ export default async function StudyPage({ searchParams }: { searchParams: Promis
     return (
       <div className="page">
         <h1>
-          <W a="Secure line" p="Ask Sparkle" />
+          <W a="Comms" p="Ask Sparkle" />
         </h1>
         <div className="sub">Your study helper</div>
         <div className="panel empty" style={{ marginTop: 20, display: "flex", gap: 14, alignItems: "center" }}>
@@ -56,7 +56,7 @@ export default async function StudyPage({ searchParams }: { searchParams: Promis
   return (
     <div className="page">
       <h1>
-        <W a="Secure line" p="Ask Sparkle" />
+        <W a="Comms" p="Ask Sparkle" />
       </h1>
       <div className="sub">Your study helper. Type or tap the mic.</div>
       <AskSparkle

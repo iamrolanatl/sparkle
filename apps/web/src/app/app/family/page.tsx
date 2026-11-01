@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SITE_URL } from "@/lib/site";
 import { approveInvitation, revokeInvitation, revokeShare } from "./actions";
 import { AddStudentForm, InviteForm } from "./forms";
+import { shipStats } from "@/lib/ship/load";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Family & helpers", robots: { index: false } };
@@ -62,12 +63,16 @@ export default async function FamilyPage() {
       .limit(200),
   ]);
 
+  const crew = await Promise.all(
+    ((students ?? []) as Student[]).slice(0, 12).map(async (s) => ({ s, st: await shipStats(supabase, s.id, []) })),
+  );
+  crew.sort((a, b) => b.st.xp - a.st.xp);
   return (
     <div className="page stack">
       <div className="phead">
         <div>
           <h1>
-            <W a="The team" p="Family & helpers" />
+            <W a="Crew" p="Family & helpers" />
           </h1>
           <div className="sub">Students, the people who can see them, and invitations</div>
         </div>
@@ -75,6 +80,38 @@ export default async function FamilyPage() {
           Have a code?
         </Link>
       </div>
+      <section className="panel sh-card" data-testid="crew-roster">
+        <div className="sh-l">
+          <W a="Crew roster · family only" p="Family progress" />
+        </div>
+        {crew.length ? (
+          <ol className="sh-crew">
+            {crew.map(({ s, st }, i) => (
+              <li key={s.id}>
+                <span className="sh-pos">#{i + 1}</span>
+                <b>{s.display_name.split(" ")[0]}</b>
+                <span>
+                  {st.rank} · Lv {st.level}
+                </span>
+                <span>{st.xp} XP</span>
+                <span>
+                  {st.streak} day{st.streak === 1 ? "" : "s"} fuel
+                </span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="empty">No crew yet. Add a student below.</div>
+        )}
+        <div className="sh-d">
+          Real data: XP and streaks come from completed tasks in the last 60 days. Only your family sees this.
+        </div>
+        <div className="sh-sample" data-testid="crew-sample">
+          <span className="chip">Sample · not real data</span>
+          <b>Shared goal (preview):</b> “Math to 80% by Nov 20 → pick Friday’s movie.” Shared parent-child goals arrive
+          in the next phase.
+        </div>
+      </section>
       <NeonWindow title="Add a student">
         <AddStudentForm />
       </NeonWindow>

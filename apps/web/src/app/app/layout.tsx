@@ -58,7 +58,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <SparkleBg />
       <div className="ag-tex" aria-hidden="true" />
       <div className="ag-class" aria-hidden="true">
-        TOP SECRET // SPARKLE // EYES ONLY
+        STARSHIP SPARKLE // BRIDGE // CONDITION GREEN
       </div>
       <Fx />
       <div className="sa-main">
