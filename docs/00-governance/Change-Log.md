@@ -8,8 +8,7 @@
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
-| Last Updated | 2026-10-31 | CR-0012 | Feature Register (F-23..27), CR Register, Decision Log (DEC-193..199), WBS 2.26–2.30, RAID R-38/39 | Retro-logged everything built 2026-10-22..31 (redesigns, list sharing, voice beta, galaxy video, agent theme, starship 1–2, family_goals migration, speed, CI, password rotation, Dependabot findings). Sponsor decisions DEC-196..199 left Open | Grok Bot |
-| 2026-10-21 |
+| Last Updated | 2026-10-31 |
 | Source | New |
 
 > **Purpose.** Chronological, append-only record of every change to baselined documents, scope, or decisions. One line per change; newest first.
@@ -20,6 +19,7 @@
 
 | Date | CR | Documents affected | Summary | Author |
 |---|---|---|---|---|
+| 2026-10-31 | CR-0012 | Feature Register (F-23..27), CR Register, Decision Log (DEC-193..199), WBS 2.26–2.30, RAID R-38/39 | Retro-logged everything built 2026-10-22..31 (redesigns, list sharing, voice beta, galaxy video, agent theme, starship 1–2, family_goals migration, speed, CI, password rotation, Dependabot findings). Sponsor decisions DEC-196..199 left Open | Grok Bot |
 | 2026-10-21 | Lane 1 (Phase 1 build) | Decision Log (DEC-04 decided, DEC-56..63), WBS, RAID, Sponsor-Action-Items | PRs #8–#15: RLS perf, hygiene gates, UI effects/applets, API resilience, family invitations, CSV import + Today doc, sync health, confirmation gate; migrations 20261022000000/010000/020000 applied to dev | Grok Bot |
 | 2026-10-21 | DEC-46..50 (Lane 1, go-live dev) | Decision Log, Sponsor-Action-Items, WBS 2.2/2.7.2, RAID D-12 closed | Migrations applied to Supabase; AI Gateway created; API + web deployed to workers.dev; auth redirect URLs set; purge-chats cron; chat model swapped (deprecation); site noindex | Grok Bot |
 | 2026-10-21 | CR-0007, CR-0008 | Requirements (NFR-35..48), Scalability-Reliability-Plan (new), Design-System (new), Definition-of-Done, SOP-13 (new), SOP README, Decision Log (DEC-51..55), CR Register, WBS, RAID, Sponsor-Action-Items, docs index | Enterprise standard (1M users, 99.9 %, crash-free, RPO/RTO, hygiene) and design direction baselined | Grok Bot |
