@@ -19,6 +19,7 @@
 6. **Access-widening changes** — `CREATE OR REPLACE` of an access function (`can_view_student`, `redeem_invitation`, `is_active_guardian`, `is_student_self`, `student_age`), `ALTER POLICY`, or any `SECURITY DEFINER` function — need an explicit `-- integration-signoff: <PR#>` line (added by Integration after review) **and** RLS pg tests proving no new access. CI enforces.
 7. `drop policy if exists X on T;` is allowed only when the same file re-creates policy `X on T` (policy rewrite); a bare policy drop is destructive.
 8. The `-- rollback:` note must describe the rollback; blank, `n/a`, `none` or `TBD` fail CI.
+9. **`today_bundle_v2` policy drift guard.** `public.today_bundle_v2` (SECURITY DEFINER) hand-copies the SELECT policy of the 13 tables it reads. Changing or adding a SELECT/ALL policy on `classes, units, class_categories, assignments, grades, class_materials, posts, messages, resources, post_actions, post_reads, tasks, attendance_events` fails `supabase/tests/today_bundle_b_test.sql` (drift guard, runs in `pnpm test:db`). Update v2's scope checks in a new migration, then the expected map in that test. Never just edit the map.
 
 ## 2. Apply procedure (Integration)
 1. **Backup** both targets to `/workspace/backups/<YYYYMMDD-HHMMSS>/<project-ref>/`: `schema.sql` (schema dump) and `data.sql` (data-only dump of `public`), plus `migrations.txt` (applied versions). **Never commit backups** — they contain user data. `/workspace/backups` lives outside the repo, is `chmod 700`, and `backups/`, `*.dump`, `*.backup` are gitignored.
