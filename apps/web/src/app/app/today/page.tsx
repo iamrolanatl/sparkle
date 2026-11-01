@@ -321,6 +321,11 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
           <WhatIf
             classes={classes
               .filter((c) => c.pct != null || c.categories.length)
+              .sort(
+                (a, b) =>
+                  Number(b.pct != null && b.categories.some((k) => k.weight > 0)) -
+                  Number(a.pct != null && a.categories.some((k) => k.weight > 0)),
+              )
               .map((c) => ({ id: c.id, name: c.name, pct: c.pct, cats: c.categories }))}
           />
         </div>
