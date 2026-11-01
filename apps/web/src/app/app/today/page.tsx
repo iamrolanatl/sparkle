@@ -334,7 +334,13 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         <div className="sh-l">
           <W a="Mission report" p="Weekly summary" />
         </div>
-        <ShareCard first={first || "Pilot"} rank={stats.rank} xp={stats.xp} streak={stats.streak} done={stats.done} />
+        <ShareCard
+          first={me.display_name.split(" ")[0] || "Pilot"}
+          rank={stats.rank}
+          xp={stats.xp}
+          streak={stats.streak}
+          done={stats.done}
+        />
       </section>
       <div className="grid s4" style={{ gridTemplateColumns: "repeat(4,1fr)", marginTop: 20 }}>
         <div className="panel stat">

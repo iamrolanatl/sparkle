@@ -1287,3 +1287,11 @@
     text-overflow: ellipsis;
   }
 }
+[data-theme="light"] .sh-hero .hero-next {
+  background: rgb(0 0 0 / 0.55);
+  border-color: rgb(255 255 255 / 0.15);
+}
+[data-theme="light"] .sh-hero .hero-next small,
+[data-theme="light"] .sh-hero .eyebrow {
+  color: #d9d2c2;
+}
