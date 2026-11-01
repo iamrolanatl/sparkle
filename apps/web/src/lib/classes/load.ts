@@ -85,7 +85,7 @@ export async function loadStudents(sb: SupabaseClient, knownUid?: string) {
   );
 }
 
-export async function loadClasses(sb: SupabaseClient, studentId: string): Promise<ClassView[]> {
+export async function loadClasses(sb: SupabaseClient, studentId: string, knownUid?: string): Promise<ClassView[]> {
   const nowIso = new Date().toISOString();
   const since = new Date(Date.now() - 60 * 86_400_000).toISOString();
   const [cls, units, cats, asg, grades, mats, missing, posts, msgs, res, acts, reads, me] = await Promise.all([
@@ -156,7 +156,8 @@ export async function loadClasses(sb: SupabaseClient, studentId: string): Promis
       .gte("created_at", since)
       .limit(600),
     sb.from("post_reads").select("post_id").eq("student_id", studentId).limit(2000),
-    sb.auth.getUser(),
+    // Skip the network Auth round trip when the caller already verified the user (JWT claims).
+    knownUid ? Promise.resolve({ data: { user: { id: knownUid } } }) : sb.auth.getUser(),
   ]);
   const readSet = new Set(((reads.data ?? []) as { post_id: string }[]).map((r) => r.post_id));
   const canRead = !!me.data.user;

@@ -43,5 +43,6 @@ export const getStudents = cache(async () => {
 
 export const getClasses = cache(async (studentId: string) => {
   const sb = await getSb();
-  return sb ? loadClasses(sb, studentId) : [];
+  const u = await getUser();
+  return sb ? loadClasses(sb, studentId, u?.id) : [];
 });

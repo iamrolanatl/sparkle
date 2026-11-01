@@ -1,5 +1,6 @@
 import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
 import { gpaOf, pickStudent } from "@/lib/classes/load";
 import { daysUntil, dueText } from "@/lib/classes/due";
@@ -321,12 +322,14 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
             Built from real upcoming tests, missing work and due items. Missing work first, then spaced test review.
           </div>
         </div>
-        <Goals
-          sb={supabase}
-          studentId={me.id}
-          first={first}
-          classes={classes.map((c) => ({ id: c.id, name: c.name, pct: c.pct }))}
-        />
+        <Suspense fallback={<div className="panel sh-card sh-goals" data-testid="goals" aria-busy="true" />}>
+          <Goals
+            sb={supabase}
+            studentId={me.id}
+            first={first}
+            classes={classes.map((c) => ({ id: c.id, name: c.name, pct: c.pct }))}
+          />
+        </Suspense>
         <div className="panel sh-card">
           <div className="sh-l">
             <W a="Trajectory · what-if" p="What-if grade calculator" />
