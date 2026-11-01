@@ -62,7 +62,10 @@ export function parseItem(raw: string, classes: string[] = []): ParsedItem {
   if (f) {
     const want = f[1]!.toLowerCase();
     const hit = matchClass(f[1]!, classes);
-    if (hit || /^(ela|la|ss|sci|math|science|social studies|pe|art|music|band|spanish|pltw|reading|chorus)\b/i.test(want)) {
+    if (
+      hit ||
+      /^(ela|la|ss|sci|math|science|social studies|pe|art|music|band|spanish|pltw|reading|chorus)\b/i.test(want)
+    ) {
       classLabel = (hit ?? f[1]!).slice(0, 60);
       s = s.slice(0, f.index);
     }

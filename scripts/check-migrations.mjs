@@ -66,7 +66,8 @@ for (const f of files) {
   if (seen.has(m[1])) errors.push(`${f}: duplicate timestamp ${m[1]}`);
   seen.add(m[1]);
   if (m[1] <= CUTOFF) continue;
-  if (!NEW_NAME.test(f) && !NAME_ALLOW.has(f)) errors.push(`${f}: new migrations must be <timestamp>_<int|a|b|c|d|e>_<name>.sql`);
+  if (!NEW_NAME.test(f) && !NAME_ALLOW.has(f))
+    errors.push(`${f}: new migrations must be <timestamp>_<int|a|b|c|d|e>_<name>.sql`);
   const raw = readFileSync(`${DIR}/${f}`, "utf8");
   // Note may be inline or on the following "--" comment lines (multi-line rollback block).
   const rb = /--\s*rollback:[ \t]*(.*)((?:\r?\n--[^\n]*)*)/i.exec(raw);
