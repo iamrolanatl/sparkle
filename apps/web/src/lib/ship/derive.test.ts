@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fuelStreak, nightlyPlan, rankOf, shieldOf, whatIf } from "./derive";
+import { fuelStreak, goalProgress, nightlyPlan, rankOf, recoveryPlan, shieldOf, whatIf } from "./derive";
 
 describe("ship derive", () => {
   it("shields", () => {
@@ -39,5 +39,31 @@ describe("ship derive", () => {
     );
     expect(p[0]!.text).toMatch(/TKO/);
     expect(p.reduce((a, s) => a + s.min, 0)).toBeLessThanOrEqual(30);
+  });
+});
+
+describe("recoveryPlan", () => {
+  it("builds steps, questions and a polite copy-ready email", () => {
+    const r = recoveryPlan({
+      cls: "Math",
+      teacher: "Ms. Hyden",
+      pct: 70,
+      student: "Eli",
+      unit: "Inequalities",
+      missing: [{ title: "2 Step TKO", due: "2026-10-09T00:00:00Z" }],
+    });
+    expect(r.steps[0]).toContain("2 Step TKO");
+    expect(r.steps.join(" ")).toContain("Inequalities");
+    expect(r.email).toContain("Hello Ms. Hyden,");
+    expect(r.email).toContain("This is Eli.");
+    expect(r.subject).toBe("Eli: catching up in Math");
+  });
+});
+
+describe("goalProgress", () => {
+  it("uses the real grade and never invents one", () => {
+    expect(goalProgress(70, 80, "2026-11-30", "2026-10-31")).toMatchObject({ met: false, gap: 10, daysLeft: 30 });
+    expect(goalProgress(null, 80, "2026-11-30", "2026-10-31")).toMatchObject({ now: null, ratio: 0 });
+    expect(goalProgress(85, 80, "2026-11-30", "2026-11-30").met).toBe(true);
   });
 });

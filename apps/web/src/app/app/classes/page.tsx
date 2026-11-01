@@ -117,7 +117,13 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
           or school sync runs.
         </div>
       ) : (
-        <ClassList studentId={me.id} classes={classes} openId={open ?? null} fileUrls={urlOf} />
+        <ClassList
+          studentId={me.id}
+          classes={classes}
+          openId={open ?? null}
+          fileUrls={urlOf}
+          studentName={me.display_name.split(" ")[0] ?? ""}
+        />
       )}
     </div>
   );

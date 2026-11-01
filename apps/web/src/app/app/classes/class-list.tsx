@@ -3,6 +3,8 @@ import { useActionState, useState, useTransition } from "react";
 import type { ClassView } from "@/lib/classes/load";
 import { COBB_LINKS, practiceLinks } from "@/lib/classes/resources";
 import { shortDate } from "@/lib/classes/due";
+import WhatIf from "@/components/ship/WhatIf";
+import Recovery from "@/components/ship/Recovery";
 import {
   addMaterialLink,
   deleteMaterial,
@@ -214,8 +216,10 @@ export function ClassList({
   classes,
   openId,
   fileUrls,
+  studentName = "",
 }: {
   studentId: string;
+  studentName?: string;
   classes: ClassView[];
   openId: string | null;
   fileUrls: Record<string, string>;
@@ -379,6 +383,22 @@ export function ClassList({
                       </div>
                     )}
                   </div>
+                  {c.categories.some((k) => k.weight > 0) ? (
+                    <div className="blk">
+                      <h4>
+                        What-if<span>Nothing is saved</span>
+                      </h4>
+                      <WhatIf classes={[{ id: c.id, name: c.name, pct: c.pct, cats: c.categories }]} />
+                    </div>
+                  ) : null}
+                  <Recovery
+                    cls={c.name}
+                    teacher={c.teacher}
+                    pct={c.pct}
+                    student={studentName}
+                    unit={c.unit?.title ?? null}
+                    missing={c.missing.map((a) => ({ title: a.title, due: a.due_at }))}
+                  />
                   <Materials studentId={studentId} c={c} fileUrls={fileUrls} />
                 </div>
                 <div style={{ display: "grid", gap: 14, alignContent: "start" }}>

@@ -88,3 +88,55 @@ export function nightlyPlan(items: PlanItem[], now: Date): PlanStep[] {
     add(10, `Work on: ${i.title}`, i.cls);
   return steps;
 }
+
+export type RecoveryInput = {
+  cls: string;
+  teacher: string | null;
+  pct: number | null;
+  missing: { title: string; due: string | null }[];
+  student: string;
+  unit?: string | null;
+};
+export type Recovery = { steps: string[]; ask: string[]; subject: string; email: string };
+
+/** One-tap recovery mission for missing work or a falling grade. Text only: nothing is sent. */
+export function recoveryPlan(r: RecoveryInput): Recovery {
+  const steps: string[] = [];
+  const items = r.missing.slice(0, 5);
+  for (const m of items)
+    steps.push(`Finish and turn in "${m.title}"${m.due ? ` (was due ${m.due.slice(0, 10)})` : ""}.`);
+  if (r.pct != null && r.pct < 80)
+    steps.push(
+      `Review ${r.unit ? `"${r.unit}"` : "the current unit"} for 15 minutes tonight and redo 5 practice problems.`,
+    );
+  steps.push("Check the grade again after the teacher updates the gradebook.");
+  const ask = [
+    items.length
+      ? "Can late work still be turned in, and is there a deadline?"
+      : "Is there anything I can redo or make up?",
+    "Is there a retake or test-correction option?",
+    "When is a good time for extra help?",
+  ];
+  const last = (r.teacher ?? "").trim().split(/\s+/).pop();
+  const hi = last
+    ? `Hello ${/^(mr|ms|mrs|dr)\.?$/i.test(r.teacher!.split(/\s+/)[0]!) ? r.teacher : `${last}`},`
+    : "Hello,";
+  const list = items.length
+    ? `\n\nI'm working on getting caught up on:\n${items.map((m) => `- ${m.title}`).join("\n")}`
+    : "";
+  const email = `${hi}\n\nThis is ${r.student}. I want to bring my grade up in ${r.cls}.${list}\n\n${ask.map((q) => `- ${q}`).join("\n")}\n\nThank you for your help.\n${r.student}`;
+  return { steps, ask, subject: `${r.student}: catching up in ${r.cls}`, email };
+}
+
+/** Goal progress from the real current class %. ratio is 0..1 toward target. */
+export function goalProgress(now: number | null, target: number, by: string, today: string) {
+  const daysLeft = Math.max(0, Math.round((Date.parse(by) - Date.parse(today)) / 864e5));
+  if (now == null) return { now: null, ratio: 0, met: false, gap: null, daysLeft };
+  return {
+    now,
+    ratio: Math.max(0, Math.min(1, now / target)),
+    met: now >= target,
+    gap: Math.round((target - now) * 10) / 10,
+    daysLeft,
+  };
+}
