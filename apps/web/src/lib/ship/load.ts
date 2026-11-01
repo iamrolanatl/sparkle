@@ -13,6 +13,11 @@ export async function shipStats(sb: SupabaseClient, sid: string, pcts: (number |
     .order("done_at", { ascending: false })
     .limit(500);
   const done = ((data ?? []) as { done_at: string | null }[]).map((r) => r.done_at).filter(Boolean) as string[];
+  return statsFrom(done, pcts, now);
+}
+
+/** Pure: stats from completed-task timestamps (used with the today_bundle RPC's tasks_done). */
+export function statsFrom(done: string[], pcts: (number | null)[], now = new Date()) {
   const streak = fuelStreak(done, now);
   return { done: done.length, streak, ...rankOf(done.length, pcts.filter((p) => p != null && p >= 90).length, streak) };
 }

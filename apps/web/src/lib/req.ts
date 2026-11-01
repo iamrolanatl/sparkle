@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { loadClasses, loadStudents } from "@/lib/classes/load";
+import { buildClasses, loadClassRaw, loadStudents } from "@/lib/classes/load";
 
 /**
  * Per-request memoized data access (React cache). The layout and the page render in the same request,
@@ -41,8 +41,13 @@ export const getStudents = cache(async () => {
   return sb ? loadStudents(sb, u?.id) : [];
 });
 
-export const getClasses = cache(async (studentId: string) => {
+/** All raw rows for one student in one RPC round trip (falls back to per-table queries). */
+export const getClassRaw = cache(async (studentId: string) => {
   const sb = await getSb();
-  const u = await getUser();
-  return sb ? loadClasses(sb, studentId, u?.id) : [];
+  return sb ? loadClassRaw(sb, studentId) : null;
+});
+
+export const getClasses = cache(async (studentId: string) => {
+  const [raw, u] = await Promise.all([getClassRaw(studentId), getUser()]);
+  return raw ? buildClasses(raw, !!u) : [];
 });

@@ -85,10 +85,60 @@ export async function loadStudents(sb: SupabaseClient, knownUid?: string) {
   );
 }
 
-export async function loadClasses(sb: SupabaseClient, studentId: string, knownUid?: string): Promise<ClassView[]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- loosely typed DB rows, narrowed where used
+type Rows = Record<string, any>[];
+/** Raw per-student rows behind Classes/Today. `extra` is filled only by the one-round-trip RPC path. */
+export type ClassRaw = {
+  cls: Rows;
+  units: Rows;
+  cats: Rows;
+  asg: Rows;
+  grades: Rows;
+  mats: Rows;
+  missing: Rows;
+  posts: Rows;
+  msgs: Rows;
+  res: Rows;
+  acts: Rows;
+  reads: string[];
+  extra?: { tasksOpen: Rows; tasksDone: string[]; attendance: Rows };
+};
+
+/** One Postgres call (public.today_bundle, SECURITY INVOKER so RLS applies) instead of ~15 PostgREST requests. */
+export function rawFromBundle(b: Record<string, unknown>): ClassRaw {
+  const a = (k: string) => ((b[k] as Rows | null) ?? []) as Rows;
+  return {
+    cls: a("classes"),
+    units: a("units"),
+    cats: a("categories"),
+    asg: a("upcoming"),
+    grades: a("grades"),
+    mats: a("materials"),
+    missing: a("missing"),
+    posts: a("posts"),
+    msgs: a("messages"),
+    res: a("resources"),
+    acts: a("actions"),
+    reads: a("reads") as unknown as string[],
+    extra: {
+      tasksOpen: a("tasks_open"),
+      tasksDone: (a("tasks_done") as unknown as (string | null)[]).filter(Boolean) as string[],
+      attendance: a("attendance"),
+    },
+  };
+}
+
+export async function loadClassRaw(sb: SupabaseClient, studentId: string): Promise<ClassRaw> {
+  const { data, error } = await sb.rpc("today_bundle", { p_student: studentId });
+  if (!error && data && typeof data === "object") return rawFromBundle(data as Record<string, unknown>);
+  return loadClassRawLegacy(sb, studentId);
+}
+
+/** Fallback (function not deployed yet / RPC error): the original per-table queries. */
+async function loadClassRawLegacy(sb: SupabaseClient, studentId: string): Promise<ClassRaw> {
   const nowIso = new Date().toISOString();
   const since = new Date(Date.now() - 60 * 86_400_000).toISOString();
-  const [cls, units, cats, asg, grades, mats, missing, posts, msgs, res, acts, reads, me] = await Promise.all([
+  const [cls, units, cats, asg, grades, mats, missing, posts, msgs, res, acts, reads] = await Promise.all([
     sb
       .from("classes")
       .select("id, name, teacher, room, period, syllabus_url, ebook_url, created_at, pct, section_no, synced_at")
@@ -156,13 +206,38 @@ export async function loadClasses(sb: SupabaseClient, studentId: string, knownUi
       .gte("created_at", since)
       .limit(600),
     sb.from("post_reads").select("post_id").eq("student_id", studentId).limit(2000),
-    // Skip the network Auth round trip when the caller already verified the user (JWT claims).
-    knownUid ? Promise.resolve({ data: { user: { id: knownUid } } }) : sb.auth.getUser(),
   ]);
-  const readSet = new Set(((reads.data ?? []) as { post_id: string }[]).map((r) => r.post_id));
-  const canRead = !!me.data.user;
+  return {
+    cls: cls.data ?? [],
+    units: units.data ?? [],
+    cats: cats.data ?? [],
+    asg: asg.data ?? [],
+    grades: grades.data ?? [],
+    mats: mats.data ?? [],
+    missing: missing.data ?? [],
+    posts: posts.data ?? [],
+    msgs: msgs.data ?? [],
+    res: res.data ?? [],
+    acts: acts.data ?? [],
+    reads: ((reads.data ?? []) as { post_id: string }[]).map((r) => r.post_id),
+  };
+}
+
+export async function loadClasses(sb: SupabaseClient, studentId: string, knownUid?: string): Promise<ClassView[]> {
+  const [raw, uid] = await Promise.all([
+    loadClassRaw(sb, studentId),
+    // Skip the network Auth round trip when the caller already verified the user (JWT claims).
+    knownUid ? Promise.resolve(knownUid) : sb.auth.getUser().then((r) => r.data.user?.id),
+  ]);
+  return buildClasses(raw, !!uid);
+}
+
+/** Pure: shape raw rows into the per-class view (unit-tested). */
+export function buildClasses(raw: ClassRaw, canRead: boolean): ClassView[] {
+  const { cls, units, cats, asg, grades, mats, missing, posts, msgs, res, acts } = raw;
+  const readSet = new Set(raw.reads);
   const fresh = Date.now() - 14 * 86_400_000;
-  const board: BoardPost[] = ((posts.data ?? []) as Record<string, string | null>[])
+  const board: BoardPost[] = (posts as Record<string, string | null>[])
     .filter((p) => p.source === "ctls-learn")
     .map((p) => ({
       id: p.id!,
@@ -172,17 +247,17 @@ export async function loadClasses(sb: SupabaseClient, studentId: string, knownUi
       posted_at: p.posted_at ?? null,
       read: !canRead || readSet.has(p.id!) || Date.parse(p.posted_at ?? "0") < fresh,
     }));
-  return ((cls.data ?? []) as Record<string, unknown>[]).map((c, i) => {
+  return (cls as Record<string, unknown>[]).map((c, i) => {
     const id = c.id as string;
-    const u = (units.data ?? []).filter((x) => x.class_id === id);
+    const u = units.filter((x) => x.class_id === id);
     const unit = u.find((x) => x.is_current && x.source !== "inferred") ?? u.find((x) => x.is_current) ?? u[0] ?? null;
-    const categories = (cats.data ?? [])
+    const categories = cats
       .filter((x) => x.class_id === id)
       .map((x) => ({ name: x.name, weight: Number(x.weight), score: x.score == null ? null : Number(x.score) }));
     const synced = c.pct == null ? null : Number(c.pct);
     const computed = classPercent(
       categories,
-      (grades.data ?? [])
+      grades
         .filter((g) => g.class_id === id)
         .map((g) => ({
           score: g.score == null ? null : Number(g.score),
@@ -191,7 +266,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string, knownUi
     );
     const pct = synced ?? (c.synced_at ? null : computed);
     const feed: Feed[] = [
-      ...(posts.data ?? [])
+      ...posts
         .filter((x) => x.class_id === id)
         .map((x) => ({
           id: x.id,
@@ -203,7 +278,7 @@ export async function loadClasses(sb: SupabaseClient, studentId: string, knownUi
           body: x.body,
           unread: board.some((b) => b.id === x.id && !b.read),
         })),
-      ...(msgs.data ?? [])
+      ...msgs
         .filter((x) => x.class_id === id)
         .map((x) => ({
           id: x.id,
@@ -219,17 +294,17 @@ export async function loadClasses(sb: SupabaseClient, studentId: string, knownUi
       .slice(0, 6);
     const myBoard = board.filter((b) => b.class_id === id);
     const items = classItems(
-      ((acts.data ?? []) as PostAction[]).filter((a) => a.class_id === id),
+      (acts as PostAction[]).filter((a) => a.class_id === id),
       myBoard,
     );
     const unreadPostIds = myBoard.filter((b) => !b.read).map((b) => b.id);
-    const missingList = ((missing.data ?? []) as Assignment[]).filter((a) => a.class_id === id);
+    const missingList = (missing as Assignment[]).filter((a) => a.class_id === id);
     const unitView = unit ? { title: unit.title as string } : null;
     // Dated items from teacher class-board posts join Upcoming (and so Today due-soon + Tasks), unless the
     // portal already lists the same work.
-    const realUpcoming = ((asg.data ?? []) as Assignment[]).filter((a) => a.class_id === id);
+    const realUpcoming = (asg as Assignment[]).filter((a) => a.class_id === id);
     const fromPosts: Assignment[] = postUpcoming(
-      ((acts.data ?? []) as PostAction[]).filter((a) => a.class_id === id),
+      (acts as PostAction[]).filter((a) => a.class_id === id),
       realUpcoming,
     ).map((a) => ({ ...a, class_id: id }));
     return {
@@ -250,10 +325,10 @@ export async function loadClasses(sb: SupabaseClient, studentId: string, knownUi
       upcoming: [...realUpcoming, ...fromPosts].sort((a, b) => Date.parse(a.due_at!) - Date.parse(b.due_at!)),
       pct,
       letter: pct == null ? null : letterFor(Math.min(pct, 110)).letter,
-      materials: ((mats.data ?? []) as (Material & { class_id: string })[]).filter((m) => m.class_id === id),
-      missing: ((missing.data ?? []) as Assignment[]).filter((a) => a.class_id === id),
+      materials: (mats as (Material & { class_id: string })[]).filter((m) => m.class_id === id),
+      missing: (missing as Assignment[]).filter((a) => a.class_id === id),
       feed,
-      resources: ((res.data ?? []) as (Resource & { class_id: string })[]).filter((r) => r.class_id === id),
+      resources: (res as (Resource & { class_id: string })[]).filter((r) => r.class_id === id),
       section: (c.section_no as string) ?? null,
       synced_at: (c.synced_at as string) ?? null,
     };

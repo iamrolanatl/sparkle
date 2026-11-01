@@ -1,7 +1,7 @@
 import Link from "@/components/IntentLink";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { getClasses, getSb, getStudents, getUser } from "@/lib/req";
+import { getClassRaw, getClasses, getSb, getStudents, getUser } from "@/lib/req";
 import { gpaOf, pickStudent } from "@/lib/classes/load";
 import { daysUntil, dueText } from "@/lib/classes/due";
 import { dontMiss } from "@/lib/classes/guidance";
@@ -15,7 +15,7 @@ import Battle from "@/components/ship/LazyBattle";
 import WhatIf from "@/components/ship/WhatIf";
 import ShareCard from "@/components/ship/ShareCard";
 import { nightlyPlan, shieldOf, type PlanItem } from "@/lib/ship/derive";
-import { shipStats } from "@/lib/ship/load";
+import { shipStats, statsFrom } from "@/lib/ship/load";
 
 const KIND: Record<string, React.ReactNode> = {
   missing: <W a="Compromised" p="Missing" />,
@@ -75,32 +75,40 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         </div>
       </div>
     );
-  const classesP = getClasses(me.id);
-  const statsP = classesP.then((cs) =>
-    shipStats(
-      supabase,
-      me.id,
-      cs.map((c) => c.pct),
-      now,
-    ),
-  );
-  const [classes, tasksRes, attRes, stats] = await Promise.all([
-    classesP,
-    supabase
-      .from("tasks")
-      .select("id, title, due_at, priority")
-      .eq("student_id", me.id)
-      .is("done_at", null)
-      .order("due_at", { nullsFirst: false })
-      .limit(100),
-    supabase
-      .from("attendance_events")
-      .select("day, code, excused, course_name")
-      .eq("student_id", me.id)
-      .order("day", { ascending: false })
-      .limit(500),
-    statsP,
-  ]);
+  // One RPC (today_bundle) carries classes + tasks + attendance + stats rows; legacy queries only if it failed.
+  const [classes, raw] = await Promise.all([getClasses(me.id), getClassRaw(me.id)]);
+  const extra = raw?.extra;
+  const [tasksRes, attRes, stats] = extra
+    ? [
+        { data: extra.tasksOpen },
+        { data: extra.attendance },
+        statsFrom(
+          extra.tasksDone,
+          classes.map((c) => c.pct),
+          now,
+        ),
+      ]
+    : await Promise.all([
+        supabase
+          .from("tasks")
+          .select("id, title, due_at, priority")
+          .eq("student_id", me.id)
+          .is("done_at", null)
+          .order("due_at", { nullsFirst: false })
+          .limit(100),
+        supabase
+          .from("attendance_events")
+          .select("day, code, excused, course_name")
+          .eq("student_id", me.id)
+          .order("day", { ascending: false })
+          .limit(500),
+        shipStats(
+          supabase,
+          me.id,
+          classes.map((c) => c.pct),
+          now,
+        ),
+      ]);
   const att = (attRes.data ?? []) as {
     day: string;
     code: string;
