@@ -1261,3 +1261,29 @@
 .sh-snd.on {
   color: var(--neon);
 }
+.sh-whatif label {
+  min-width: 0;
+}
+.sh-whatif select {
+  width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+@media (max-width: 700px) {
+  .sh-wf-row {
+    grid-template-columns: 1fr;
+  }
+  .ag-led {
+    display: none;
+  }
+  .ag-dock > a,
+  .ag-dock > button {
+    padding: 0 8px;
+    min-width: 0;
+  }
+  .ag-dock > .on .ag-lb {
+    max-width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
