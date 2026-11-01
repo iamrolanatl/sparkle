@@ -6,7 +6,9 @@ const nextConfig: NextConfig = {
   // Expose only public values to the browser.
   poweredByHeader: false,
   // Class materials uploads (10 MB cap enforced in the action + bucket).
-  experimental: { serverActions: { bodySizeLimit: "11mb" } },
+  // inlineCss: put the (small) global stylesheet in a <style> tag instead of a render-blocking <link> (~150 ms LCP on
+  // the public landing/login pages). style-src already allows inline styles.
+  experimental: { serverActions: { bodySizeLimit: "11mb" }, inlineCss: true },
   async headers() {
     const api = (process.env.NEXT_PUBLIC_API_URL ?? "https://sparkle-api.crystal-iamrolan.workers.dev").split(",");
     // Static CSP for public/prerendered pages; signed-in routes get a nonce CSP from middleware (DEC-186).
