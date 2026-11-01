@@ -104,7 +104,7 @@ export type ClassRaw = {
   extra?: { tasksOpen: Rows; tasksDone: string[]; attendance: Rows };
 };
 
-/** One Postgres call (public.today_bundle, SECURITY INVOKER so RLS applies) instead of ~15 PostgREST requests. */
+/** One Postgres call (public.today_bundle_v2 / today_bundle) instead of ~15 PostgREST requests. */
 export function rawFromBundle(b: Record<string, unknown>): ClassRaw {
   const a = (k: string) => ((b[k] as Rows | null) ?? []) as Rows;
   return {
@@ -129,8 +129,11 @@ export function rawFromBundle(b: Record<string, unknown>): ClassRaw {
 }
 
 export async function loadClassRaw(sb: SupabaseClient, studentId: string): Promise<ClassRaw> {
-  const { data, error } = await sb.rpc("today_bundle", { p_student: studentId });
-  if (!error && data && typeof data === "object") return rawFromBundle(data as Record<string, unknown>);
+  // v2 checks access once per scope (SECURITY DEFINER, same predicates as the RLS policies); v1 is RLS-per-row.
+  for (const fn of ["today_bundle_v2", "today_bundle"]) {
+    const { data, error } = await sb.rpc(fn, { p_student: studentId });
+    if (!error && data && typeof data === "object") return rawFromBundle(data as Record<string, unknown>);
+  }
   return loadClassRawLegacy(sb, studentId);
 }
 

@@ -75,4 +75,36 @@ do $$ begin
 exception when insufficient_privilege then raise notice 'ok - bundle: anon cannot execute'; end $$;
 reset role;
 select tests.ok((select not prosecdef from pg_proc where proname = 'today_bundle'), 'bundle: function is SECURITY INVOKER');
+-- ===== today_bundle_v2 (SECURITY DEFINER, per-scope checks) must equal the RLS-enforced invoker version =====
+reset role;
+do $$ declare t text; begin foreach t in array array['posts','post_reads','attendance_events','grades'] loop
+  if to_regclass('public.'||t) is not null then execute format('grant select on public.%I to authenticated', t); end if; end loop; end $$;
+insert into public.posts (id, student_id, class_id, source, title, external_key, posted_at) values
+ ('30000000-0000-0000-0000-00000000000a', '10000000-0000-0000-0000-00000000000a', '20000000-0000-0000-0000-00000000000a', 'ctls-learn', 'Post A', 'pa', now());
+insert into public.post_reads (post_id, user_id, student_id) values
+ ('30000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000a5', '10000000-0000-0000-0000-00000000000a');
+insert into public.attendance_events (student_id, day, code, source, external_key) values
+ ('10000000-0000-0000-0000-00000000000a', current_date, 'Tardy', 'test', 'att-a');
+insert into public.shares (student_id, grantee_profile_id, scopes, granted_by) values
+ ('10000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-0000000000f0', array['schedule']::public.access_scope[], '00000000-0000-0000-0000-00000000000a');
+set local role authenticated;
+select tests.as_user('00000000-0000-0000-0000-00000000000a');
+select tests.ok(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a', '2026-11-01') = public.today_bundle('10000000-0000-0000-0000-00000000000a', '2026-11-01'), 'bundle: v2 equals RLS version for guardian');
+select tests.ok(jsonb_array_length(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a')->'posts') = 1 and jsonb_array_length(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a')->'reads') = 0, 'bundle: v2 guardian sees post but not the student''s reads');
+select tests.ok(jsonb_array_length(public.today_bundle_v2('10000000-0000-0000-0000-00000000000b')->'classes') = 0, 'bundle: v2 parent A cannot read family B classes');
+select tests.as_user('00000000-0000-0000-0000-0000000000a5');
+select tests.ok(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a', '2026-11-01') = public.today_bundle('10000000-0000-0000-0000-00000000000a', '2026-11-01'), 'bundle: v2 equals RLS version for student');
+select tests.as_user('00000000-0000-0000-0000-00000000000b');
+select tests.ok(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a', '2026-11-01') = public.today_bundle('10000000-0000-0000-0000-00000000000a', '2026-11-01'), 'bundle: v2 equals RLS version for other family');
+select tests.ok(not exists (select 1 from jsonb_each(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a')) e where jsonb_array_length(e.value) > 0), 'bundle: v2 other family gets only empty arrays');
+select tests.as_user('00000000-0000-0000-0000-0000000000f0');
+select tests.ok(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a', '2026-11-01') = public.today_bundle('10000000-0000-0000-0000-00000000000a', '2026-11-01'), 'bundle: v2 equals RLS version for schedule-only share');
+select tests.ok(jsonb_array_length(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a')->'classes') = 1 and jsonb_array_length(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a')->'posts') = 0 and jsonb_array_length(public.today_bundle_v2('10000000-0000-0000-0000-00000000000a')->'attendance') = 0, 'bundle: v2 share scopes honoured');
+reset role;
+set local role anon;
+do $$ begin
+  perform public.today_bundle_v2('10000000-0000-0000-0000-00000000000a');
+  raise exception 'FAIL: anon executed today_bundle_v2';
+exception when insufficient_privilege then raise notice 'ok - bundle: v2 anon cannot execute'; end $$;
+reset role;
 rollback;

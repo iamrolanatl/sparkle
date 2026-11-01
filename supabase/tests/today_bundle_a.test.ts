@@ -27,7 +27,7 @@ describe("today_bundle RPC RLS", () => {
       .catch((e) => {
         throw new Error(`${e.message}\npassed so far:\n${notices.join("\n")}`);
       });
-    expect(notices.filter((n) => /^ok - bundle:/.test(n)).length).toBe(11);
+    expect(notices.filter((n) => /^ok - bundle:/.test(n)).length).toBe(20);
     await db.close();
   }, 60_000);
 });
