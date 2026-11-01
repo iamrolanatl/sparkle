@@ -66,6 +66,8 @@
 | R-36 | Public pages keep script-src 'unsafe-inline' (static CSP) | 2 | 3 | 6 | Accept | No user data on public pages; nonce CSP on signed-in routes (DEC-186) | Team E | Open |
 | R-37 | Crash-free SLO (NFR-37) unmeasurable until a Sentry DSN exists | 3 | 3 | 9 | Mitigate | No-op adapters ready (DEC-184); SA-17 | Rolan | Open |
 | R-A1 | AI study helper or task text gives age-inappropriate or unsafe output to a minor | 2 | 5 | 10 | Mitigate | Pre/post screening, age bands, coach mode (DEC-102/103); crisis copy needs child-safety expert review (Sponsor action) | Team A | Open |
+| R-38 | Dependabot security updates fail: body-parser pinned at 2.3.0 (fix 2.4.0), undici at 6.29.1 (fix 7.30.1, major); 10 open alerts (5 high, 5 moderate) | 3 | 3 | 9 | Mitigate | Plan upgrade of parent packages; test undici major bump in a branch (WBS 2.30) | Grok Bot | Open |
+| R-39 | First-visit signed-in Today misses LCP < 1.5 s on slow phone (server response variable, cold isolates) | 3 | 2 | 6 | Mitigate | Free fixes first (DEC-195); next: single RPC for class bundle to cut Supabase round trips | Grok Bot | Open |
 
 ## Assumptions
 | ID | Assumption | Validation | Status |
@@ -125,3 +127,4 @@
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Closed I-03 (R2); added R-14..R-18, D-12..D-14. |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | R-06 downgraded; R-20..25, D-20/21 added (CR-0005). |
 | 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | R-26..30, D-22/23 (CR-0006). |
+| 1.5 | 2026-10-31 | Grok Bot (for Rolan Chowdhury) | CR-0012 | Added R-38, R-39. |

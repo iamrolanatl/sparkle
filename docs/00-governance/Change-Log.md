@@ -8,7 +8,8 @@
 | Status | Draft — Baselined under CR-0001, pending sponsor sign-off |
 | Document Owner | Rolan Chowdhury (PM) |
 | Approver | Rolan Chowdhury (Sponsor / Project Manager) |
-| Last Updated | 2026-10-21 |
+| Last Updated | 2026-10-31 | CR-0012 | Feature Register (F-23..27), CR Register, Decision Log (DEC-193..199), WBS 2.26–2.30, RAID R-38/39 | Retro-logged everything built 2026-10-22..31 (redesigns, list sharing, voice beta, galaxy video, agent theme, starship 1–2, family_goals migration, speed, CI, password rotation, Dependabot findings). Sponsor decisions DEC-196..199 left Open | Grok Bot |
+| 2026-10-21 |
 | Source | New |
 
 > **Purpose.** Chronological, append-only record of every change to baselined documents, scope, or decisions. One line per change; newest first.

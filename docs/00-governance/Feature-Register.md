@@ -42,6 +42,11 @@
 | F-20 | School-day weather | CR-0004 | FR-22 | E2 | 2 | Could | Planned (landing "coming soon") |
 | F-21 | OCR document scanning | CR-0004 | FR-23 | E6 | 2 / 4 | Should | Planned (R2 bucket ready; landing "coming soon") |
 | F-22 | School mail vault | CR-0004 | FR-24 | E6 | 4 | Should | Planned — flag `vault_enabled=false`, sample data only (landing "coming soon") |
+| F-23 | Today hero + class applets; light/dark, glass/neumorphic effects, micro-interactions (c98f696, 1312c1e) — later superseded by F-25/F-26 | Sponsor | NFR-47 | E2 | 1 | Should | Done on dev (CR-0012) |
+| F-24 | Shopping list delete/undo + in-app list sharing (list_shares, viewer/editor, revoke; migration 20261023020000_int_list_shares + RLS tests) (54b6c15, d415f50) | 3.7 | FR-08 | E6 | 1 | Should | Done on dev (CR-0012) |
+| F-25 | Ask Sparkle chat + voice beta (Web Speech API; per-student study_helper allowlist = Eli only) (3a22037, e721df0, d9ec0c7, bab79bb); unit-aware hints-first (be36dbb) | 3.10 | FR-10 | E4 | 1 | Must | Beta on dev (CR-0012) |
+| F-26 | Agent dark theme: floating dock nav, More sheet, Ctrl/Cmd-K palette, plain-wording toggle, opt-in sound/haptics, boot; Sparkle pigeon mascot replaces robot; 3D star removed; galaxy video background (244a8b6, aedde17, 95274fb) | Sponsor | NFR-47/48 | E2 | 1 | Should | Done on dev (CR-0012) |
+| F-27 | Starship phases 1–2: Bridge HUD (shields, fuel, rank, threat radar), what-if calculator, nightly flight plan, Mission Report share card, command-center sounds (off by default), Crew, one-tap recovery mission (copy-only email), shared family goals (family_goals + RLS + test, migration 20261031220000_a_family_goals) (c53a60c…90dd231) | Sponsor | FR-05, FR-06 | E2/E3 | 1–2 | Must | Done on dev; awaiting sponsor review (CR-0012) |
 
 ---
 
@@ -60,3 +65,4 @@
 | 1.0 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0001 | Re-created in PMBOK-aligned Markdown; reconciled with Implementation Handoff v1.0; gaps marked TBD. |
 | 1.1 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0002 | Statuses updated for Phase 0; added F-14, F-15. |
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added F-16..F-22. |
+| 1.3 | 2026-10-31 | Grok Bot (for Rolan Chowdhury) | CR-0012 | Added F-23..F-27 (work built 2026-10-22..31). |

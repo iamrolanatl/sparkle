@@ -63,6 +63,11 @@ Rolan Chowdhury is Sponsor and currently holds **every** project role (PO, Eng L
 | 2.23 | Repo security: Dependabot (done), gitleaks CI, CODEOWNERS; branch protection if GitHub Pro — DEC-44 |  | Not started | CR-0006 |
 | 2.24 | Cost alerts & budgets: Cloudflare, Supabase, xAI, Anthropic — DEC-43 |  | Not started | CR-0006 |
 | 2.25 | Privacy-respecting analytics + KPI instrumentation — DEC-42 |  | Not started | CR-0006 |
+| 2.26 | Design iterations: applets/effects (Oct 22), agent dark theme + dock/Cmd-K + pigeon, star removal, galaxy video (Oct 29), starship phases 1–2 (Oct 31) |  | Done on dev — sponsor baseline review open | CR-0012 |
+| 2.27 | Speed passes: request dedupe, Suspense streaming, static caching, video gating (Oct 29); framer-motion removal, Smart Placement (Oct 31); claims-based class loader + streamed goals (67ae780) |  | In progress — first-visit LCP budget not yet met | CR-0012 / DEC-195 |
+| 2.28 | CI hygiene: prettier, knip unused exports, relative-date test, visual baselines from CI artifacts (0af2181, 89d8ba5, ecdf104) |  | Done — main green | CR-0012 |
+| 2.29 | Test-account password rotation (credentials only in protected secrets file) |  | Done 2026-10-31 | SOP secrets |
+| 2.30 | Dependabot remediation: body-parser 2.3.0→2.4.0, undici 6.29.1→7.30.1 (major); 10 open alerts (5 high, 5 moderate) |  | Not started — upgrade plan pending | R-38 |
 | 3.0 | **Phase 1 — Core Data & Identity** | G1 | Not started | Entry: 2.10 complete |
 | 3.1 | Google auth + family/helper invitations + sharing/RLS | | In progress | Schema + RLS (CR-0002) + UI PR #12 |
 | 3.2 | Desktop agent skeleton (Tauri) + first connector (StudentVue) | Team D | In progress (mock only) | Ingest API + DO/Queue + provenance migration `20261022130000_d_ingest_provenance` (#30); agent core (#47); Playwright-in-CI + unsigned Tauri shell (#61). First live connector **gated** by ToS review (SOP-12 step 2, SA-D1) and signing certs (SA-D3) |
@@ -157,3 +162,4 @@ Added 1.0 PM and 8.0 Closing branches; added web fallback, connectors beyond Stu
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added 1.1 SOP library, 1.2 DoD/ADR template; R2 done (I-03 closed); 2.7.1–2.7.3 (legal, chat, admin slice); CR-0004 elements 4.8–4.10, 6.6, 6.7. |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added 6.8.x vault compliance (renumbered from 6.7.x on rebase), sorted rows, 7.5 pen test, 7.6 counsel sign-off/launch gate. |
 | 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Added 2.20–2.25 and 1.1 (CR-0006). |
+| 1.5 | 2026-10-31 | Grok Bot (for Rolan Chowdhury) | CR-0012 | Added 2.26–2.30 (work since 2026-10-22). |

@@ -160,6 +160,13 @@
 | DEC-153 | 2026-10-21 | Lifecycle job: inactivity (any active guardian) notices at 24/25 months, delete at 26; age-18 notices 60/14 days, transfer to student account at 18 (guardians need a student share), else 12-month guardian read-only then delete; events queued, no sends from DB | DEC-28 | Manual process | Grok Bot (Team C) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-154 | 2026-10-21 | ConsentVerifier adapter; only DevStubVerifier (method sample_only) exists and refuses APP_ENV=production; real vendor waits on SA-C1 | DEC-21; no paid signups | Build vendor integration now | Grok Bot (Team C) under Rolan's standing delegation (2026-10-21) | Decided |
 | DEC-155 | 2026-10-21 | Step-up uses JWT amr sign-in timestamp (≤ 15 min), not iat; upload is raw body ≤ 10 MB (was 25 MB base64) | Review #53; CR-0007 memory safety | iat; 25 MB JSON | Grok Bot (Team C) under Rolan's standing delegation (2026-10-21) | Decided |
+| DEC-193 | 2026-10-29 | Visual direction: dark-first agent theme, phosphor-green/amber neon only (no blue/purple); pigeon mascot replaces robot (supersedes ADR-06 Rive robot for now) | Sponsor directives Oct 29 | Warm-gold glass (rejected by sponsor) | Rolan Chowdhury (directive) | Accepted |
+| DEC-194 | 2026-10-31 | Starship look built on dev with sounds off by default and a Plain-wording switch; no paid video/hosting | Sponsor directive Oct 31; free tiers | — | Grok Bot under Rolan's standing delegation | Accepted — sponsor review of design baseline Open |
+| DEC-195 | 2026-10-31 | Perf: Today reuses verified JWT claims (no per-request Auth network call), streams slow panels with Suspense; Smart Placement on (free); no paid keep-warm | NFR budgets; free tiers | Workers Paid keep-warm | Grok Bot under Rolan's standing delegation | Accepted |
+| DEC-196 | 2026-10-31 | Confirm DEC-06 default (core records always visible; student may limit notes, AI chats, personal resources) | Pending sponsor | — | Rolan Chowdhury | **Open** |
+| DEC-197 | 2026-10-31 | Confirm CR-0011 (portal passwords on device only); DEC-76 recorded PM approval, sponsor confirmation still requested (SA-21) | Pending sponsor | — | Rolan Chowdhury | **Open** |
+| DEC-198 | 2026-10-31 | Age threshold 13 vs 14 (DEC-04 provisional 13) and go-live month | Pending sponsor + counsel | — | Rolan Chowdhury | **Open** |
+| DEC-199 | 2026-10-31 | Whether laptop portal sync with the family's own sign-ins may continue before the SA-D1 portal-terms review (DEC-161) | Pending sponsor | Pause sync until review | Rolan Chowdhury | **Open** |
 
 All ADRs are "Accepted" as inputs from the handoff and are ratified on approval of CR-0001.
 
@@ -182,3 +189,4 @@ All ADRs are "Accepted" as inputs from the handoff and are ratified on approval 
 | 1.2 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0003, CR-0004 | Added DEC-08 (chat model), DEC-09 (CR-0004 scope amendment). |
 | 1.3 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0005 | Added DEC-20..DEC-39 (vault compliance & security posture). |
 | 1.4 | 2026-10-21 | Grok Bot (for Rolan Chowdhury) | CR-0006 | Added DEC-40..45. |
+| 1.5 | 2026-10-31 | Grok Bot (for Rolan Chowdhury) | CR-0012 | Added DEC-193..199 (DEC-196..199 Open, awaiting Rolan). |
