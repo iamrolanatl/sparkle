@@ -159,7 +159,7 @@ describe("tasks routes", () => {
   });
   it("save requires review confirmation, then saves", async () => {
     stub(true);
-    const base = { title: "Study bio", dueAt: "2026-10-24T03:59:00.000Z", priority: "high" };
+    const base = { title: "Study bio", dueAt: new Date(Date.now() + 3 * 86_400_000).toISOString(), priority: "high" };
     const no = await app.request(
       `/students/${SID}/tasks`,
       { method: "POST", headers: auth, body: JSON.stringify(base) },

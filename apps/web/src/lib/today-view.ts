@@ -1,5 +1,5 @@
 /** Shapes and formatting for the Today view (WBS 4.1). Mirrors the API TodayDoc. */
-export interface TodayItem {
+interface TodayItem {
   id: string;
   title: string;
   due_at: string | null;

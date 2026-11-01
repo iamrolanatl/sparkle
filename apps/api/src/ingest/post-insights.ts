@@ -10,7 +10,7 @@ import { routerFromEnv, type AiEnv } from "../ai/env";
 import { screenModelOutput } from "../tasks/safety";
 import { serviceRest } from "../lib/supa";
 
-export type Kind = "todo" | "due" | "bring" | "assessment" | "reminder" | "change" | "announcement";
+type Kind = "todo" | "due" | "bring" | "assessment" | "reminder" | "change" | "announcement";
 export interface Action {
   kind: Kind;
   text: string;

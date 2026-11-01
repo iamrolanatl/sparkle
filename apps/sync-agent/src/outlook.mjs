@@ -62,7 +62,7 @@ function parseWhen(w) {
 }
 
 /** Base course name without the term marker: "Language Arts 7 Q1" → "language arts 7", "Soc Stdy 7Q2" → "soc stdy 7". */
-export const courseBase = (n) =>
+const courseBase = (n) =>
   clean(n)
     .toLowerCase()
     .replace(/\s*q[1-4]\b/g, "")

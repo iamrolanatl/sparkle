@@ -3,7 +3,7 @@
  * (teacher post summaries, pending SA-A1), missing work, grade and current unit. Pure + deterministic: the only AI
  * step is the server-side per-post extraction; this file only ranks and phrases.
  */
-export type ActionKind = "todo" | "due" | "bring" | "assessment" | "reminder" | "change" | "announcement";
+type ActionKind = "todo" | "due" | "bring" | "assessment" | "reminder" | "change" | "announcement";
 export interface PostAction {
   id: string;
   post_id: string;
@@ -177,7 +177,7 @@ export function dontMiss(
     });
 }
 
-export const FROM_POST = "From teacher post";
+const FROM_POST = "From teacher post";
 const words = (s: string) =>
   new Set(
     (s.toLowerCase().match(/[a-z0-9]{3,}/g) ?? []).filter((w) => !/^(due|the|and|at|on|for|oct|nov|dec|sep)$/.test(w)),

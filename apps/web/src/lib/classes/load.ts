@@ -4,7 +4,7 @@ import { computeGpa, letterFor } from "@/lib/gpa";
 import { CLASS_COLORS } from "./resources";
 import { classGuidance, classItems, postUpcoming, type BoardPost, type Guidance, type PostAction } from "./guidance";
 
-export type Category = { name: string; weight: number; score: number | null };
+type Category = { name: string; weight: number; score: number | null };
 export type Assignment = {
   id: string;
   title: string;
@@ -13,7 +13,7 @@ export type Assignment = {
   category: string | null;
   class_id: string | null;
 };
-export type Material = {
+type Material = {
   id: string;
   kind: "file" | "link";
   name: string;
@@ -21,7 +21,7 @@ export type Material = {
   storage_path: string | null;
   unit_id: string | null;
 };
-export type Feed = {
+type Feed = {
   id: string;
   kind: "post" | "email";
   title: string;
@@ -31,7 +31,7 @@ export type Feed = {
   body: string | null;
   unread?: boolean;
 };
-export type Resource = { id: string; kind: string; provider: string | null; title: string; url: string };
+type Resource = { id: string; kind: string; provider: string | null; title: string; url: string };
 export type ClassView = {
   id: string;
   name: string;
@@ -58,10 +58,7 @@ export type ClassView = {
 };
 
 /** Weighted category average when categories have scores; else mean of recorded grades. */
-export function classPercent(
-  cats: Category[],
-  grades: { score: number | null; max_score: number | null }[],
-): number | null {
+function classPercent(cats: Category[], grades: { score: number | null; max_score: number | null }[]): number | null {
   const scored = cats.filter((c) => c.score != null && c.weight > 0);
   const w = scored.reduce((a, c) => a + c.weight, 0);
   if (w > 0) return Math.round((scored.reduce((a, c) => a + c.weight * c.score!, 0) / w) * 10) / 10;

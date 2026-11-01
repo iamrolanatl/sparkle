@@ -15,7 +15,7 @@ import { screened, sseDeltas } from "./stream";
 import { mayAsk, type StudyEnv } from "./route";
 
 /** Practice coaching (never reveal the final answer first). */
-export const PRACTICE_RULES = [
+const PRACTICE_RULES = [
   "This is a practice problem. Do NOT state or hint the final answer or the final value of any variable.",
   "Give only the FIRST step, phrased as a question for the student, then stop and wait for their reply.",
   'If the student offers their own answer, check it by plugging it back in. If it is correct, say plainly "Yes, that\'s correct!" and show the one-line check. If it is wrong, say so kindly and point to the step to recheck.',
